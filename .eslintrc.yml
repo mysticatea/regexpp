@@ -1,0 +1,39 @@
+extends:
+  - mysticatea
+  - mysticatea/modules
+  - plugin:prettier/recommended
+
+rules:
+  class-methods-use-this: off
+  complexity: off
+  mysticatea/arrow-parens: off
+  prettier/prettier:
+    - error
+    - tabWidth: 4
+      semi: false
+      trailingComma: all
+      parser: typescript
+
+overrides:
+  - files: ["*.ts"]
+    parser: typescript-eslint-parser
+    rules:
+      lines-between-class-members: off
+      no-invalid-this: off
+      no-loop-func: off
+      no-undef: off
+      no-unused-vars: off
+      no-use-before-define: off
+      require-jsdoc: off
+      valid-jsdoc: off
+    settings:
+      node:
+        tryExtensions: [".ts"]
+
+  - files: ["src/unicode/ids.ts"]
+    rules:
+      import/exports-last: off
+
+  - files: ["src/unicode/property-data.ts"]
+    rules:
+      camelcase: off

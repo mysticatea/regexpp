@@ -1,0 +1,39 @@
+{
+    "compileOnSave": true,
+    "compilerOptions": {
+        "allowJs": false,
+        "allowSyntheticDefaultImports": false,
+        "allowUnreachableCode": false,
+        "allowUnusedLabels": false,
+        "alwaysStrict": true,
+        "baseUrl": ".",
+        "checkJs": false,
+        "declaration": true,
+        "diagnostics": true,
+        "esModuleInterop": true,
+        "forceConsistentCasingInFileNames": true,
+        "lib": [
+            "es2017"
+        ],
+        "module": "commonjs",
+        "moduleResolution": "node",
+        "newLine": "LF",
+        "noEmitOnError": true,
+        "noFallthroughCasesInSwitch": true,
+        "noImplicitAny": true,
+        "noImplicitReturns": true,
+        "noImplicitThis": true,
+        "noUnusedLocals": true,
+        "noUnusedParameters": false,
+        "outDir": ".temp",
+        "pretty": true,
+        "removeComments": true,
+        "sourceMap": true,
+        "sourceRoot": "src",
+        "strictNullChecks": true,
+        "target": "es2015"
+    },
+    "include": [
+        "src/**/*.ts"
+    ]
+}

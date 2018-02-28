@@ -1,0 +1,68 @@
+{
+  "options": {
+    "strict": false,
+    "ecmaVersion": 2018
+  },
+  "patterns": {
+    "/\\p/u": {
+      "error": {
+        "message": "Invalid regular expression: /\\p/u: Invalid property name",
+        "index": 3
+      }
+    },
+    "/\\p{/u": {
+      "error": {
+        "message": "Invalid regular expression: /\\p{/u: Invalid property name",
+        "index": 4
+      }
+    },
+    "/\\p{ASCII/u": {
+      "error": {
+        "message": "Invalid regular expression: /\\p{ASCII/u: Invalid property name",
+        "index": 9
+      }
+    },
+    "/\\p{General_Category}/u": {
+      "error": {
+        "message": "Invalid regular expression: /\\p{General_Category}/u: Invalid property name",
+        "index": 20
+      }
+    },
+    "/\\p{General_Category=}/u": {
+      "error": {
+        "message": "Invalid regular expression: /\\p{General_Category=}/u: Invalid property name",
+        "index": 20
+      }
+    },
+    "/\\p{General_Category/u": {
+      "error": {
+        "message": "Invalid regular expression: /\\p{General_Category/u: Invalid property name",
+        "index": 20
+      }
+    },
+    "/\\p{General_Category=/u": {
+      "error": {
+        "message": "Invalid regular expression: /\\p{General_Category=/u: Invalid property name",
+        "index": 20
+      }
+    },
+    "/\\p{General_Category=Letter/u": {
+      "error": {
+        "message": "Invalid regular expression: /\\p{General_Category=Letter/u: Invalid property name",
+        "index": 27
+      }
+    },
+    "/\\p{General_Category=Hiragana}/u": {
+      "error": {
+        "message": "Invalid regular expression: /\\p{General_Category=Hiragana}/u: Invalid property name",
+        "index": 29
+      }
+    },
+    "/[\\p{Script=Hiragana}-\\p{Script=Katakana}]/u": {
+      "error": {
+        "message": "Invalid regular expression: /[\\p{Script=Hiragana}-\\p{Script=Katakana}]/u: Invalid character class",
+        "index": 41
+      }
+    }
+  }
+}

@@ -1,0 +1,230 @@
+{
+  "options": {
+    "strict": false,
+    "ecmaVersion": 2015
+  },
+  "patterns": {
+    "/(/": {
+      "error": {
+        "message": "Invalid regular expression: /(/: Unterminated group",
+        "index": 2
+      }
+    },
+    "/(?/": {
+      "error": {
+        "message": "Invalid regular expression: /(?/: Invalid group",
+        "index": 2
+      }
+    },
+    "/(?=/": {
+      "error": {
+        "message": "Invalid regular expression: /(?=/: Unterminated group",
+        "index": 4
+      }
+    },
+    "/(?=foo/": {
+      "error": {
+        "message": "Invalid regular expression: /(?=foo/: Unterminated group",
+        "index": 7
+      }
+    },
+    "/(?!/": {
+      "error": {
+        "message": "Invalid regular expression: /(?!/: Unterminated group",
+        "index": 4
+      }
+    },
+    "/(?!foo/": {
+      "error": {
+        "message": "Invalid regular expression: /(?!foo/: Unterminated group",
+        "index": 7
+      }
+    },
+    "/a{2,1}/": {
+      "error": {
+        "message": "Invalid regular expression: /a{2,1}/: numbers out of order in {} quantifier",
+        "index": 7
+      }
+    },
+    "/(a{2,1}/": {
+      "error": {
+        "message": "Invalid regular expression: /(a{2,1}/: numbers out of order in {} quantifier",
+        "index": 8
+      }
+    },
+    "/a{2,1}?/": {
+      "error": {
+        "message": "Invalid regular expression: /a{2,1}?/: numbers out of order in {} quantifier",
+        "index": 7
+      }
+    },
+    "/(*)/": {
+      "error": {
+        "message": "Invalid regular expression: /(*)/: Nothing to repeat",
+        "index": 3
+      }
+    },
+    "/+/": {
+      "error": {
+        "message": "Invalid regular expression: /+/: Nothing to repeat",
+        "index": 2
+      }
+    },
+    "/?/": {
+      "error": {
+        "message": "Invalid regular expression: /?/: Nothing to repeat",
+        "index": 2
+      }
+    },
+    "/)/": {
+      "error": {
+        "message": "Invalid regular expression: /)/: Unmatched ')'",
+        "index": 1
+      }
+    },
+    "/[/": {
+      "error": {
+        "message": "Invalid regular expression: /[/: Unterminated character class",
+        "index": 3
+      }
+    },
+    "/^*/": {
+      "error": {
+        "message": "Invalid regular expression: /^*/: Nothing to repeat",
+        "index": 3
+      }
+    },
+    "/$*/": {
+      "error": {
+        "message": "Invalid regular expression: /$*/: Nothing to repeat",
+        "index": 3
+      }
+    },
+    "/${1,2}/": {
+      "error": {
+        "message": "Invalid regular expression: /${1,2}/: Nothing to repeat",
+        "index": 7
+      }
+    },
+    "/${2,1}/": {
+      "error": {
+        "message": "Invalid regular expression: /${2,1}/: Nothing to repeat",
+        "index": 7
+      }
+    },
+    "/\\2(a)(/": {
+      "error": {
+        "message": "Invalid regular expression: /\\2(a)(/: Unterminated group",
+        "index": 7
+      }
+    },
+    "/(?a/": {
+      "error": {
+        "message": "Invalid regular expression: /(?a/: Invalid group",
+        "index": 2
+      }
+    },
+    "/(?a)/": {
+      "error": {
+        "message": "Invalid regular expression: /(?a)/: Invalid group",
+        "index": 2
+      }
+    },
+    "/(?:/": {
+      "error": {
+        "message": "Invalid regular expression: /(?:/: Unterminated group",
+        "index": 4
+      }
+    },
+    "/(?:a/": {
+      "error": {
+        "message": "Invalid regular expression: /(?:a/: Unterminated group",
+        "index": 5
+      }
+    },
+    "/(:a/": {
+      "error": {
+        "message": "Invalid regular expression: /(:a/: Unterminated group",
+        "index": 4
+      }
+    },
+    "/[b-a]/": {
+      "error": {
+        "message": "Invalid regular expression: /[b-a]/: Range out of order in character class",
+        "index": 5
+      }
+    },
+    "/[a-b--+]/": {
+      "error": {
+        "message": "Invalid regular expression: /[a-b--+]/: Range out of order in character class",
+        "index": 8
+      }
+    },
+    "/[\\u0001-\\u0000]/": {
+      "error": {
+        "message": "Invalid regular expression: /[\\u0001-\\u0000]/: Range out of order in character class",
+        "index": 15
+      }
+    },
+    "/[\\u{1}-\\u{2}]/": {
+      "error": {
+        "message": "Invalid regular expression: /[\\u{1}-\\u{2}]/: Range out of order in character class",
+        "index": 10
+      }
+    },
+    "/[\\u{2}-\\u{1}]/": {
+      "error": {
+        "message": "Invalid regular expression: /[\\u{2}-\\u{1}]/: Range out of order in character class",
+        "index": 10
+      }
+    },
+    "/[\\z-\\a]/": {
+      "error": {
+        "message": "Invalid regular expression: /[\\z-\\a]/: Range out of order in character class",
+        "index": 7
+      }
+    },
+    "/[0-9--+]/": {
+      "error": {
+        "message": "Invalid regular expression: /[0-9--+]/: Range out of order in character class",
+        "index": 8
+      }
+    },
+    "/[\\c-a]/": {
+      "error": {
+        "message": "Invalid regular expression: /[\\c-a]/: Range out of order in character class",
+        "index": 6
+      }
+    },
+    "/[🌷-🌸]/": {
+      "error": {
+        "message": "Invalid regular expression: /[🌷-🌸]/: Range out of order in character class",
+        "index": 6
+      }
+    },
+    "/[\\u0000-🌸-\\u0000]/": {
+      "error": {
+        "message": "Invalid regular expression: /[\\u0000-🌸-\\u0000]/: Range out of order in character class",
+        "index": 18
+      }
+    },
+    "/[\\u0000-\\ud83c\\udf38-\\u0000]/": {
+      "error": {
+        "message": "Invalid regular expression: /[\\u0000-\\ud83c\\udf38-\\u0000]/: Range out of order in character class",
+        "index": 28
+      }
+    },
+    "/[🌸-🌷]/": {
+      "error": {
+        "message": "Invalid regular expression: /[🌸-🌷]/: Range out of order in character class",
+        "index": 6
+      }
+    },
+    "/[\\uD834\\uDF06-\\uD834\\uDF08a-z]/": {
+      "error": {
+        "message": "Invalid regular expression: /[\\uD834\\uDF06-\\uD834\\uDF08a-z]/: Range out of order in character class",
+        "index": 21
+      }
+    }
+  }
+}

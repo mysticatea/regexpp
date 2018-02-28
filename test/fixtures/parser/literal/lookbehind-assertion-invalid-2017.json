@@ -1,0 +1,44 @@
+{
+  "options": {
+    "strict": false,
+    "ecmaVersion": 2017
+  },
+  "patterns": {
+    "/(?<a)/": {
+      "error": {
+        "message": "Invalid regular expression: /(?<a)/: Invalid group",
+        "index": 2
+      }
+    },
+    "/(?<a)/u": {
+      "error": {
+        "message": "Invalid regular expression: /(?<a)/u: Invalid group",
+        "index": 2
+      }
+    },
+    "/(?<=a)/": {
+      "error": {
+        "message": "Invalid regular expression: /(?<=a)/: Invalid group",
+        "index": 2
+      }
+    },
+    "/(?<=a)/u": {
+      "error": {
+        "message": "Invalid regular expression: /(?<=a)/u: Invalid group",
+        "index": 2
+      }
+    },
+    "/(?<!a)/": {
+      "error": {
+        "message": "Invalid regular expression: /(?<!a)/: Invalid group",
+        "index": 2
+      }
+    },
+    "/(?<!a)/u": {
+      "error": {
+        "message": "Invalid regular expression: /(?<!a)/u: Invalid group",
+        "index": 2
+      }
+    }
+  }
+}

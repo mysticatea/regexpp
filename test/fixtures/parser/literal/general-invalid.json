@@ -1,0 +1,86 @@
+{
+  "options": {
+    "strict": true,
+    "ecmaVersion": 2018
+  },
+  "patterns": {
+    "/\\\r/": {
+      "error": {
+        "message": "Invalid regular expression: /\\\r/: Unterminated regular expression",
+        "index": 2
+      }
+    },
+    "/\\\n/": {
+      "error": {
+        "message": "Invalid regular expression: /\\\n/: Unterminated regular expression",
+        "index": 2
+      }
+    },
+    "/\\/": {
+      "error": {
+        "message": "Invalid regular expression: /\\/: Unterminated regular expression",
+        "index": 3
+      }
+    },
+    "/\n/": {
+      "error": {
+        "message": "Invalid regular expression: /\n/: Unterminated regular expression",
+        "index": 1
+      }
+    },
+    "/\r/": {
+      "error": {
+        "message": "Invalid regular expression: /\r/: Unterminated regular expression",
+        "index": 1
+      }
+    },
+    "/ /": {
+      "error": {
+        "message": "Invalid regular expression: / /: Unterminated regular expression",
+        "index": 1
+      }
+    },
+    "/ /": {
+      "error": {
+        "message": "Invalid regular expression: / /: Unterminated regular expression",
+        "index": 1
+      }
+    },
+    "///": {
+      "error": {
+        "message": "Invalid regular expression: ///: Unexpected character '/'",
+        "index": 1
+      }
+    },
+    "//": {
+      "error": {
+        "message": "Invalid regular expression: //: Unexpected character '/'",
+        "index": 1
+      }
+    },
+    "/": {
+      "error": {
+        "message": "Invalid regular expression: /: Unterminated regular expression",
+        "index": 1
+      }
+    },
+    "/*/": {
+      "error": {
+        "message": "Invalid regular expression: /*/: Unexpected character '*'",
+        "index": 1
+      }
+    },
+    "/*": {
+      "error": {
+        "message": "Invalid regular expression: /*: Unexpected character '*'",
+        "index": 1
+      }
+    },
+    "": {
+      "error": {
+        "message": "Invalid regular expression: Empty",
+        "index": 0
+      }
+    }
+  }
+}

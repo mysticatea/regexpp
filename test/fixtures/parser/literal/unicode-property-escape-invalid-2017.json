@@ -1,0 +1,32 @@
+{
+  "options": {
+    "strict": false,
+    "ecmaVersion": 2017
+  },
+  "patterns": {
+    "/\\p/u": {
+      "error": {
+        "message": "Invalid regular expression: /\\p/u: Invalid escape",
+        "index": 2
+      }
+    },
+    "/\\p{/u": {
+      "error": {
+        "message": "Invalid regular expression: /\\p{/u: Invalid escape",
+        "index": 2
+      }
+    },
+    "/\\p{ASCII/u": {
+      "error": {
+        "message": "Invalid regular expression: /\\p{ASCII/u: Invalid escape",
+        "index": 2
+      }
+    },
+    "/\\p{ASCII}/u": {
+      "error": {
+        "message": "Invalid regular expression: /\\p{ASCII}/u: Invalid escape",
+        "index": 2
+      }
+    }
+  }
+}

@@ -1,0 +1,116 @@
+{
+  "options": {
+    "strict": false,
+    "ecmaVersion": 2018
+  },
+  "patterns": {
+    "/(?<a)/": {
+      "error": {
+        "message": "Invalid regular expression: /(?<a)/: Invalid capture group name",
+        "index": 5
+      }
+    },
+    "/(?<a)/u": {
+      "error": {
+        "message": "Invalid regular expression: /(?<a)/u: Invalid capture group name",
+        "index": 5
+      }
+    },
+    "/(?<=a)?/": {
+      "error": {
+        "message": "Invalid regular expression: /(?<=a)?/: Nothing to repeat",
+        "index": 8
+      }
+    },
+    "/(?<=a)?/u": {
+      "error": {
+        "message": "Invalid regular expression: /(?<=a)?/u: Nothing to repeat",
+        "index": 8
+      }
+    },
+    "/(?<=a)+/": {
+      "error": {
+        "message": "Invalid regular expression: /(?<=a)+/: Nothing to repeat",
+        "index": 8
+      }
+    },
+    "/(?<=a)+/u": {
+      "error": {
+        "message": "Invalid regular expression: /(?<=a)+/u: Nothing to repeat",
+        "index": 8
+      }
+    },
+    "/(?<=a)*/": {
+      "error": {
+        "message": "Invalid regular expression: /(?<=a)*/: Nothing to repeat",
+        "index": 8
+      }
+    },
+    "/(?<=a)*/u": {
+      "error": {
+        "message": "Invalid regular expression: /(?<=a)*/u: Nothing to repeat",
+        "index": 8
+      }
+    },
+    "/(?<=a){1}/": {
+      "error": {
+        "message": "Invalid regular expression: /(?<=a){1}/: Nothing to repeat",
+        "index": 10
+      }
+    },
+    "/(?<=a){1}/u": {
+      "error": {
+        "message": "Invalid regular expression: /(?<=a){1}/u: Nothing to repeat",
+        "index": 10
+      }
+    },
+    "/(?<!a)?/": {
+      "error": {
+        "message": "Invalid regular expression: /(?<!a)?/: Nothing to repeat",
+        "index": 8
+      }
+    },
+    "/(?<!a)?/u": {
+      "error": {
+        "message": "Invalid regular expression: /(?<!a)?/u: Nothing to repeat",
+        "index": 8
+      }
+    },
+    "/(?<!a)+/": {
+      "error": {
+        "message": "Invalid regular expression: /(?<!a)+/: Nothing to repeat",
+        "index": 8
+      }
+    },
+    "/(?<!a)+/u": {
+      "error": {
+        "message": "Invalid regular expression: /(?<!a)+/u: Nothing to repeat",
+        "index": 8
+      }
+    },
+    "/(?<!a)*/": {
+      "error": {
+        "message": "Invalid regular expression: /(?<!a)*/: Nothing to repeat",
+        "index": 8
+      }
+    },
+    "/(?<!a)*/u": {
+      "error": {
+        "message": "Invalid regular expression: /(?<!a)*/u: Nothing to repeat",
+        "index": 8
+      }
+    },
+    "/(?<!a){1}/": {
+      "error": {
+        "message": "Invalid regular expression: /(?<!a){1}/: Nothing to repeat",
+        "index": 10
+      }
+    },
+    "/(?<!a){1}/u": {
+      "error": {
+        "message": "Invalid regular expression: /(?<!a){1}/u: Nothing to repeat",
+        "index": 10
+      }
+    }
+  }
+}

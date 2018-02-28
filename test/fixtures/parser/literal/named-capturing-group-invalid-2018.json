@@ -1,0 +1,140 @@
+{
+  "options": {
+    "strict": false,
+    "ecmaVersion": 2018
+  },
+  "patterns": {
+    "/(?a/": {
+      "error": {
+        "message": "Invalid regular expression: /(?a/: Invalid group",
+        "index": 3
+      }
+    },
+    "/(?a)/": {
+      "error": {
+        "message": "Invalid regular expression: /(?a)/: Invalid group",
+        "index": 3
+      }
+    },
+    "/(?</": {
+      "error": {
+        "message": "Invalid regular expression: /(?</: Invalid capture group name",
+        "index": 4
+      }
+    },
+    "/(?<)/": {
+      "error": {
+        "message": "Invalid regular expression: /(?<)/: Invalid capture group name",
+        "index": 4
+      }
+    },
+    "/(?<a)/": {
+      "error": {
+        "message": "Invalid regular expression: /(?<a)/: Invalid capture group name",
+        "index": 5
+      }
+    },
+    "/\\k/u": {
+      "error": {
+        "message": "Invalid regular expression: /\\k/u: Invalid named reference",
+        "index": 3
+      }
+    },
+    "/\\k<a>/u": {
+      "error": {
+        "message": "Invalid regular expression: /\\k<a>/u: Invalid named capture referenced",
+        "index": 6
+      }
+    },
+    "/(?<a>a)\\k</": {
+      "error": {
+        "message": "Invalid regular expression: /(?<a>a)\\k</: Invalid capture group name",
+        "index": 11
+      }
+    },
+    "/(?<a>a)\\k</u": {
+      "error": {
+        "message": "Invalid regular expression: /(?<a>a)\\k</u: Invalid capture group name",
+        "index": 11
+      }
+    },
+    "/(?<a>a)\\k<a/": {
+      "error": {
+        "message": "Invalid regular expression: /(?<a>a)\\k<a/: Invalid capture group name",
+        "index": 12
+      }
+    },
+    "/(?<a>a)\\k<a/u": {
+      "error": {
+        "message": "Invalid regular expression: /(?<a>a)\\k<a/u: Invalid capture group name",
+        "index": 12
+      }
+    },
+    "/(?<a>a)\\2/u": {
+      "error": {
+        "message": "Invalid regular expression: /(?<a>a)\\2/u: Invalid escape",
+        "index": 10
+      }
+    },
+    "/(?<a>a)\\k<b>/": {
+      "error": {
+        "message": "Invalid regular expression: /(?<a>a)\\k<b>/: Invalid named capture referenced",
+        "index": 13
+      }
+    },
+    "/(?<a>a)\\k<b>/u": {
+      "error": {
+        "message": "Invalid regular expression: /(?<a>a)\\k<b>/u: Invalid named capture referenced",
+        "index": 13
+      }
+    },
+    "/(?<a>a)(?<a>a)/": {
+      "error": {
+        "message": "Invalid regular expression: /(?<a>a)(?<a>a)/: Duplicate capture group name",
+        "index": 13
+      }
+    },
+    "/(?<a>a)(?<a>a)/u": {
+      "error": {
+        "message": "Invalid regular expression: /(?<a>a)(?<a>a)/u: Duplicate capture group name",
+        "index": 13
+      }
+    },
+    "/(?<a>a)(?<\\u{61}>a)/u": {
+      "error": {
+        "message": "Invalid regular expression: /(?<a>a)(?<\\u{61}>a)/u: Duplicate capture group name",
+        "index": 18
+      }
+    },
+    "/(?<a>a)(?<\\u0061>a)/u": {
+      "error": {
+        "message": "Invalid regular expression: /(?<a>a)(?<\\u0061>a)/u: Duplicate capture group name",
+        "index": 18
+      }
+    },
+    "/(?<☀>a)\\k<☀>/u": {
+      "error": {
+        "message": "Invalid regular expression: /(?<☀>a)\\k<☀>/u: Invalid capture group name",
+        "index": 4
+      }
+    },
+    "/(?<\\u0020>a)\\k<\\u0020>/u": {
+      "error": {
+        "message": "Invalid regular expression: /(?<\\u0020>a)\\k<\\u0020>/u: Invalid capture group name",
+        "index": 4
+      }
+    },
+    "/(?<\\u0061\\u0062\\u0063>a)\\k<abd>/u": {
+      "error": {
+        "message": "Invalid regular expression: /(?<\\u0061\\u0062\\u0063>a)\\k<abd>/u: Invalid named capture referenced",
+        "index": 32
+      }
+    },
+    "/(?<11>a)\\k<11>/u": {
+      "error": {
+        "message": "Invalid regular expression: /(?<11>a)\\k<11>/u: Invalid capture group name",
+        "index": 4
+      }
+    }
+  }
+}

@@ -1,0 +1,1244 @@
+{
+  "options": {
+    "strict": false,
+    "ecmaVersion": 2018
+  },
+  "patterns": {
+    "/(?<=a)/": {
+      "ast": {
+        "type": "RegExpLiteral",
+        "parent": null,
+        "start": 0,
+        "end": 8,
+        "raw": "/(?<=a)/",
+        "pattern": {
+          "type": "Pattern",
+          "parent": "♻️..",
+          "start": 1,
+          "end": 7,
+          "raw": "(?<=a)",
+          "elements": [
+            {
+              "type": "Assertion",
+              "parent": "♻️../..",
+              "start": 1,
+              "end": 7,
+              "raw": "(?<=a)",
+              "kind": "lookbehind",
+              "negate": false,
+              "elements": [
+                {
+                  "type": "Character",
+                  "parent": "♻️../..",
+                  "start": 5,
+                  "end": 6,
+                  "raw": "a",
+                  "value": 97
+                }
+              ]
+            }
+          ]
+        },
+        "flags": {
+          "type": "Flags",
+          "parent": "♻️..",
+          "start": 8,
+          "end": 8,
+          "raw": "",
+          "global": false,
+          "ignoreCase": false,
+          "multiline": false,
+          "unicode": false,
+          "sticky": false,
+          "dotAll": false
+        }
+      }
+    },
+    "/(?<=a)/u": {
+      "ast": {
+        "type": "RegExpLiteral",
+        "parent": null,
+        "start": 0,
+        "end": 9,
+        "raw": "/(?<=a)/u",
+        "pattern": {
+          "type": "Pattern",
+          "parent": "♻️..",
+          "start": 1,
+          "end": 7,
+          "raw": "(?<=a)",
+          "elements": [
+            {
+              "type": "Assertion",
+              "parent": "♻️../..",
+              "start": 1,
+              "end": 7,
+              "raw": "(?<=a)",
+              "kind": "lookbehind",
+              "negate": false,
+              "elements": [
+                {
+                  "type": "Character",
+                  "parent": "♻️../..",
+                  "start": 5,
+                  "end": 6,
+                  "raw": "a",
+                  "value": 97
+                }
+              ]
+            }
+          ]
+        },
+        "flags": {
+          "type": "Flags",
+          "parent": "♻️..",
+          "start": 8,
+          "end": 9,
+          "raw": "u",
+          "global": false,
+          "ignoreCase": false,
+          "multiline": false,
+          "unicode": true,
+          "sticky": false,
+          "dotAll": false
+        }
+      }
+    },
+    "/(?<!a)/": {
+      "ast": {
+        "type": "RegExpLiteral",
+        "parent": null,
+        "start": 0,
+        "end": 8,
+        "raw": "/(?<!a)/",
+        "pattern": {
+          "type": "Pattern",
+          "parent": "♻️..",
+          "start": 1,
+          "end": 7,
+          "raw": "(?<!a)",
+          "elements": [
+            {
+              "type": "Assertion",
+              "parent": "♻️../..",
+              "start": 1,
+              "end": 7,
+              "raw": "(?<!a)",
+              "kind": "lookbehind",
+              "negate": true,
+              "elements": [
+                {
+                  "type": "Character",
+                  "parent": "♻️../..",
+                  "start": 5,
+                  "end": 6,
+                  "raw": "a",
+                  "value": 97
+                }
+              ]
+            }
+          ]
+        },
+        "flags": {
+          "type": "Flags",
+          "parent": "♻️..",
+          "start": 8,
+          "end": 8,
+          "raw": "",
+          "global": false,
+          "ignoreCase": false,
+          "multiline": false,
+          "unicode": false,
+          "sticky": false,
+          "dotAll": false
+        }
+      }
+    },
+    "/(?<!a)/u": {
+      "ast": {
+        "type": "RegExpLiteral",
+        "parent": null,
+        "start": 0,
+        "end": 9,
+        "raw": "/(?<!a)/u",
+        "pattern": {
+          "type": "Pattern",
+          "parent": "♻️..",
+          "start": 1,
+          "end": 7,
+          "raw": "(?<!a)",
+          "elements": [
+            {
+              "type": "Assertion",
+              "parent": "♻️../..",
+              "start": 1,
+              "end": 7,
+              "raw": "(?<!a)",
+              "kind": "lookbehind",
+              "negate": true,
+              "elements": [
+                {
+                  "type": "Character",
+                  "parent": "♻️../..",
+                  "start": 5,
+                  "end": 6,
+                  "raw": "a",
+                  "value": 97
+                }
+              ]
+            }
+          ]
+        },
+        "flags": {
+          "type": "Flags",
+          "parent": "♻️..",
+          "start": 8,
+          "end": 9,
+          "raw": "u",
+          "global": false,
+          "ignoreCase": false,
+          "multiline": false,
+          "unicode": true,
+          "sticky": false,
+          "dotAll": false
+        }
+      }
+    },
+    "/(?<=(?<a>\\w){3})f/u": {
+      "ast": {
+        "type": "RegExpLiteral",
+        "parent": null,
+        "start": 0,
+        "end": 20,
+        "raw": "/(?<=(?<a>\\w){3})f/u",
+        "pattern": {
+          "type": "Pattern",
+          "parent": "♻️..",
+          "start": 1,
+          "end": 18,
+          "raw": "(?<=(?<a>\\w){3})f",
+          "elements": [
+            {
+              "type": "Assertion",
+              "parent": "♻️../..",
+              "start": 1,
+              "end": 17,
+              "raw": "(?<=(?<a>\\w){3})",
+              "kind": "lookbehind",
+              "negate": false,
+              "elements": [
+                {
+                  "type": "Quantifier",
+                  "parent": "♻️../..",
+                  "start": 13,
+                  "end": 16,
+                  "raw": "{3}",
+                  "min": 3,
+                  "max": 3,
+                  "greedy": true,
+                  "element": {
+                    "type": "CapturingGroup",
+                    "parent": "♻️..",
+                    "start": 5,
+                    "end": 13,
+                    "raw": "(?<a>\\w)",
+                    "name": "a",
+                    "elements": [
+                      {
+                        "type": "CharacterSet",
+                        "parent": "♻️../..",
+                        "start": 10,
+                        "end": 12,
+                        "raw": "\\w",
+                        "kind": "word",
+                        "negate": false
+                      }
+                    ],
+                    "references": []
+                  }
+                }
+              ]
+            },
+            {
+              "type": "Character",
+              "parent": "♻️../..",
+              "start": 17,
+              "end": 18,
+              "raw": "f",
+              "value": 102
+            }
+          ]
+        },
+        "flags": {
+          "type": "Flags",
+          "parent": "♻️..",
+          "start": 19,
+          "end": 20,
+          "raw": "u",
+          "global": false,
+          "ignoreCase": false,
+          "multiline": false,
+          "unicode": true,
+          "sticky": false,
+          "dotAll": false
+        }
+      }
+    },
+    "/((?<=\\w{3}))f/u": {
+      "ast": {
+        "type": "RegExpLiteral",
+        "parent": null,
+        "start": 0,
+        "end": 16,
+        "raw": "/((?<=\\w{3}))f/u",
+        "pattern": {
+          "type": "Pattern",
+          "parent": "♻️..",
+          "start": 1,
+          "end": 14,
+          "raw": "((?<=\\w{3}))f",
+          "elements": [
+            {
+              "type": "CapturingGroup",
+              "parent": "♻️../..",
+              "start": 1,
+              "end": 13,
+              "raw": "((?<=\\w{3}))",
+              "name": null,
+              "elements": [
+                {
+                  "type": "Assertion",
+                  "parent": "♻️../..",
+                  "start": 2,
+                  "end": 12,
+                  "raw": "(?<=\\w{3})",
+                  "kind": "lookbehind",
+                  "negate": false,
+                  "elements": [
+                    {
+                      "type": "Quantifier",
+                      "parent": "♻️../..",
+                      "start": 8,
+                      "end": 11,
+                      "raw": "{3}",
+                      "min": 3,
+                      "max": 3,
+                      "greedy": true,
+                      "element": {
+                        "type": "CharacterSet",
+                        "parent": "♻️..",
+                        "start": 6,
+                        "end": 8,
+                        "raw": "\\w",
+                        "kind": "word",
+                        "negate": false
+                      }
+                    }
+                  ]
+                }
+              ],
+              "references": []
+            },
+            {
+              "type": "Character",
+              "parent": "♻️../..",
+              "start": 13,
+              "end": 14,
+              "raw": "f",
+              "value": 102
+            }
+          ]
+        },
+        "flags": {
+          "type": "Flags",
+          "parent": "♻️..",
+          "start": 15,
+          "end": 16,
+          "raw": "u",
+          "global": false,
+          "ignoreCase": false,
+          "multiline": false,
+          "unicode": true,
+          "sticky": false,
+          "dotAll": false
+        }
+      }
+    },
+    "/(?<a>(?<=\\w{3}))f/u": {
+      "ast": {
+        "type": "RegExpLiteral",
+        "parent": null,
+        "start": 0,
+        "end": 20,
+        "raw": "/(?<a>(?<=\\w{3}))f/u",
+        "pattern": {
+          "type": "Pattern",
+          "parent": "♻️..",
+          "start": 1,
+          "end": 18,
+          "raw": "(?<a>(?<=\\w{3}))f",
+          "elements": [
+            {
+              "type": "CapturingGroup",
+              "parent": "♻️../..",
+              "start": 1,
+              "end": 17,
+              "raw": "(?<a>(?<=\\w{3}))",
+              "name": "a",
+              "elements": [
+                {
+                  "type": "Assertion",
+                  "parent": "♻️../..",
+                  "start": 6,
+                  "end": 16,
+                  "raw": "(?<=\\w{3})",
+                  "kind": "lookbehind",
+                  "negate": false,
+                  "elements": [
+                    {
+                      "type": "Quantifier",
+                      "parent": "♻️../..",
+                      "start": 12,
+                      "end": 15,
+                      "raw": "{3}",
+                      "min": 3,
+                      "max": 3,
+                      "greedy": true,
+                      "element": {
+                        "type": "CharacterSet",
+                        "parent": "♻️..",
+                        "start": 10,
+                        "end": 12,
+                        "raw": "\\w",
+                        "kind": "word",
+                        "negate": false
+                      }
+                    }
+                  ]
+                }
+              ],
+              "references": []
+            },
+            {
+              "type": "Character",
+              "parent": "♻️../..",
+              "start": 17,
+              "end": 18,
+              "raw": "f",
+              "value": 102
+            }
+          ]
+        },
+        "flags": {
+          "type": "Flags",
+          "parent": "♻️..",
+          "start": 19,
+          "end": 20,
+          "raw": "u",
+          "global": false,
+          "ignoreCase": false,
+          "multiline": false,
+          "unicode": true,
+          "sticky": false,
+          "dotAll": false
+        }
+      }
+    },
+    "/(?<!(?<a>\\d){3})f/u": {
+      "ast": {
+        "type": "RegExpLiteral",
+        "parent": null,
+        "start": 0,
+        "end": 20,
+        "raw": "/(?<!(?<a>\\d){3})f/u",
+        "pattern": {
+          "type": "Pattern",
+          "parent": "♻️..",
+          "start": 1,
+          "end": 18,
+          "raw": "(?<!(?<a>\\d){3})f",
+          "elements": [
+            {
+              "type": "Assertion",
+              "parent": "♻️../..",
+              "start": 1,
+              "end": 17,
+              "raw": "(?<!(?<a>\\d){3})",
+              "kind": "lookbehind",
+              "negate": true,
+              "elements": [
+                {
+                  "type": "Quantifier",
+                  "parent": "♻️../..",
+                  "start": 13,
+                  "end": 16,
+                  "raw": "{3}",
+                  "min": 3,
+                  "max": 3,
+                  "greedy": true,
+                  "element": {
+                    "type": "CapturingGroup",
+                    "parent": "♻️..",
+                    "start": 5,
+                    "end": 13,
+                    "raw": "(?<a>\\d)",
+                    "name": "a",
+                    "elements": [
+                      {
+                        "type": "CharacterSet",
+                        "parent": "♻️../..",
+                        "start": 10,
+                        "end": 12,
+                        "raw": "\\d",
+                        "kind": "digit",
+                        "negate": false
+                      }
+                    ],
+                    "references": []
+                  }
+                }
+              ]
+            },
+            {
+              "type": "Character",
+              "parent": "♻️../..",
+              "start": 17,
+              "end": 18,
+              "raw": "f",
+              "value": 102
+            }
+          ]
+        },
+        "flags": {
+          "type": "Flags",
+          "parent": "♻️..",
+          "start": 19,
+          "end": 20,
+          "raw": "u",
+          "global": false,
+          "ignoreCase": false,
+          "multiline": false,
+          "unicode": true,
+          "sticky": false,
+          "dotAll": false
+        }
+      }
+    },
+    "/(?<!(?<a>\\D){3})f|f/u": {
+      "ast": {
+        "type": "RegExpLiteral",
+        "parent": null,
+        "start": 0,
+        "end": 22,
+        "raw": "/(?<!(?<a>\\D){3})f|f/u",
+        "pattern": {
+          "type": "Pattern",
+          "parent": "♻️..",
+          "start": 1,
+          "end": 20,
+          "raw": "(?<!(?<a>\\D){3})f|f",
+          "elements": [
+            {
+              "type": "Disjunction",
+              "parent": "♻️../..",
+              "start": 1,
+              "end": 20,
+              "raw": "(?<!(?<a>\\D){3})f|f",
+              "alternatives": [
+                [
+                  {
+                    "type": "Assertion",
+                    "parent": "♻️../../..",
+                    "start": 1,
+                    "end": 17,
+                    "raw": "(?<!(?<a>\\D){3})",
+                    "kind": "lookbehind",
+                    "negate": true,
+                    "elements": [
+                      {
+                        "type": "Quantifier",
+                        "parent": "♻️../..",
+                        "start": 13,
+                        "end": 16,
+                        "raw": "{3}",
+                        "min": 3,
+                        "max": 3,
+                        "greedy": true,
+                        "element": {
+                          "type": "CapturingGroup",
+                          "parent": "♻️..",
+                          "start": 5,
+                          "end": 13,
+                          "raw": "(?<a>\\D)",
+                          "name": "a",
+                          "elements": [
+                            {
+                              "type": "CharacterSet",
+                              "parent": "♻️../..",
+                              "start": 10,
+                              "end": 12,
+                              "raw": "\\D",
+                              "kind": "digit",
+                              "negate": true
+                            }
+                          ],
+                          "references": []
+                        }
+                      }
+                    ]
+                  },
+                  {
+                    "type": "Character",
+                    "parent": "♻️../../..",
+                    "start": 17,
+                    "end": 18,
+                    "raw": "f",
+                    "value": 102
+                  }
+                ],
+                [
+                  {
+                    "type": "Character",
+                    "parent": "♻️../../..",
+                    "start": 19,
+                    "end": 20,
+                    "raw": "f",
+                    "value": 102
+                  }
+                ]
+              ]
+            }
+          ]
+        },
+        "flags": {
+          "type": "Flags",
+          "parent": "♻️..",
+          "start": 21,
+          "end": 22,
+          "raw": "u",
+          "global": false,
+          "ignoreCase": false,
+          "multiline": false,
+          "unicode": true,
+          "sticky": false,
+          "dotAll": false
+        }
+      }
+    },
+    "/(?<a>(?<!\\D{3}))f|f/u": {
+      "ast": {
+        "type": "RegExpLiteral",
+        "parent": null,
+        "start": 0,
+        "end": 22,
+        "raw": "/(?<a>(?<!\\D{3}))f|f/u",
+        "pattern": {
+          "type": "Pattern",
+          "parent": "♻️..",
+          "start": 1,
+          "end": 20,
+          "raw": "(?<a>(?<!\\D{3}))f|f",
+          "elements": [
+            {
+              "type": "Disjunction",
+              "parent": "♻️../..",
+              "start": 1,
+              "end": 20,
+              "raw": "(?<a>(?<!\\D{3}))f|f",
+              "alternatives": [
+                [
+                  {
+                    "type": "CapturingGroup",
+                    "parent": "♻️../../..",
+                    "start": 1,
+                    "end": 17,
+                    "raw": "(?<a>(?<!\\D{3}))",
+                    "name": "a",
+                    "elements": [
+                      {
+                        "type": "Assertion",
+                        "parent": "♻️../..",
+                        "start": 6,
+                        "end": 16,
+                        "raw": "(?<!\\D{3})",
+                        "kind": "lookbehind",
+                        "negate": true,
+                        "elements": [
+                          {
+                            "type": "Quantifier",
+                            "parent": "♻️../..",
+                            "start": 12,
+                            "end": 15,
+                            "raw": "{3}",
+                            "min": 3,
+                            "max": 3,
+                            "greedy": true,
+                            "element": {
+                              "type": "CharacterSet",
+                              "parent": "♻️..",
+                              "start": 10,
+                              "end": 12,
+                              "raw": "\\D",
+                              "kind": "digit",
+                              "negate": true
+                            }
+                          }
+                        ]
+                      }
+                    ],
+                    "references": []
+                  },
+                  {
+                    "type": "Character",
+                    "parent": "♻️../../..",
+                    "start": 17,
+                    "end": 18,
+                    "raw": "f",
+                    "value": 102
+                  }
+                ],
+                [
+                  {
+                    "type": "Character",
+                    "parent": "♻️../../..",
+                    "start": 19,
+                    "end": 20,
+                    "raw": "f",
+                    "value": 102
+                  }
+                ]
+              ]
+            }
+          ]
+        },
+        "flags": {
+          "type": "Flags",
+          "parent": "♻️..",
+          "start": 21,
+          "end": 22,
+          "raw": "u",
+          "global": false,
+          "ignoreCase": false,
+          "multiline": false,
+          "unicode": true,
+          "sticky": false,
+          "dotAll": false
+        }
+      }
+    },
+    "/(?<=(?<a>\\w){3})f/": {
+      "ast": {
+        "type": "RegExpLiteral",
+        "parent": null,
+        "start": 0,
+        "end": 19,
+        "raw": "/(?<=(?<a>\\w){3})f/",
+        "pattern": {
+          "type": "Pattern",
+          "parent": "♻️..",
+          "start": 1,
+          "end": 18,
+          "raw": "(?<=(?<a>\\w){3})f",
+          "elements": [
+            {
+              "type": "Assertion",
+              "parent": "♻️../..",
+              "start": 1,
+              "end": 17,
+              "raw": "(?<=(?<a>\\w){3})",
+              "kind": "lookbehind",
+              "negate": false,
+              "elements": [
+                {
+                  "type": "Quantifier",
+                  "parent": "♻️../..",
+                  "start": 13,
+                  "end": 16,
+                  "raw": "{3}",
+                  "min": 3,
+                  "max": 3,
+                  "greedy": true,
+                  "element": {
+                    "type": "CapturingGroup",
+                    "parent": "♻️..",
+                    "start": 5,
+                    "end": 13,
+                    "raw": "(?<a>\\w)",
+                    "name": "a",
+                    "elements": [
+                      {
+                        "type": "CharacterSet",
+                        "parent": "♻️../..",
+                        "start": 10,
+                        "end": 12,
+                        "raw": "\\w",
+                        "kind": "word",
+                        "negate": false
+                      }
+                    ],
+                    "references": []
+                  }
+                }
+              ]
+            },
+            {
+              "type": "Character",
+              "parent": "♻️../..",
+              "start": 17,
+              "end": 18,
+              "raw": "f",
+              "value": 102
+            }
+          ]
+        },
+        "flags": {
+          "type": "Flags",
+          "parent": "♻️..",
+          "start": 19,
+          "end": 19,
+          "raw": "",
+          "global": false,
+          "ignoreCase": false,
+          "multiline": false,
+          "unicode": false,
+          "sticky": false,
+          "dotAll": false
+        }
+      }
+    },
+    "/((?<=\\w{3}))f/": {
+      "ast": {
+        "type": "RegExpLiteral",
+        "parent": null,
+        "start": 0,
+        "end": 15,
+        "raw": "/((?<=\\w{3}))f/",
+        "pattern": {
+          "type": "Pattern",
+          "parent": "♻️..",
+          "start": 1,
+          "end": 14,
+          "raw": "((?<=\\w{3}))f",
+          "elements": [
+            {
+              "type": "CapturingGroup",
+              "parent": "♻️../..",
+              "start": 1,
+              "end": 13,
+              "raw": "((?<=\\w{3}))",
+              "name": null,
+              "elements": [
+                {
+                  "type": "Assertion",
+                  "parent": "♻️../..",
+                  "start": 2,
+                  "end": 12,
+                  "raw": "(?<=\\w{3})",
+                  "kind": "lookbehind",
+                  "negate": false,
+                  "elements": [
+                    {
+                      "type": "Quantifier",
+                      "parent": "♻️../..",
+                      "start": 8,
+                      "end": 11,
+                      "raw": "{3}",
+                      "min": 3,
+                      "max": 3,
+                      "greedy": true,
+                      "element": {
+                        "type": "CharacterSet",
+                        "parent": "♻️..",
+                        "start": 6,
+                        "end": 8,
+                        "raw": "\\w",
+                        "kind": "word",
+                        "negate": false
+                      }
+                    }
+                  ]
+                }
+              ],
+              "references": []
+            },
+            {
+              "type": "Character",
+              "parent": "♻️../..",
+              "start": 13,
+              "end": 14,
+              "raw": "f",
+              "value": 102
+            }
+          ]
+        },
+        "flags": {
+          "type": "Flags",
+          "parent": "♻️..",
+          "start": 15,
+          "end": 15,
+          "raw": "",
+          "global": false,
+          "ignoreCase": false,
+          "multiline": false,
+          "unicode": false,
+          "sticky": false,
+          "dotAll": false
+        }
+      }
+    },
+    "/(?<a>(?<=\\w{3}))f/": {
+      "ast": {
+        "type": "RegExpLiteral",
+        "parent": null,
+        "start": 0,
+        "end": 19,
+        "raw": "/(?<a>(?<=\\w{3}))f/",
+        "pattern": {
+          "type": "Pattern",
+          "parent": "♻️..",
+          "start": 1,
+          "end": 18,
+          "raw": "(?<a>(?<=\\w{3}))f",
+          "elements": [
+            {
+              "type": "CapturingGroup",
+              "parent": "♻️../..",
+              "start": 1,
+              "end": 17,
+              "raw": "(?<a>(?<=\\w{3}))",
+              "name": "a",
+              "elements": [
+                {
+                  "type": "Assertion",
+                  "parent": "♻️../..",
+                  "start": 6,
+                  "end": 16,
+                  "raw": "(?<=\\w{3})",
+                  "kind": "lookbehind",
+                  "negate": false,
+                  "elements": [
+                    {
+                      "type": "Quantifier",
+                      "parent": "♻️../..",
+                      "start": 12,
+                      "end": 15,
+                      "raw": "{3}",
+                      "min": 3,
+                      "max": 3,
+                      "greedy": true,
+                      "element": {
+                        "type": "CharacterSet",
+                        "parent": "♻️..",
+                        "start": 10,
+                        "end": 12,
+                        "raw": "\\w",
+                        "kind": "word",
+                        "negate": false
+                      }
+                    }
+                  ]
+                }
+              ],
+              "references": []
+            },
+            {
+              "type": "Character",
+              "parent": "♻️../..",
+              "start": 17,
+              "end": 18,
+              "raw": "f",
+              "value": 102
+            }
+          ]
+        },
+        "flags": {
+          "type": "Flags",
+          "parent": "♻️..",
+          "start": 19,
+          "end": 19,
+          "raw": "",
+          "global": false,
+          "ignoreCase": false,
+          "multiline": false,
+          "unicode": false,
+          "sticky": false,
+          "dotAll": false
+        }
+      }
+    },
+    "/(?<!(?<a>\\d){3})f/": {
+      "ast": {
+        "type": "RegExpLiteral",
+        "parent": null,
+        "start": 0,
+        "end": 19,
+        "raw": "/(?<!(?<a>\\d){3})f/",
+        "pattern": {
+          "type": "Pattern",
+          "parent": "♻️..",
+          "start": 1,
+          "end": 18,
+          "raw": "(?<!(?<a>\\d){3})f",
+          "elements": [
+            {
+              "type": "Assertion",
+              "parent": "♻️../..",
+              "start": 1,
+              "end": 17,
+              "raw": "(?<!(?<a>\\d){3})",
+              "kind": "lookbehind",
+              "negate": true,
+              "elements": [
+                {
+                  "type": "Quantifier",
+                  "parent": "♻️../..",
+                  "start": 13,
+                  "end": 16,
+                  "raw": "{3}",
+                  "min": 3,
+                  "max": 3,
+                  "greedy": true,
+                  "element": {
+                    "type": "CapturingGroup",
+                    "parent": "♻️..",
+                    "start": 5,
+                    "end": 13,
+                    "raw": "(?<a>\\d)",
+                    "name": "a",
+                    "elements": [
+                      {
+                        "type": "CharacterSet",
+                        "parent": "♻️../..",
+                        "start": 10,
+                        "end": 12,
+                        "raw": "\\d",
+                        "kind": "digit",
+                        "negate": false
+                      }
+                    ],
+                    "references": []
+                  }
+                }
+              ]
+            },
+            {
+              "type": "Character",
+              "parent": "♻️../..",
+              "start": 17,
+              "end": 18,
+              "raw": "f",
+              "value": 102
+            }
+          ]
+        },
+        "flags": {
+          "type": "Flags",
+          "parent": "♻️..",
+          "start": 19,
+          "end": 19,
+          "raw": "",
+          "global": false,
+          "ignoreCase": false,
+          "multiline": false,
+          "unicode": false,
+          "sticky": false,
+          "dotAll": false
+        }
+      }
+    },
+    "/(?<a>(?<!\\D{3}))f|f/": {
+      "ast": {
+        "type": "RegExpLiteral",
+        "parent": null,
+        "start": 0,
+        "end": 21,
+        "raw": "/(?<a>(?<!\\D{3}))f|f/",
+        "pattern": {
+          "type": "Pattern",
+          "parent": "♻️..",
+          "start": 1,
+          "end": 20,
+          "raw": "(?<a>(?<!\\D{3}))f|f",
+          "elements": [
+            {
+              "type": "Disjunction",
+              "parent": "♻️../..",
+              "start": 1,
+              "end": 20,
+              "raw": "(?<a>(?<!\\D{3}))f|f",
+              "alternatives": [
+                [
+                  {
+                    "type": "CapturingGroup",
+                    "parent": "♻️../../..",
+                    "start": 1,
+                    "end": 17,
+                    "raw": "(?<a>(?<!\\D{3}))",
+                    "name": "a",
+                    "elements": [
+                      {
+                        "type": "Assertion",
+                        "parent": "♻️../..",
+                        "start": 6,
+                        "end": 16,
+                        "raw": "(?<!\\D{3})",
+                        "kind": "lookbehind",
+                        "negate": true,
+                        "elements": [
+                          {
+                            "type": "Quantifier",
+                            "parent": "♻️../..",
+                            "start": 12,
+                            "end": 15,
+                            "raw": "{3}",
+                            "min": 3,
+                            "max": 3,
+                            "greedy": true,
+                            "element": {
+                              "type": "CharacterSet",
+                              "parent": "♻️..",
+                              "start": 10,
+                              "end": 12,
+                              "raw": "\\D",
+                              "kind": "digit",
+                              "negate": true
+                            }
+                          }
+                        ]
+                      }
+                    ],
+                    "references": []
+                  },
+                  {
+                    "type": "Character",
+                    "parent": "♻️../../..",
+                    "start": 17,
+                    "end": 18,
+                    "raw": "f",
+                    "value": 102
+                  }
+                ],
+                [
+                  {
+                    "type": "Character",
+                    "parent": "♻️../../..",
+                    "start": 19,
+                    "end": 20,
+                    "raw": "f",
+                    "value": 102
+                  }
+                ]
+              ]
+            }
+          ]
+        },
+        "flags": {
+          "type": "Flags",
+          "parent": "♻️..",
+          "start": 21,
+          "end": 21,
+          "raw": "",
+          "global": false,
+          "ignoreCase": false,
+          "multiline": false,
+          "unicode": false,
+          "sticky": false,
+          "dotAll": false
+        }
+      }
+    },
+    "/(?<=(?<fst>.)|(?<snd>.))/u": {
+      "ast": {
+        "type": "RegExpLiteral",
+        "parent": null,
+        "start": 0,
+        "end": 27,
+        "raw": "/(?<=(?<fst>.)|(?<snd>.))/u",
+        "pattern": {
+          "type": "Pattern",
+          "parent": "♻️..",
+          "start": 1,
+          "end": 25,
+          "raw": "(?<=(?<fst>.)|(?<snd>.))",
+          "elements": [
+            {
+              "type": "Assertion",
+              "parent": "♻️../..",
+              "start": 1,
+              "end": 25,
+              "raw": "(?<=(?<fst>.)|(?<snd>.))",
+              "kind": "lookbehind",
+              "negate": false,
+              "elements": [
+                {
+                  "type": "Disjunction",
+                  "parent": "♻️../..",
+                  "start": 5,
+                  "end": 24,
+                  "raw": "(?<fst>.)|(?<snd>.)",
+                  "alternatives": [
+                    [
+                      {
+                        "type": "CapturingGroup",
+                        "parent": "♻️../../..",
+                        "start": 5,
+                        "end": 14,
+                        "raw": "(?<fst>.)",
+                        "name": "fst",
+                        "elements": [
+                          {
+                            "type": "CharacterSet",
+                            "parent": "♻️../..",
+                            "start": 12,
+                            "end": 13,
+                            "raw": ".",
+                            "kind": "any"
+                          }
+                        ],
+                        "references": []
+                      }
+                    ],
+                    [
+                      {
+                        "type": "CapturingGroup",
+                        "parent": "♻️../../..",
+                        "start": 15,
+                        "end": 24,
+                        "raw": "(?<snd>.)",
+                        "name": "snd",
+                        "elements": [
+                          {
+                            "type": "CharacterSet",
+                            "parent": "♻️../..",
+                            "start": 22,
+                            "end": 23,
+                            "raw": ".",
+                            "kind": "any"
+                          }
+                        ],
+                        "references": []
+                      }
+                    ]
+                  ]
+                }
+              ]
+            }
+          ]
+        },
+        "flags": {
+          "type": "Flags",
+          "parent": "♻️..",
+          "start": 26,
+          "end": 27,
+          "raw": "u",
+          "global": false,
+          "ignoreCase": false,
+          "multiline": false,
+          "unicode": true,
+          "sticky": false,
+          "dotAll": false
+        }
+      }
+    }
+  }
+}

@@ -1,0 +1,278 @@
+{
+  "options": {
+    "strict": true,
+    "ecmaVersion": 5
+  },
+  "patterns": {
+    "/(?:)/g": {
+      "ast": {
+        "type": "RegExpLiteral",
+        "parent": null,
+        "start": 0,
+        "end": 7,
+        "raw": "/(?:)/g",
+        "pattern": {
+          "type": "Pattern",
+          "parent": "♻️..",
+          "start": 1,
+          "end": 5,
+          "raw": "(?:)",
+          "elements": [
+            {
+              "type": "Group",
+              "parent": "♻️../..",
+              "start": 1,
+              "end": 5,
+              "raw": "(?:)",
+              "elements": []
+            }
+          ]
+        },
+        "flags": {
+          "type": "Flags",
+          "parent": "♻️..",
+          "start": 6,
+          "end": 7,
+          "raw": "g",
+          "global": true,
+          "ignoreCase": false,
+          "multiline": false,
+          "unicode": false,
+          "sticky": false,
+          "dotAll": false
+        }
+      }
+    },
+    "/(?:)/i": {
+      "ast": {
+        "type": "RegExpLiteral",
+        "parent": null,
+        "start": 0,
+        "end": 7,
+        "raw": "/(?:)/i",
+        "pattern": {
+          "type": "Pattern",
+          "parent": "♻️..",
+          "start": 1,
+          "end": 5,
+          "raw": "(?:)",
+          "elements": [
+            {
+              "type": "Group",
+              "parent": "♻️../..",
+              "start": 1,
+              "end": 5,
+              "raw": "(?:)",
+              "elements": []
+            }
+          ]
+        },
+        "flags": {
+          "type": "Flags",
+          "parent": "♻️..",
+          "start": 6,
+          "end": 7,
+          "raw": "i",
+          "global": false,
+          "ignoreCase": true,
+          "multiline": false,
+          "unicode": false,
+          "sticky": false,
+          "dotAll": false
+        }
+      }
+    },
+    "/(?:)/m": {
+      "ast": {
+        "type": "RegExpLiteral",
+        "parent": null,
+        "start": 0,
+        "end": 7,
+        "raw": "/(?:)/m",
+        "pattern": {
+          "type": "Pattern",
+          "parent": "♻️..",
+          "start": 1,
+          "end": 5,
+          "raw": "(?:)",
+          "elements": [
+            {
+              "type": "Group",
+              "parent": "♻️../..",
+              "start": 1,
+              "end": 5,
+              "raw": "(?:)",
+              "elements": []
+            }
+          ]
+        },
+        "flags": {
+          "type": "Flags",
+          "parent": "♻️..",
+          "start": 6,
+          "end": 7,
+          "raw": "m",
+          "global": false,
+          "ignoreCase": false,
+          "multiline": true,
+          "unicode": false,
+          "sticky": false,
+          "dotAll": false
+        }
+      }
+    },
+    "/(?:)/gi": {
+      "ast": {
+        "type": "RegExpLiteral",
+        "parent": null,
+        "start": 0,
+        "end": 8,
+        "raw": "/(?:)/gi",
+        "pattern": {
+          "type": "Pattern",
+          "parent": "♻️..",
+          "start": 1,
+          "end": 5,
+          "raw": "(?:)",
+          "elements": [
+            {
+              "type": "Group",
+              "parent": "♻️../..",
+              "start": 1,
+              "end": 5,
+              "raw": "(?:)",
+              "elements": []
+            }
+          ]
+        },
+        "flags": {
+          "type": "Flags",
+          "parent": "♻️..",
+          "start": 6,
+          "end": 8,
+          "raw": "gi",
+          "global": true,
+          "ignoreCase": true,
+          "multiline": false,
+          "unicode": false,
+          "sticky": false,
+          "dotAll": false
+        }
+      }
+    },
+    "/(?:)/mg": {
+      "ast": {
+        "type": "RegExpLiteral",
+        "parent": null,
+        "start": 0,
+        "end": 8,
+        "raw": "/(?:)/mg",
+        "pattern": {
+          "type": "Pattern",
+          "parent": "♻️..",
+          "start": 1,
+          "end": 5,
+          "raw": "(?:)",
+          "elements": [
+            {
+              "type": "Group",
+              "parent": "♻️../..",
+              "start": 1,
+              "end": 5,
+              "raw": "(?:)",
+              "elements": []
+            }
+          ]
+        },
+        "flags": {
+          "type": "Flags",
+          "parent": "♻️..",
+          "start": 6,
+          "end": 8,
+          "raw": "mg",
+          "global": true,
+          "ignoreCase": false,
+          "multiline": true,
+          "unicode": false,
+          "sticky": false,
+          "dotAll": false
+        }
+      }
+    },
+    "/(?:)/mig": {
+      "ast": {
+        "type": "RegExpLiteral",
+        "parent": null,
+        "start": 0,
+        "end": 9,
+        "raw": "/(?:)/mig",
+        "pattern": {
+          "type": "Pattern",
+          "parent": "♻️..",
+          "start": 1,
+          "end": 5,
+          "raw": "(?:)",
+          "elements": [
+            {
+              "type": "Group",
+              "parent": "♻️../..",
+              "start": 1,
+              "end": 5,
+              "raw": "(?:)",
+              "elements": []
+            }
+          ]
+        },
+        "flags": {
+          "type": "Flags",
+          "parent": "♻️..",
+          "start": 6,
+          "end": 9,
+          "raw": "mig",
+          "global": true,
+          "ignoreCase": true,
+          "multiline": true,
+          "unicode": false,
+          "sticky": false,
+          "dotAll": false
+        }
+      }
+    },
+    "/./G": {
+      "error": {
+        "message": "Invalid regular expression: /./G: Invalid flag 'G'",
+        "index": 3
+      }
+    },
+    "/./gig": {
+      "error": {
+        "message": "Invalid regular expression: /./gig: Duplicated flag 'g'",
+        "index": 3
+      }
+    },
+    "/./\\u0067": {
+      "error": {
+        "message": "Invalid regular expression: /./\\u0067: Invalid flag '\\'",
+        "index": 3
+      }
+    },
+    "/./u": {
+      "error": {
+        "message": "Invalid regular expression: /./u: Invalid flag 'u'",
+        "index": 3
+      }
+    },
+    "/./y": {
+      "error": {
+        "message": "Invalid regular expression: /./y: Invalid flag 'y'",
+        "index": 3
+      }
+    },
+    "/./s": {
+      "error": {
+        "message": "Invalid regular expression: /./s: Invalid flag 's'",
+        "index": 3
+      }
+    }
+  }
+}

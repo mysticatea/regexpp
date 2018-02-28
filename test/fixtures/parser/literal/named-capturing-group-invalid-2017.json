@@ -1,0 +1,56 @@
+{
+  "options": {
+    "strict": false,
+    "ecmaVersion": 2017
+  },
+  "patterns": {
+    "/\\k/u": {
+      "error": {
+        "message": "Invalid regular expression: /\\k/u: Invalid escape",
+        "index": 2
+      }
+    },
+    "/\\k<a>/u": {
+      "error": {
+        "message": "Invalid regular expression: /\\k<a>/u: Invalid escape",
+        "index": 2
+      }
+    },
+    "/(?<a>a)\\k</": {
+      "error": {
+        "message": "Invalid regular expression: /(?<a>a)\\k</: Invalid group",
+        "index": 2
+      }
+    },
+    "/(?<a>a)\\k</u": {
+      "error": {
+        "message": "Invalid regular expression: /(?<a>a)\\k</u: Invalid group",
+        "index": 2
+      }
+    },
+    "/(?<a>a)\\k<a/": {
+      "error": {
+        "message": "Invalid regular expression: /(?<a>a)\\k<a/: Invalid group",
+        "index": 2
+      }
+    },
+    "/(?<a>a)\\k<a/u": {
+      "error": {
+        "message": "Invalid regular expression: /(?<a>a)\\k<a/u: Invalid group",
+        "index": 2
+      }
+    },
+    "/(?<a>a)\\k<a>/": {
+      "error": {
+        "message": "Invalid regular expression: /(?<a>a)\\k<a>/: Invalid group",
+        "index": 2
+      }
+    },
+    "/(?<a>a)\\k<a>/u": {
+      "error": {
+        "message": "Invalid regular expression: /(?<a>a)\\k<a>/u: Invalid group",
+        "index": 2
+      }
+    }
+  }
+}
