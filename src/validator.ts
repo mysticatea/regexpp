@@ -908,11 +908,11 @@ export class RegExpValidator {
             const c = String.fromCodePoint(cp)
             this.raise(`Unexpected character '${c}'`)
         }
-        for (const name of this._backreferenceNames) {
+        this._backreferenceNames.forEach(name => {
             if (!this._groupNames.has(name)) {
                 this.raise("Invalid named capture referenced")
             }
-        }
+        })
         this.onPatternLeave(start, this.index)
     }
 

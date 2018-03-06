@@ -1,9 +1,9 @@
 import assert from "assert"
-import { parseRegExpLiteral, ParserOptions } from "../src/index"
+import { parseRegExpLiteral, RegExpParser } from "../src/index"
 import { cloneWithoutCircular } from "../tools/clone-without-circular"
 import { Fixtures } from "./fixtures/parser/literal"
 
-function generateAST(source: string, options: ParserOptions): object {
+function generateAST(source: string, options: RegExpParser.Options): object {
     return JSON.parse(
         Buffer.from(
             JSON.stringify(

@@ -7,6 +7,7 @@ rules:
   class-methods-use-this: off
   complexity: off
   mysticatea/arrow-parens: off
+  mysticatea/prefer-for-of: off
   prettier/prettier:
     - error
     - tabWidth: 4
