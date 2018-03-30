@@ -5,15 +5,19 @@
   "engines": {
     "node": ">=4.0.0"
   },
-  "main": "index.js",
+  "main": "index",
   "files": [
-    "index.d.ts",
-    "index.js.map"
+    "index.*"
   ],
+  "dependencies": {},
   "devDependencies": {
     "@types/eslint": "^4.16.0",
     "@types/mocha": "^2.2.48",
     "@types/node": "^9.4.6",
+    "babel-core": "^6.26.0",
+    "babel-plugin-transform-es2015-destructuring": "^6.23.0",
+    "babel-plugin-transform-es2015-parameters": "^6.24.1",
+    "babel-plugin-transform-es2015-spread": "^6.22.0",
     "dts-bundle": "^0.7.3",
     "eslint": "^4.18.0",
     "eslint-config-mysticatea": "^13.0.2",
@@ -24,6 +28,7 @@
     "prettier": "^1.9.2",
     "rimraf": "^2.6.2",
     "rollup": "^0.56.1",
+    "rollup-plugin-babel": "^3.0.3",
     "rollup-plugin-node-resolve": "^3.0.3",
     "rollup-plugin-sourcemaps": "^0.4.2",
     "rollup-watch": "^4.3.1",
@@ -33,7 +38,11 @@
   },
   "scripts": {
     "prebuild": "npm run -s clean",
-    "build": "tsc --project tsconfig.prod.json && rollup -c -o index.js && dts-bundle --name regexpp --main .temp/index.d.ts --out ../index.d.ts",
+    "build": "run-s build:*",
+    "build:tsc": "tsc --module es2015 --target es2015",
+    "build:mjs": "rollup -c rollup-mjs.config.js",
+    "build:js": "rollup -c rollup-js.config.js",
+    "build:dts": "dts-bundle --name regexpp --main .temp/index.d.ts --out ../index.d.ts",
     "clean": "rimraf .temp index.*",
     "lint": "eslint src test tools --ext .ts",
     "pretest": "run-s build lint",

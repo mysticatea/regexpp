@@ -4,14 +4,12 @@ import sourcemaps from "rollup-plugin-sourcemaps"
 export default {
     input: ".temp/index.js",
     output: {
-        file: "index.js",
-        format: "cjs",
+        file: "index.mjs",
+        format: "es",
         sourcemap: true,
-        sourcemapFile: "index.js.map",
+        sourcemapFile: "index.mjs.map",
         strict: true,
-        banner: `/*!
- * @author Toru Nagashima <https://github.com/mysticatea>
- */`,
+        banner: `/*! @author Toru Nagashima <https://github.com/mysticatea> */`,
     },
     plugins: [sourcemaps(), resolve()],
 }
