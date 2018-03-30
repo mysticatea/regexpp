@@ -1,6 +1,6 @@
 {
   "name": "regexpp",
-  "version": "1.0.1",
+  "version": "1.1.0",
   "description": "Regular expression parser for ECMAScript 2018.",
   "engines": {
     "node": ">=4.0.0"
