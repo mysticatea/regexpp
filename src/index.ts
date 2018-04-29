@@ -10,11 +10,11 @@ export { AST, RegExpParser, RegExpValidator }
  * @param options The options to parse.
  * @returns The AST of the regular expression.
  */
-export function parseRegExpLiteral<T>(
-    source: T extends RegExp ? RegExp : string,
+export function parseRegExpLiteral(
+    source: string | RegExp,
     options?: RegExpParser.Options,
 ): AST.RegExpLiteral {
-    return new RegExpParser(options).parseLiteral(source instanceof RegExp ? `/${source.source}/${source.flags}` : source)
+    return new RegExpParser(options).parseLiteral(source instanceof RegExp ? String(source) : source)
 }
 
 /**
