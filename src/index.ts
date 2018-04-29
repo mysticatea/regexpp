@@ -12,10 +12,10 @@ export { AST, RegExpParser, RegExpValidator }
  * @returns The AST of the regular expression.
  */
 export function parseRegExpLiteral(
-    source: string,
+    source: string | RegExp,
     options?: RegExpParser.Options,
 ): AST.RegExpLiteral {
-    return new RegExpParser(options).parseLiteral(source)
+    return new RegExpParser(options).parseLiteral(source instanceof RegExp ? String(source) : source)
 }
 
 /**
