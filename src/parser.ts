@@ -302,7 +302,7 @@ class RegExpParserState {
             max,
             greedy,
             element: prevNode as QuantifiableElement,
-			quantifier: this.source.slice(start, end),
+            quantifier: this.source.slice(start, end),
         }
         elements.push(node)
         prevNode.parent = node
