@@ -297,11 +297,12 @@ class RegExpParserState {
             parent: parentNode,
             start,
             end,
-            raw: this.source.slice(start, end),
+            raw: prevNode.raw + this.source.slice(start, end),
             min,
             max,
             greedy,
             element: prevNode as QuantifiableElement,
+			quantifier: this.source.slice(start, end),
         }
         elements.push(node)
         prevNode.parent = node
