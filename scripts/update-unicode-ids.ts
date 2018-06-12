@@ -17,7 +17,7 @@ enum Mode {
 
 // Main
 ;(async () => {
-    let banner: string = ""
+    let banner = ""
     const idStartSet: Set<string> = new Set()
     const idStartSmall: Array<[number, number]> = []
     const idStartLarge: Array<[number, number]> = []
@@ -26,7 +26,7 @@ enum Mode {
 
     logger.log("Fetching data... (%s)", DB_URL)
     await processEachLine(line => {
-        let m: RegExpExecArray //eslint-disable-line init-declarations
+        let m: RegExpExecArray
         if (banner === "") {
             logger.log("Processing data... (%s)", line.slice(2))
             banner = `/* Generated from ${line.slice(2)} */`

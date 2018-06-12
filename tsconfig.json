@@ -31,7 +31,7 @@
         "sourceMap": true,
         "sourceRoot": "src",
         "strictNullChecks": true,
-        "target": "es5"
+        "target": "es2015"
     },
     "include": [
         "src/**/*.ts"

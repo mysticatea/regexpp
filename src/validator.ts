@@ -428,7 +428,7 @@ export class RegExpValidator {
      * Initialize this validator.
      * @param options The options of validator.
      */
-    constructor(options?: RegExpValidator.Options) {
+    public constructor(options?: RegExpValidator.Options) {
         this._options = options || {}
     }
 
@@ -438,9 +438,9 @@ export class RegExpValidator {
      * @param start The start index in the source code.
      * @param end The end index in the source code.
      */
-    validateLiteral(
+    public validateLiteral(
         source: string,
-        start: number = 0,
+        start = 0,
         end: number = source.length,
     ): void {
         this._uFlag = this._nFlag = false
@@ -467,9 +467,9 @@ export class RegExpValidator {
      * @param start The start index in the source code.
      * @param end The end index in the source code.
      */
-    validateFlags(
+    public validateFlags(
         source: string,
-        start: number = 0,
+        start = 0,
         end: number = source.length,
     ): void {
         const existingFlags = new Set<number>()
@@ -522,11 +522,11 @@ export class RegExpValidator {
      * @param end The end index in the source code.
      * @param uFlag The flag to set unicode mode.
      */
-    validatePattern(
+    public validatePattern(
         source: string,
-        start: number = 0,
+        start = 0,
         end: number = source.length,
-        uFlag: boolean = false,
+        uFlag = false,
     ): void {
         this._uFlag = uFlag && this.ecmaVersion >= 2015
         this._nFlag = uFlag && this.ecmaVersion >= 2018
@@ -908,11 +908,11 @@ export class RegExpValidator {
             const c = String.fromCodePoint(cp)
             this.raise(`Unexpected character '${c}'`)
         }
-        this._backreferenceNames.forEach(name => {
+        for (const name of this._backreferenceNames) {
             if (!this._groupNames.has(name)) {
                 this.raise("Invalid named capture referenced")
             }
-        })
+        }
         this.onPatternLeave(start, this.index)
     }
 
@@ -974,7 +974,9 @@ export class RegExpValidator {
         const start = this.index
 
         this.onAlternativeEnter(start, i)
-        while (this.currentCodePoint !== -1 && this.eatTerm());
+        while (this.currentCodePoint !== -1 && this.eatTerm()) {
+            // do nothing.
+        }
         this.onAlternativeLeave(start, this.index, i)
     }
 

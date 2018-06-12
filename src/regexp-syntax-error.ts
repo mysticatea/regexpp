@@ -1,6 +1,6 @@
 export class RegExpSyntaxError extends SyntaxError {
     public index: number
-    constructor(
+    public constructor(
         source: string,
         uFlag: boolean,
         index: number,

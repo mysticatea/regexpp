@@ -17,49 +17,54 @@ const unicodeImpl = {
 
 export class Reader {
     private _impl = legacyImpl
-    private _s: string = ""
-    private _i: number = 0
-    private _end: number = 0
+    private _s = ""
+    private _i = 0
+    private _end = 0
     private _cp1: number = -1
-    private _w1: number = 1
+    private _w1 = 1
     private _cp2: number = -1
-    private _w2: number = 1
+    private _w2 = 1
     private _cp3: number = -1
-    private _w3: number = 1
+    private _w3 = 1
     private _cp4: number = -1
 
-    get source(): string {
+    public get source(): string {
         return this._s
     }
 
-    get index(): number {
+    public get index(): number {
         return this._i
     }
 
-    get currentCodePoint(): number {
+    public get currentCodePoint(): number {
         return this._cp1
     }
 
-    get nextCodePoint(): number {
+    public get nextCodePoint(): number {
         return this._cp2
     }
 
-    get nextCodePoint2(): number {
+    public get nextCodePoint2(): number {
         return this._cp3
     }
 
-    get nextCodePoint3(): number {
+    public get nextCodePoint3(): number {
         return this._cp4
     }
 
-    reset(source: string, start: number, end: number, uFlag: boolean): void {
+    public reset(
+        source: string,
+        start: number,
+        end: number,
+        uFlag: boolean,
+    ): void {
         this._impl = uFlag ? unicodeImpl : legacyImpl
         this._s = source
         this._end = end
         this.rewind(start)
     }
 
-    rewind(index: number): void {
+    public rewind(index: number): void {
         const impl = this._impl
         this._i = index
         this._cp1 = impl.at(this._s, this._end, index)
@@ -75,7 +80,7 @@ export class Reader {
         )
     }
 
-    advance(): void {
+    public advance(): void {
         if (this._cp1 !== -1) {
             const impl = this._impl
             this._i += this._w1
@@ -93,7 +98,7 @@ export class Reader {
         }
     }
 
-    eat(cp: number): boolean {
+    public eat(cp: number): boolean {
         if (this._cp1 === cp) {
             this.advance()
             return true
@@ -101,7 +106,7 @@ export class Reader {
         return false
     }
 
-    eat2(cp1: number, cp2: number): boolean {
+    public eat2(cp1: number, cp2: number): boolean {
         if (this._cp1 === cp1 && this._cp2 === cp2) {
             this.advance()
             this.advance()
@@ -110,7 +115,7 @@ export class Reader {
         return false
     }
 
-    eat3(cp1: number, cp2: number, cp3: number): boolean {
+    public eat3(cp1: number, cp2: number, cp3: number): boolean {
         if (this._cp1 === cp1 && this._cp2 === cp2 && this._cp3 === cp3) {
             this.advance()
             this.advance()

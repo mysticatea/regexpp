@@ -87,36 +87,36 @@ function addCommonElement(
 }
 
 class RegExpParserState {
-    readonly strict: boolean
-    readonly ecmaVersion: 5 | 2015 | 2016 | 2017 | 2018
+    public readonly strict: boolean
+    public readonly ecmaVersion: 5 | 2015 | 2016 | 2017 | 2018
     private _node: AppendableNode = DummyPattern
     private _flags: Flags = DummyFlags
     private _disjunctionStartStack: number[] = []
     private _backreferences: Backreference[] = []
     private _capturingGroups: CapturingGroup[] = []
 
-    source: string = ""
+    public source = ""
 
-    constructor(options?: RegExpParser.Options) {
+    public constructor(options?: RegExpParser.Options) {
         this.strict = Boolean(options && options.strict)
         this.ecmaVersion = (options && options.ecmaVersion) || 2018
     }
 
-    get pattern(): Pattern {
+    public get pattern(): Pattern {
         if (this._node.type !== "Pattern") {
             throw new Error("UnknownError")
         }
         return this._node
     }
 
-    get flags(): Flags {
+    public get flags(): Flags {
         if (this._flags.type !== "Flags") {
             throw new Error("UnknownError")
         }
         return this._flags
     }
 
-    onFlags(
+    public onFlags(
         start: number,
         end: number,
         global: boolean,
@@ -141,7 +141,7 @@ class RegExpParserState {
         }
     }
 
-    onPatternEnter(start: number): void {
+    public onPatternEnter(start: number): void {
         this._node = {
             type: "Pattern",
             parent: null,
@@ -154,7 +154,7 @@ class RegExpParserState {
         this._capturingGroups.length = 0
     }
 
-    onPatternLeave(start: number, end: number): void {
+    public onPatternLeave(start: number, end: number): void {
         this._node.end = end
         this._node.raw = this.source.slice(start, end)
 
@@ -169,15 +169,15 @@ class RegExpParserState {
         }
     }
 
-    onDisjunctionEnter(start: number): void {
+    public onDisjunctionEnter(start: number): void {
         this._disjunctionStartStack.push(start)
     }
 
-    onDisjunctionLeave(start: number, end: number): void {
+    public onDisjunctionLeave(start: number, end: number): void {
         this._disjunctionStartStack.pop()
     }
 
-    onAlternativeEnter(start: number, index: number): void {
+    public onAlternativeEnter(start: number, index: number): void {
         if (index === 0) {
             return
         }
@@ -212,7 +212,7 @@ class RegExpParserState {
         }
     }
 
-    onAlternativeLeave(start: number, end: number, index: number): void {
+    public onAlternativeLeave(start: number, end: number, index: number): void {
         if (index === 0) {
             return
         }
@@ -221,7 +221,7 @@ class RegExpParserState {
         this._node = this._node.parent as AppendableNode
     }
 
-    onGroupEnter(start: number): void {
+    public onGroupEnter(start: number): void {
         const parentNode = this._node
         if (parentNode.type === "CharacterClass") {
             throw new Error("UnknownError")
@@ -238,13 +238,13 @@ class RegExpParserState {
         addAlternativeElement(parentNode, this._node)
     }
 
-    onGroupLeave(start: number, end: number): void {
+    public onGroupLeave(start: number, end: number): void {
         this._node.end = end
         this._node.raw = this.source.slice(start, end)
         this._node = this._node.parent as AppendableNode
     }
 
-    onCapturingGroupEnter(start: number, name: string | null): void {
+    public onCapturingGroupEnter(start: number, name: string | null): void {
         const parentNode = this._node
         if (parentNode.type === "CharacterClass") {
             throw new Error("UnknownError")
@@ -264,7 +264,7 @@ class RegExpParserState {
         this._capturingGroups.push(this._node)
     }
 
-    onCapturingGroupLeave(
+    public onCapturingGroupLeave(
         start: number,
         end: number,
         name: string | null,
@@ -274,7 +274,7 @@ class RegExpParserState {
         this._node = this._node.parent as AppendableNode
     }
 
-    onQuantifier(
+    public onQuantifier(
         start: number,
         end: number,
         min: number,
@@ -307,7 +307,7 @@ class RegExpParserState {
         prevNode.parent = node
     }
 
-    onLookaroundAssertionEnter(
+    public onLookaroundAssertionEnter(
         start: number,
         kind: "lookahead" | "lookbehind",
         negate: boolean,
@@ -330,7 +330,7 @@ class RegExpParserState {
         addAlternativeElement(parentNode, this._node)
     }
 
-    onLookaroundAssertionLeave(
+    public onLookaroundAssertionLeave(
         start: number,
         end: number,
         kind: "lookahead" | "lookbehind",
@@ -341,7 +341,11 @@ class RegExpParserState {
         this._node = this._node.parent as AppendableNode
     }
 
-    onEdgeAssertion(start: number, end: number, kind: "start" | "end"): void {
+    public onEdgeAssertion(
+        start: number,
+        end: number,
+        kind: "start" | "end",
+    ): void {
         const parentNode = this._node
         if (parentNode.type === "CharacterClass") {
             throw new Error("UnknownError")
@@ -357,7 +361,7 @@ class RegExpParserState {
         })
     }
 
-    onWordBoundaryAssertion(
+    public onWordBoundaryAssertion(
         start: number,
         end: number,
         kind: "word",
@@ -379,7 +383,7 @@ class RegExpParserState {
         })
     }
 
-    onAnyCharacterSet(start: number, end: number, kind: "any"): void {
+    public onAnyCharacterSet(start: number, end: number, kind: "any"): void {
         const parentNode = this._node
         if (parentNode.type === "CharacterClass") {
             throw new Error("UnknownError")
@@ -395,7 +399,7 @@ class RegExpParserState {
         })
     }
 
-    onEscapeCharacterSet(
+    public onEscapeCharacterSet(
         start: number,
         end: number,
         kind: "digit" | "space" | "word",
@@ -412,7 +416,7 @@ class RegExpParserState {
         })
     }
 
-    onUnicodePropertyCharacterSet(
+    public onUnicodePropertyCharacterSet(
         start: number,
         end: number,
         kind: "property",
@@ -433,7 +437,7 @@ class RegExpParserState {
         })
     }
 
-    onCharacter(start: number, end: number, value: number): void {
+    public onCharacter(start: number, end: number, value: number): void {
         addCommonElement(this._node, {
             type: "Character",
             parent: this._node,
@@ -444,7 +448,11 @@ class RegExpParserState {
         })
     }
 
-    onBackreference(start: number, end: number, ref: number | string): void {
+    public onBackreference(
+        start: number,
+        end: number,
+        ref: number | string,
+    ): void {
         const parentNode = this._node
         if (parentNode.type === "CharacterClass") {
             throw new Error("UnknownError")
@@ -463,7 +471,7 @@ class RegExpParserState {
         this._backreferences.push(node)
     }
 
-    onCharacterClassEnter(start: number, negate: boolean): void {
+    public onCharacterClassEnter(start: number, negate: boolean): void {
         const parentNode = this._node
         if (parentNode.type === "CharacterClass") {
             throw new Error("UnknownError")
@@ -481,13 +489,17 @@ class RegExpParserState {
         addAlternativeElement(parentNode, this._node)
     }
 
-    onCharacterClassLeave(start: number, end: number, negate: boolean): void {
+    public onCharacterClassLeave(
+        start: number,
+        end: number,
+        negate: boolean,
+    ): void {
         this._node.end = end
         this._node.raw = this.source.slice(start, end)
         this._node = this._node.parent as AppendableNode
     }
 
-    onCharacterClassRange(
+    public onCharacterClassRange(
         start: number,
         end: number,
         min: number,
@@ -548,7 +560,7 @@ export class RegExpParser {
      * Initialize this parser.
      * @param options The options of parser.
      */
-    constructor(options?: RegExpParser.Options) {
+    public constructor(options?: RegExpParser.Options) {
         this._state = new RegExpParserState(options)
         this._validator = new RegExpValidator(this._state)
     }
@@ -560,9 +572,9 @@ export class RegExpParser {
      * @param end The end index in the source code.
      * @returns The AST of the given regular expression.
      */
-    parseLiteral(
+    public parseLiteral(
         source: string,
-        start: number = 0,
+        start = 0,
         end: number = source.length,
     ): RegExpLiteral {
         this._state.source = source
@@ -590,9 +602,9 @@ export class RegExpParser {
      * @param end The end index in the source code.
      * @returns The AST of the given flags.
      */
-    parseFlags(
+    public parseFlags(
         source: string,
-        start: number = 0,
+        start = 0,
         end: number = source.length,
     ): Flags {
         this._state.source = source
@@ -608,11 +620,11 @@ export class RegExpParser {
      * @param uFlag The flag to set unicode mode.
      * @returns The AST of the given pattern.
      */
-    parsePattern(
+    public parsePattern(
         source: string,
-        start: number = 0,
+        start = 0,
         end: number = source.length,
-        uFlag: boolean = false,
+        uFlag = false,
     ): Pattern {
         this._state.source = source
         this._validator.validatePattern(source, start, end, uFlag)

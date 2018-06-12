@@ -1,6 +1,6 @@
 import assert from "assert"
 import { parseRegExpLiteral, RegExpParser } from "../src/index"
-import { cloneWithoutCircular } from "../tools/clone-without-circular"
+import { cloneWithoutCircular } from "../scripts/clone-without-circular"
 import { Fixtures } from "./fixtures/parser/literal"
 
 function generateAST(source: string, options: RegExpParser.Options): object {
