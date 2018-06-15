@@ -1,6 +1,7 @@
 import * as AST from "./ast"
 import { RegExpParser } from "./parser"
 import { RegExpValidator } from "./validator"
+import { RegExpVisitor } from "./visitor"
 
 export { AST, RegExpParser, RegExpValidator }
 
@@ -27,4 +28,11 @@ export function validateRegExpLiteral(
     options?: RegExpValidator.Options,
 ): void {
     return new RegExpValidator(options).validateLiteral(source)
+}
+
+export function visitRegExpAST(
+    node: AST.Node,
+    handlers: RegExpVisitor.Handlers,
+): void {
+    new RegExpVisitor(handlers).visit(node)
 }
