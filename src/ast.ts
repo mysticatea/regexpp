@@ -200,6 +200,7 @@ export interface Quantifier extends NodeBase {
     max: number // can be Number.POSITIVE_INFINITY
     greedy: boolean
     element: QuantifiableElement
+    quantifier: string
 }
 
 /**
