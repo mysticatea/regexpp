@@ -295,9 +295,9 @@ class RegExpParserState {
         const node: Quantifier = {
             type: "Quantifier",
             parent: parentNode,
-            start,
+            start: prevNode.start,
             end,
-            raw: this.source.slice(start, end),
+            raw: this.source.slice(prevNode.start, end),
             min,
             max,
             greedy,
