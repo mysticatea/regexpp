@@ -1,0 +1,6 @@
+{
+    "include": ["src/**/*.ts"],
+    "exclude": ["src/unicode/*.ts"],
+    "extension": [".ts"],
+    "require": ["ts-node/register"]
+}

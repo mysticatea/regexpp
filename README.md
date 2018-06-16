@@ -3,6 +3,7 @@
 [![npm version](https://img.shields.io/npm/v/regexpp.svg)](https://www.npmjs.com/package/regexpp)
 [![Downloads/month](https://img.shields.io/npm/dm/regexpp.svg)](http://www.npmtrends.com/regexpp)
 [![Build Status](https://travis-ci.org/mysticatea/regexpp.svg?branch=master)](https://travis-ci.org/mysticatea/regexpp)
+[![Coverage Status](https://coveralls.io/repos/github/mysticatea/regexpp/badge.svg)](https://coveralls.io/github/mysticatea/regexpp)
 [![Dependency Status](https://david-dm.org/mysticatea/regexpp.svg)](https://david-dm.org/mysticatea/regexpp)
 
 The regular expression parser for ECMAScript.
