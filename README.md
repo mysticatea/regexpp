@@ -14,7 +14,7 @@ The regular expression parser for ECMAScript.
 $ npm install regexpp
 ```
 
-- require Node.js 4.0.0 or newer.
+- require Node.js 6.5.0 or newer.
 
 ## 📖 Usage
 
@@ -23,8 +23,10 @@ import {
     AST,
     RegExpParser,
     RegExpValidator,
+    RegExpVisitor,
     parseRegExpLiteral,
     validateRegExpLiteral,
+    visitRegExpAST
 } from "regexpp"
 ```
 
@@ -49,6 +51,16 @@ This is equivalent to `new RegExpValidator(options).validateLiteral(source)`.
 - **Parameters:**
     - `source` (`string`) The source code to validate.
     - `options?` ([`RegExpValidator.Options`]) The options to validate.
+
+### visitRegExpAST(ast, handlers)
+
+Visit each node of a given AST.
+
+This is equivalent to `new RegExpVisitor(handlers).visit(ast)`.
+
+- **Parameters:**
+    - `ast` ([`AST.Node`]) The AST to visit.
+    - `handlers` ([`RegExpVisitor.Handlers`]) The callbacks.
 
 ### RegExpParser
 
@@ -126,6 +138,20 @@ Validate a regular expression flags.
     - `start?` (`number`) The start index in the source code. Default is `0`.
     - `end?` (`number`) The end index in the source code. Default is `source.length`.
 
+### RegExpVisitor
+
+#### new RegExpVisitor(handlers)
+
+- **Parameters:**
+    - `handlers` ([`RegExpVisitor.Handlers`]) The callbacks.
+
+#### visitor.visit(ast)
+
+Validate a regular expression literal.
+
+- **Parameters:**
+    - `ast` ([`AST.Node`]) The AST to visit.
+
 ## 📰 Changelog
 
 - [GitHub Releases](https://github.com/mysticatea/regexpp/releases)
@@ -146,5 +172,7 @@ Please use GitHub's Issues/PRs.
 - `npm run update:ids` updates `src/unicode/ids.ts`.
 - `npm run watch` runs tests with `--watch` option.
 
-[`RegExpParser.Options`]: src/parser.ts#L527
+[`AST.Node`]: src/ast.ts#L4
+[`RegExpParser.Options`]: src/parser.ts#L539
 [`RegExpValidator.Options`]: src/validator.ts#L127
+[`RegExpVisitor.Handlers`]: src/visitor.ts#L204
