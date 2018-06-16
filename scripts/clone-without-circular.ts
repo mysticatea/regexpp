@@ -1,7 +1,7 @@
 const relative = require("path").posix.relative
 
 function resolveLocation(
-    obj: object,
+    obj: any,
     path: string[],
     pathMap: Map<object, string>,
 ): void {
@@ -38,7 +38,7 @@ function cloneWithoutCircularRec(x: any, pathMap: Map<object, string>): any {
         return x.map(el => cloneWithoutCircularRec(el, pathMap))
     }
 
-    const y = {}
+    const y = {} as any
     for (const key of Object.keys(x)) {
         if (key === "parent" || key === "resolved" || key === "references") {
             y[key] = getRelativePath(x, x[key], pathMap)

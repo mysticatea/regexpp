@@ -54,7 +54,6 @@ describe("parseRegExpLiteral function:", () => {
 
 for (const filename of Object.keys(Fixtures)) {
     const fixture = Fixtures[filename]
-    const options = fixture.options
 
     if (filename.indexOf("-valid") !== -1) {
         describe(filename, () => {

@@ -2,7 +2,7 @@
     "compileOnSave": true,
     "compilerOptions": {
         "allowJs": false,
-        "allowSyntheticDefaultImports": false,
+        "allowSyntheticDefaultImports": true,
         "allowUnreachableCode": false,
         "allowUnusedLabels": false,
         "alwaysStrict": true,
@@ -30,7 +30,9 @@
         "removeComments": true,
         "sourceMap": true,
         "sourceRoot": "src",
+        "strictFunctionTypes": true,
         "strictNullChecks": true,
+        "strictPropertyInitialization": true,
         "target": "es2015"
     },
     "include": [

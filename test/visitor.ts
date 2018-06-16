@@ -28,7 +28,7 @@ describe("visitRegExpAST function:", () => {
                 it(`${source} should succeed to visit.`, () => {
                     const expected = fixture.patterns[source]
                     const ast = generateAST(source, options)
-                    const history = []
+                    const history = [] as string[]
                     const enter = (node: AST.Node): void => {
                         history.push(`enter:${node.type}:${node.raw}`)
                     }
