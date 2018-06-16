@@ -50,6 +50,13 @@ describe("parseRegExpLiteral function:", () => {
             }
         })
     }
+
+    it("should parse RegExp object", () => {
+        const actual = cloneWithoutCircular(parseRegExpLiteral(/[A-Z]+/))
+        const expected = cloneWithoutCircular(parseRegExpLiteral("/[A-Z]+/"))
+
+        assert.deepStrictEqual(actual, expected)
+    })
 })
 
 for (const filename of Object.keys(Fixtures)) {

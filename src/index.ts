@@ -15,7 +15,7 @@ export function parseRegExpLiteral(
     source: string | RegExp,
     options?: RegExpParser.Options,
 ): AST.RegExpLiteral {
-    return new RegExpParser(options).parseLiteral(source instanceof RegExp ? String(source) : source)
+    return new RegExpParser(options).parseLiteral(String(source))
 }
 
 /**

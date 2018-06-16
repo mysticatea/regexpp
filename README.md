@@ -35,7 +35,7 @@ Parse a given regular expression literal then make AST object.
 This is equivalent to `new RegExpParser(options).parseLiteral(source)`.
 
 - **Parameters:**
-    - `source` (`string`) The source code to parse.
+    - `source` (`string | RegExp`) The source code to parse.
     - `options?` ([`RegExpParser.Options`]) The options to parse.
 - **Return:**
     - The AST of the regular expression.
