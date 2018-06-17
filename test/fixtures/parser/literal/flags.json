@@ -17,14 +17,32 @@
           "start": 1,
           "end": 5,
           "raw": "(?:)",
-          "elements": [
+          "alternatives": [
             {
-              "type": "Group",
+              "type": "Alternative",
               "parent": "♻️../..",
               "start": 1,
               "end": 5,
               "raw": "(?:)",
-              "elements": []
+              "elements": [
+                {
+                  "type": "Group",
+                  "parent": "♻️../..",
+                  "start": 1,
+                  "end": 5,
+                  "raw": "(?:)",
+                  "alternatives": [
+                    {
+                      "type": "Alternative",
+                      "parent": "♻️../..",
+                      "start": 4,
+                      "end": 4,
+                      "raw": "",
+                      "elements": []
+                    }
+                  ]
+                }
+              ]
             }
           ]
         },
@@ -56,14 +74,32 @@
           "start": 1,
           "end": 5,
           "raw": "(?:)",
-          "elements": [
+          "alternatives": [
             {
-              "type": "Group",
+              "type": "Alternative",
               "parent": "♻️../..",
               "start": 1,
               "end": 5,
               "raw": "(?:)",
-              "elements": []
+              "elements": [
+                {
+                  "type": "Group",
+                  "parent": "♻️../..",
+                  "start": 1,
+                  "end": 5,
+                  "raw": "(?:)",
+                  "alternatives": [
+                    {
+                      "type": "Alternative",
+                      "parent": "♻️../..",
+                      "start": 4,
+                      "end": 4,
+                      "raw": "",
+                      "elements": []
+                    }
+                  ]
+                }
+              ]
             }
           ]
         },
@@ -95,14 +131,32 @@
           "start": 1,
           "end": 5,
           "raw": "(?:)",
-          "elements": [
+          "alternatives": [
             {
-              "type": "Group",
+              "type": "Alternative",
               "parent": "♻️../..",
               "start": 1,
               "end": 5,
               "raw": "(?:)",
-              "elements": []
+              "elements": [
+                {
+                  "type": "Group",
+                  "parent": "♻️../..",
+                  "start": 1,
+                  "end": 5,
+                  "raw": "(?:)",
+                  "alternatives": [
+                    {
+                      "type": "Alternative",
+                      "parent": "♻️../..",
+                      "start": 4,
+                      "end": 4,
+                      "raw": "",
+                      "elements": []
+                    }
+                  ]
+                }
+              ]
             }
           ]
         },
@@ -134,14 +188,32 @@
           "start": 1,
           "end": 5,
           "raw": "(?:)",
-          "elements": [
+          "alternatives": [
             {
-              "type": "Group",
+              "type": "Alternative",
               "parent": "♻️../..",
               "start": 1,
               "end": 5,
               "raw": "(?:)",
-              "elements": []
+              "elements": [
+                {
+                  "type": "Group",
+                  "parent": "♻️../..",
+                  "start": 1,
+                  "end": 5,
+                  "raw": "(?:)",
+                  "alternatives": [
+                    {
+                      "type": "Alternative",
+                      "parent": "♻️../..",
+                      "start": 4,
+                      "end": 4,
+                      "raw": "",
+                      "elements": []
+                    }
+                  ]
+                }
+              ]
             }
           ]
         },
@@ -173,14 +245,32 @@
           "start": 1,
           "end": 5,
           "raw": "(?:)",
-          "elements": [
+          "alternatives": [
             {
-              "type": "Group",
+              "type": "Alternative",
               "parent": "♻️../..",
               "start": 1,
               "end": 5,
               "raw": "(?:)",
-              "elements": []
+              "elements": [
+                {
+                  "type": "Group",
+                  "parent": "♻️../..",
+                  "start": 1,
+                  "end": 5,
+                  "raw": "(?:)",
+                  "alternatives": [
+                    {
+                      "type": "Alternative",
+                      "parent": "♻️../..",
+                      "start": 4,
+                      "end": 4,
+                      "raw": "",
+                      "elements": []
+                    }
+                  ]
+                }
+              ]
             }
           ]
         },
@@ -212,14 +302,32 @@
           "start": 1,
           "end": 5,
           "raw": "(?:)",
-          "elements": [
+          "alternatives": [
             {
-              "type": "Group",
+              "type": "Alternative",
               "parent": "♻️../..",
               "start": 1,
               "end": 5,
               "raw": "(?:)",
-              "elements": []
+              "elements": [
+                {
+                  "type": "Group",
+                  "parent": "♻️../..",
+                  "start": 1,
+                  "end": 5,
+                  "raw": "(?:)",
+                  "alternatives": [
+                    {
+                      "type": "Alternative",
+                      "parent": "♻️../..",
+                      "start": 4,
+                      "end": 4,
+                      "raw": "",
+                      "elements": []
+                    }
+                  ]
+                }
+              ]
             }
           ]
         },

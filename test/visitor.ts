@@ -37,6 +37,7 @@ describe("visitRegExpAST function:", () => {
                     }
 
                     visitRegExpAST(ast, {
+                        onAlternativeEnter: enter,
                         onAssertionEnter: enter,
                         onBackreferenceEnter: enter,
                         onCapturingGroupEnter: enter,
@@ -44,12 +45,12 @@ describe("visitRegExpAST function:", () => {
                         onCharacterClassEnter: enter,
                         onCharacterClassRangeEnter: enter,
                         onCharacterSetEnter: enter,
-                        onDisjunctionEnter: enter,
                         onFlagsEnter: enter,
                         onGroupEnter: enter,
                         onPatternEnter: enter,
                         onQuantifierEnter: enter,
                         onRegExpLiteralEnter: enter,
+                        onAlternativeLeave: leave,
                         onAssertionLeave: leave,
                         onBackreferenceLeave: leave,
                         onCapturingGroupLeave: leave,
@@ -57,7 +58,6 @@ describe("visitRegExpAST function:", () => {
                         onCharacterClassLeave: leave,
                         onCharacterClassRangeLeave: leave,
                         onCharacterSetLeave: leave,
-                        onDisjunctionLeave: leave,
                         onFlagsLeave: leave,
                         onGroupLeave: leave,
                         onPatternLeave: leave,

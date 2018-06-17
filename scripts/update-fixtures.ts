@@ -27,7 +27,7 @@ for (const filename of Object.keys(Visitor.Fixtures)) {
 
     for (const pattern of Object.keys(fixture.patterns)) {
         const ast = parseRegExpLiteral(pattern, options)
-        const history = []
+        const history = [] as string[]
         const enter = (node: AST.Node): void => {
             history.push(`enter:${node.type}:${node.raw}`)
         }
@@ -36,6 +36,7 @@ for (const filename of Object.keys(Visitor.Fixtures)) {
         }
 
         visitRegExpAST(ast, {
+            onAlternativeEnter: enter,
             onAssertionEnter: enter,
             onBackreferenceEnter: enter,
             onCapturingGroupEnter: enter,
@@ -43,12 +44,12 @@ for (const filename of Object.keys(Visitor.Fixtures)) {
             onCharacterClassEnter: enter,
             onCharacterClassRangeEnter: enter,
             onCharacterSetEnter: enter,
-            onDisjunctionEnter: enter,
             onFlagsEnter: enter,
             onGroupEnter: enter,
             onPatternEnter: enter,
             onQuantifierEnter: enter,
             onRegExpLiteralEnter: enter,
+            onAlternativeLeave: leave,
             onAssertionLeave: leave,
             onBackreferenceLeave: leave,
             onCapturingGroupLeave: leave,
@@ -56,7 +57,6 @@ for (const filename of Object.keys(Visitor.Fixtures)) {
             onCharacterClassLeave: leave,
             onCharacterClassRangeLeave: leave,
             onCharacterSetLeave: leave,
-            onDisjunctionLeave: leave,
             onFlagsLeave: leave,
             onGroupLeave: leave,
             onPatternLeave: leave,

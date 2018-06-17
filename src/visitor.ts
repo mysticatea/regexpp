@@ -1,4 +1,5 @@
 import {
+    Alternative,
     Assertion,
     Backreference,
     CapturingGroup,
@@ -6,7 +7,6 @@ import {
     CharacterClass,
     CharacterClassRange,
     CharacterSet,
-    Disjunction,
     Flags,
     Group,
     Node,
@@ -35,6 +35,9 @@ export class RegExpVisitor {
      */
     public visit(node: Node): void {
         switch (node.type) {
+            case "Alternative":
+                this.visitAlternative(node)
+                break
             case "Assertion":
                 this.visitAssertion(node)
                 break
@@ -56,9 +59,6 @@ export class RegExpVisitor {
             case "CharacterSet":
                 this.visitCharacterSet(node)
                 break
-            case "Disjunction":
-                this.visitDisjunction(node)
-                break
             case "Flags":
                 this.visitFlags(node)
                 break
@@ -79,12 +79,21 @@ export class RegExpVisitor {
         }
     }
 
+    private visitAlternative(node: Alternative): void {
+        if (this._handlers.onAlternativeEnter) {
+            this._handlers.onAlternativeEnter(node)
+        }
+        node.elements.forEach(this.visit, this)
+        if (this._handlers.onAlternativeLeave) {
+            this._handlers.onAlternativeLeave(node)
+        }
+    }
     private visitAssertion(node: Assertion): void {
         if (this._handlers.onAssertionEnter) {
             this._handlers.onAssertionEnter(node)
         }
         if (node.kind === "lookahead" || node.kind === "lookbehind") {
-            node.elements.forEach(this.visit, this)
+            node.alternatives.forEach(this.visit, this)
         }
         if (this._handlers.onAssertionLeave) {
             this._handlers.onAssertionLeave(node)
@@ -102,7 +111,7 @@ export class RegExpVisitor {
         if (this._handlers.onCapturingGroupEnter) {
             this._handlers.onCapturingGroupEnter(node)
         }
-        node.elements.forEach(this.visit, this)
+        node.alternatives.forEach(this.visit, this)
         if (this._handlers.onCapturingGroupLeave) {
             this._handlers.onCapturingGroupLeave(node)
         }
@@ -142,17 +151,6 @@ export class RegExpVisitor {
             this._handlers.onCharacterSetLeave(node)
         }
     }
-    private visitDisjunction(node: Disjunction): void {
-        if (this._handlers.onDisjunctionEnter) {
-            this._handlers.onDisjunctionEnter(node)
-        }
-        for (const elements of node.alternatives) {
-            elements.forEach(this.visit, this)
-        }
-        if (this._handlers.onDisjunctionLeave) {
-            this._handlers.onDisjunctionLeave(node)
-        }
-    }
     private visitFlags(node: Flags): void {
         if (this._handlers.onFlagsEnter) {
             this._handlers.onFlagsEnter(node)
@@ -165,7 +163,7 @@ export class RegExpVisitor {
         if (this._handlers.onGroupEnter) {
             this._handlers.onGroupEnter(node)
         }
-        node.elements.forEach(this.visit, this)
+        node.alternatives.forEach(this.visit, this)
         if (this._handlers.onGroupLeave) {
             this._handlers.onGroupLeave(node)
         }
@@ -174,7 +172,7 @@ export class RegExpVisitor {
         if (this._handlers.onPatternEnter) {
             this._handlers.onPatternEnter(node)
         }
-        node.elements.forEach(this.visit, this)
+        node.alternatives.forEach(this.visit, this)
         if (this._handlers.onPatternLeave) {
             this._handlers.onPatternLeave(node)
         }
@@ -202,6 +200,8 @@ export class RegExpVisitor {
 
 export namespace RegExpVisitor {
     export interface Handlers {
+        onAlternativeEnter?(node: Alternative): void
+        onAlternativeLeave?(node: Alternative): void
         onAssertionEnter?(node: Assertion): void
         onAssertionLeave?(node: Assertion): void
         onBackreferenceEnter?(node: Backreference): void
@@ -216,8 +216,6 @@ export namespace RegExpVisitor {
         onCharacterClassRangeLeave?(node: CharacterClassRange): void
         onCharacterSetEnter?(node: CharacterSet): void
         onCharacterSetLeave?(node: CharacterSet): void
-        onDisjunctionEnter?(node: Disjunction): void
-        onDisjunctionLeave?(node: Disjunction): void
         onFlagsEnter?(node: Flags): void
         onFlagsLeave?(node: Flags): void
         onGroupEnter?(node: Group): void
