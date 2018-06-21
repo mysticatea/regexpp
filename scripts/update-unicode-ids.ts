@@ -26,7 +26,7 @@ enum Mode {
 
     logger.log("Fetching data... (%s)", DB_URL)
     await processEachLine(line => {
-        let m: RegExpExecArray
+        let m: RegExpExecArray | null = null
         if (banner === "") {
             logger.log("Processing data... (%s)", line.slice(2))
             banner = `/* Generated from ${line.slice(2)} */`
@@ -68,7 +68,10 @@ ${makeCondition(idContinueLarge, Mode.Former)}
 }`
 
     logger.log("Formatting code...")
-    const engine = new CLIEngine({ fix: true })
+    const engine = new CLIEngine({
+        fix: true,
+        rules: { curly: "off" },
+    })
     const result = engine.executeOnText(code, "ids.ts").results[0]
     code = result.output || code
 
@@ -92,7 +95,7 @@ function processEachLine(cb: (line: string) => void): Promise<void> {
                     if (lines.length === 1) {
                         buffer = lines[0]
                     } else {
-                        buffer = lines.pop()
+                        buffer = lines.pop()!
                         for (const line of lines) {
                             cb(line)
                         }
