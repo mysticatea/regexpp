@@ -902,6 +902,9 @@ export class RegExpValidator {
             if (cp === RightParenthesis) {
                 this.raise("Unmatched ')'")
             }
+            if (cp === ReverseSolidus) {
+                this.raise("\\ at end of pattern")
+            }
             if (cp === RightSquareBracket || cp === RightCurlyBracket) {
                 this.raise("Lone quantifier brackets")
             }
@@ -1176,12 +1179,27 @@ export class RegExpValidator {
         return (
             this.eatDot() ||
             this.eatReverseSolidusAtomEscape() ||
+            this.eatReverseSolidusFollowedByC() ||
             this.eatCharacterClass() ||
             this.eatUncapturingGroup() ||
             this.eatCapturingGroup() ||
             this.eatInvalidBracedQuantifier() ||
             this.eatExtendedPatternCharacter()
         )
+    }
+
+    // \ [lookahead = c]
+    private eatReverseSolidusFollowedByC(): boolean {
+        if (
+            this.currentCodePoint === ReverseSolidus &&
+            this.nextCodePoint === LatinSmallLetterC
+        ) {
+            this._lastIntValue = this.currentCodePoint
+            this.advance()
+            this.onCharacter(this.index - 1, this.index, ReverseSolidus)
+            return true
+        }
+        return false
     }
 
     // https://www.ecma-international.org/ecma-262/8.0/#prod-strict-InvalidBracedQuantifier
@@ -1222,6 +1240,7 @@ export class RegExpValidator {
             cp !== -1 &&
             cp !== CircumflexAccent &&
             cp !== DollarSign &&
+            cp !== ReverseSolidus &&
             cp !== FullStop &&
             cp !== Asterisk &&
             cp !== PlusSign &&
@@ -1457,6 +1476,7 @@ export class RegExpValidator {
     }
 
     // https://www.ecma-international.org/ecma-262/8.0/#prod-RegExpUnicodeEscapeSequence
+    //eslint-disable-next-line complexity
     private eatRegExpUnicodeEscapeSequence(): boolean {
         const start = this.index
 

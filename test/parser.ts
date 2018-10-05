@@ -74,3 +74,14 @@ describe("parseRegExpLiteral function:", () => {
         assert.deepStrictEqual(actual, expected)
     })
 })
+
+describe("RegExpParser:", () => {
+    describe("parsePattern function", () => {
+        it("should throw syntax error on '\\'.", () => {
+            assert.throws(
+                () => new RegExpParser().parsePattern("\\"),
+                /\\ at end of pattern/,
+            )
+        })
+    })
+})
