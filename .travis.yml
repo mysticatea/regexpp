@@ -1,23 +1,8 @@
-sudo: false
-
 language: node_js
 node_js:
-  - "6.5"
   - "8"
   - "10"
   - "12"
 
-script:
-  # eslint and nyc don't support Node 6.
-  - |
-    if [ $TRAVIS_NODE_VERSION != "6.5" ]; then
-      npm test
-    else
-      npm run -s test:node6
-    fi
-
 after_success:
-  - |
-    if [ $TRAVIS_NODE_VERSION != "6.5" ]; then
-      npm run coveralls
-    fi
+  - npm run coveralls

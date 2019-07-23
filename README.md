@@ -14,7 +14,7 @@ The regular expression parser for ECMAScript.
 $ npm install regexpp
 ```
 
-- require Node.js 6.5.0 or newer.
+- require Node.js 8 or newer.
 
 ## 📖 Usage
 
