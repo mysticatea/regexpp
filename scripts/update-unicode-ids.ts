@@ -9,13 +9,7 @@ const ID_CONTINUE = /^([0-9a-z]+)(?:\.\.([0-9a-z]+))?[^;]*; ID_Continue /iu
 const BORDER = 0x7f
 const logger = console
 
-enum Mode {
-    Small,
-    Former,
-    Latter,
-}
-
-// Main
+    // Main
 ;(async () => {
     let banner = ""
     const idStartSet: Set<string> = new Set()
@@ -50,21 +44,39 @@ enum Mode {
         }
     })
 
+    logger.log("Normalizing data...")
+    normalizeRanges(idStartSmall)
+    normalizeRanges(idStartLarge)
+    normalizeRanges(idContinueSmall)
+    normalizeRanges(idContinueLarge)
+
     logger.log("Generating code...")
     let code = `${banner}
+
+let largeIdStartPattern: RegExp | null = null;
+let largeIdContinuePattern: RegExp | null = null;
+
 export function isIdStart(cp: number): boolean {
-${makeSmallCondtion(idStartSmall, Mode.Small)}
-return isLargeIdStart(cp)
+    ${makeSmallCondtion(idStartSmall)}
+    return isLargeIdStart(cp)
 }
 export function isIdContinue(cp: number): boolean {
-${makeSmallCondtion(idContinueSmall, Mode.Small)}
-return isLargeIdStart(cp) || isLargeIdContinue(cp)
+    ${makeSmallCondtion(idContinueSmall)}
+    return isLargeIdStart(cp) || isLargeIdContinue(cp)
 }
 function isLargeIdStart(cp: number): boolean {
-${makeCondition(idStartLarge, Mode.Former)}
+    if (!largeIdStartPattern) {
+        largeIdStartPattern = new RegExp(${makeLargePattern(idStartLarge)}, "u")
+    }
+    return largeIdStartPattern.test(String.fromCodePoint(cp))
 }
 function isLargeIdContinue(cp: number): boolean {
-${makeCondition(idContinueLarge, Mode.Former)}
+    if (!largeIdContinuePattern) {
+        largeIdContinuePattern = new RegExp(${makeLargePattern(
+            idContinueLarge,
+        )}, "u")
+    }
+    return largeIdContinuePattern.test(String.fromCodePoint(cp))
 }`
 
     logger.log("Formatting code...")
@@ -111,37 +123,59 @@ function processEachLine(cb: (line: string) => void): Promise<void> {
     })
 }
 
-function makeCondition(ranges: [number, number][], mode: Mode): string {
-    if (ranges.length < 10) {
-        return makeSmallCondtion(ranges, mode)
+function normalizeRanges(ranges: [number, number][]): void {
+    for (let i = ranges.length - 1; i >= 1; --i) {
+        const currRange = ranges[i]
+        const prevRange = ranges[i - 1]
+        if (currRange[0] - 1 === prevRange[1]) {
+            prevRange[1] = currRange[1]
+            ranges.splice(i, 1)
+        }
     }
-
-    const middle = ranges.length >> 1
-    const ranges1 = ranges.slice(0, middle)
-    const ranges2 = ranges.slice(middle)
-    const pivot = ranges2[0][0]
-    return `if (cp < 0x${pivot.toString(16)}) {
-${makeCondition(ranges1, Mode.Former)}
-}
-${makeCondition(ranges2, Mode.Latter)}`
 }
 
-function makeSmallCondtion(ranges: [number, number][], mode: Mode): string {
+function makeSmallCondtion(ranges: [number, number][]): string {
     const conditions: string[] = []
     for (const [min, max] of ranges) {
         if (min === max) {
             conditions.push(`if (cp === 0x${min.toString(16)}) return true`)
         } else {
-            if (mode !== Mode.Latter || conditions.length !== 0) {
-                conditions.push(`if (cp < 0x${min.toString(16)}) return false`)
-            }
+            conditions.push(`if (cp < 0x${min.toString(16)}) return false`)
             conditions.push(`if (cp < 0x${(max + 1).toString(16)}) return true`)
         }
     }
-    if (mode === Mode.Former || mode === Mode.Latter) {
-        conditions.push("return false")
-    }
     return conditions.join("\n")
+}
+
+function makeLargePattern(ranges: [number, number][]): string {
+    const lines = ["^["]
+    for (const [min, max] of ranges) {
+        const line = lines[lines.length - 1]
+        const part =
+            min === max
+                ? esc(min)
+                : min + 1 === max
+                ? `${esc(min)}${esc(max)}`
+                : `${esc(min)}-${esc(max)}`
+
+        if (line.length + part.length > 60) {
+            lines.push(part)
+        } else {
+            lines[lines.length - 1] += part
+        }
+    }
+    lines[lines.length - 1] += "]$"
+    return lines.map(line => `"${line}"`).join("+")
+}
+
+function esc(cp: number): string {
+    if (cp <= 0xff) {
+        return `\\x${cp.toString(16).padStart(2, "0")}`
+    }
+    if (cp <= 0xffff) {
+        return `\\u${cp.toString(16).padStart(4, "0")}`
+    }
+    return `\\u{${cp.toString(16)}}`
 }
 
 function save(content: string): Promise<void> {

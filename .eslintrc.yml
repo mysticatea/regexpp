@@ -7,3 +7,12 @@ rules:
   "no-redeclare": "off"
   # https://github.com/typescript-eslint/typescript-eslint/issues/743
   "@mysticatea/ts/unbound-method": "off"
+
+overrides:
+  - files: "./src/unicode/ids.ts"
+    rules:
+      curly: "off"
+      no-misleading-character-class: "off"
+  - files: "./src/unicode/property-data.ts"
+    rules:
+      "@mysticatea/ts/camelcase": "off"
