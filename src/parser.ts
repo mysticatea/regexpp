@@ -12,6 +12,7 @@ import {
     Pattern,
     Quantifier,
 } from "./ast"
+import { EcmaVersion } from "./ecma-versions"
 import { HyphenMinus } from "./unicode"
 import { RegExpValidator } from "./validator"
 
@@ -29,7 +30,7 @@ const DummyCapturingGroup: CapturingGroup = {} as any
 
 class RegExpParserState {
     public readonly strict: boolean
-    public readonly ecmaVersion: 5 | 2015 | 2016 | 2017 | 2018
+    public readonly ecmaVersion: EcmaVersion
     private _node: AppendableNode = DummyPattern
     private _flags: Flags = DummyFlags
     private _backreferences: Backreference[] = []
@@ -39,7 +40,7 @@ class RegExpParserState {
 
     public constructor(options?: RegExpParser.Options) {
         this.strict = Boolean(options && options.strict)
-        this.ecmaVersion = (options && options.ecmaVersion) || 2018
+        this.ecmaVersion = (options && options.ecmaVersion) || 2020
     }
 
     public get pattern(): Pattern {
@@ -501,12 +502,13 @@ export namespace RegExpParser {
         strict?: boolean
 
         /**
-         * ECMAScript version. Default is `2018`.
+         * ECMAScript version. Default is `2020`.
          * - `2015` added `u` and `y` flags.
          * - `2018` added `s` flag, Named Capturing Group, Lookbehind Assertion,
          *   and Unicode Property Escape.
+         * - `2019` and `2020` added more valid Unicode Property Escapes.
          */
-        ecmaVersion?: 5 | 2015 | 2016 | 2017 | 2018
+        ecmaVersion?: EcmaVersion
     }
 }
 

@@ -1,3 +1,4 @@
+import { EcmaVersion } from "./ecma-versions"
 import { Reader } from "./reader"
 import { RegExpSyntaxError } from "./regexp-syntax-error"
 import {
@@ -123,12 +124,13 @@ export namespace RegExpValidator {
         strict?: boolean
 
         /**
-         * ECMAScript version. Default is `2018`.
+         * ECMAScript version. Default is `2020`.
          * - `2015` added `u` and `y` flags.
          * - `2018` added `s` flag, Named Capturing Group, Lookbehind Assertion,
          *   and Unicode Property Escape.
+         * - `2019` and `2020` added more valid Unicode Property Escapes.
          */
-        ecmaVersion?: 5 | 2015 | 2016 | 2017 | 2018
+        ecmaVersion?: EcmaVersion
 
         /**
          * A function that is called when the validator entered a RegExp literal.
@@ -543,7 +545,7 @@ export class RegExpValidator {
     }
 
     private get ecmaVersion() {
-        return this._options.ecmaVersion || 2018
+        return this._options.ecmaVersion || 2020
     }
 
     private onLiteralEnter(start: number): void {
