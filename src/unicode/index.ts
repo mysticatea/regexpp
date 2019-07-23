@@ -1,5 +1,8 @@
 export { isIdContinue, isIdStart } from "./ids"
-export { PropertyData } from "./property-data"
+export {
+    isValidLoneUnicodeProperty,
+    isValidUnicodeProperty,
+} from "./properties"
 
 export const Null = 0x00
 export const Backspace = 0x08

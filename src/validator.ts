@@ -26,6 +26,8 @@ import {
     isLatinLetter,
     isLineTerminator,
     isOctalDigit,
+    isValidLoneUnicodeProperty,
+    isValidUnicodeProperty,
     isValidUnicode,
     LatinCapitalLetterB,
     LatinCapitalLetterD,
@@ -58,7 +60,6 @@ import {
     LineTabulation,
     LowLine,
     PlusSign,
-    PropertyData,
     QuestionMark,
     ReverseSolidus,
     RightCurlyBracket,
@@ -109,15 +110,6 @@ function isUnicodePropertyNameCharacter(cp: number): boolean {
 
 function isUnicodePropertyValueCharacter(cp: number): boolean {
     return isUnicodePropertyNameCharacter(cp) || isDecimalDigit(cp)
-}
-
-function isValidUnicodeProperty(name: string, value: string): boolean {
-    //eslint-disable-next-line no-prototype-builtins
-    return PropertyData.hasOwnProperty(name) && PropertyData[name].has(value)
-}
-
-function isValidUnicodePropertyName(name: string): boolean {
-    return PropertyData.$LONE.has(name)
 }
 
 export namespace RegExpValidator {
@@ -1650,6 +1642,7 @@ export class RegExpValidator {
                 this._lastValValue = this._lastStrValue
                 if (
                     isValidUnicodeProperty(
+                        this.ecmaVersion,
                         this._lastKeyValue,
                         this._lastValValue,
                     )
@@ -1664,12 +1657,18 @@ export class RegExpValidator {
         // LoneUnicodePropertyNameOrValue
         if (this.eatLoneUnicodePropertyNameOrValue()) {
             const nameOrValue = this._lastStrValue
-            if (isValidUnicodeProperty("General_Category", nameOrValue)) {
+            if (
+                isValidUnicodeProperty(
+                    this.ecmaVersion,
+                    "General_Category",
+                    nameOrValue,
+                )
+            ) {
                 this._lastKeyValue = "General_Category"
                 this._lastValValue = nameOrValue
                 return true
             }
-            if (isValidUnicodePropertyName(nameOrValue)) {
+            if (isValidLoneUnicodeProperty(this.ecmaVersion, nameOrValue)) {
                 this._lastKeyValue = nameOrValue
                 this._lastValValue = ""
                 return true
