@@ -64,7 +64,7 @@ function getRelativePath(
     const fromPath = pathMap.get(from)
     const toPath = pathMap.get(to)
     try {
-        return `♻️${relative(fromPath, toPath)}`
+        return `♻️${relative(fromPath, toPath).replace(/\/$/u, "")}`
     } catch (err) {
         console.error(fromPath, toPath, err.stack)
         return "💥💥💥💥💥💥💥💥"

@@ -651,7 +651,7 @@
                   "end": 3,
                   "raw": "a*",
                   "min": 0,
-                  "max": null,
+                  "max": "$$Infinity",
                   "greedy": true,
                   "element": {
                     "type": "Character",
@@ -709,7 +709,7 @@
                   "end": 3,
                   "raw": "a+",
                   "min": 1,
-                  "max": null,
+                  "max": "$$Infinity",
                   "greedy": true,
                   "element": {
                     "type": "Character",
@@ -883,7 +883,7 @@
                   "end": 6,
                   "raw": "a{1,}",
                   "min": 1,
-                  "max": null,
+                  "max": "$$Infinity",
                   "greedy": true,
                   "element": {
                     "type": "Character",
@@ -999,7 +999,7 @@
                   "end": 4,
                   "raw": "a*?",
                   "min": 0,
-                  "max": null,
+                  "max": "$$Infinity",
                   "greedy": false,
                   "element": {
                     "type": "Character",
@@ -1057,7 +1057,7 @@
                   "end": 4,
                   "raw": "a+?",
                   "min": 1,
-                  "max": null,
+                  "max": "$$Infinity",
                   "greedy": false,
                   "element": {
                     "type": "Character",
@@ -1231,7 +1231,7 @@
                   "end": 7,
                   "raw": "a{1,}?",
                   "min": 1,
-                  "max": null,
+                  "max": "$$Infinity",
                   "greedy": false,
                   "element": {
                     "type": "Character",
@@ -7864,7 +7864,7 @@
                   "end": 8,
                   "raw": "[0-9]*",
                   "min": 0,
-                  "max": null,
+                  "max": "$$Infinity",
                   "greedy": true,
                   "element": {
                     "type": "CharacterClass",
@@ -7963,7 +7963,7 @@
                   "end": 8,
                   "raw": "[0-9]+",
                   "min": 1,
-                  "max": null,
+                  "max": "$$Infinity",
                   "greedy": true,
                   "element": {
                     "type": "CharacterClass",
@@ -8062,7 +8062,7 @@
                   "end": 11,
                   "raw": "[a-zA-Z]*",
                   "min": 0,
-                  "max": null,
+                  "max": "$$Infinity",
                   "greedy": true,
                   "element": {
                     "type": "CharacterClass",
@@ -8184,7 +8184,7 @@
                   "end": 11,
                   "raw": "[a-zA-Z]+",
                   "min": 1,
-                  "max": null,
+                  "max": "$$Infinity",
                   "greedy": true,
                   "element": {
                     "type": "CharacterClass",
@@ -8306,7 +8306,7 @@
                   "end": 14,
                   "raw": "[0-9a-zA-Z]*",
                   "min": 0,
-                  "max": null,
+                  "max": "$$Infinity",
                   "greedy": true,
                   "element": {
                     "type": "CharacterClass",
@@ -8451,7 +8451,7 @@
                   "end": 27,
                   "raw": "[a-zA-Z0-9!-/:-@\\[-`{-~]*",
                   "min": 0,
-                  "max": null,
+                  "max": "$$Infinity",
                   "greedy": true,
                   "element": {
                     "type": "CharacterClass",
@@ -8703,7 +8703,7 @@
                           "end": 18,
                           "raw": "[a-zA-Z0-9]{8,}",
                           "min": 8,
-                          "max": null,
+                          "max": "$$Infinity",
                           "greedy": true,
                           "element": {
                             "type": "CharacterClass",
@@ -9640,7 +9640,7 @@
                           "end": 14,
                           "raw": "[0-9]*",
                           "min": 0,
-                          "max": null,
+                          "max": "$$Infinity",
                           "greedy": true,
                           "element": {
                             "type": "CharacterClass",
@@ -9737,7 +9737,7 @@
                             "end": 26,
                             "raw": "[0-9]+",
                             "min": 1,
-                            "max": null,
+                            "max": "$$Infinity",
                             "greedy": true,
                             "element": {
                               "type": "CharacterClass",
@@ -9908,7 +9908,7 @@
                           "end": 16,
                           "raw": "[0-9]*",
                           "min": 0,
-                          "max": null,
+                          "max": "$$Infinity",
                           "greedy": true,
                           "element": {
                             "type": "CharacterClass",
@@ -10005,7 +10005,7 @@
                             "end": 28,
                             "raw": "[0-9]+",
                             "min": 1,
-                            "max": null,
+                            "max": "$$Infinity",
                             "greedy": true,
                             "element": {
                               "type": "CharacterClass",
@@ -10110,7 +10110,7 @@
                   "end": 9,
                   "raw": "[ぁ-んー]*",
                   "min": 0,
-                  "max": null,
+                  "max": "$$Infinity",
                   "greedy": true,
                   "element": {
                     "type": "CharacterClass",
@@ -10217,7 +10217,7 @@
                   "end": 10,
                   "raw": "[ァ-ンヴー]*",
                   "min": 0,
-                  "max": null,
+                  "max": "$$Infinity",
                   "greedy": true,
                   "element": {
                     "type": "CharacterClass",
@@ -10332,7 +10332,7 @@
                   "end": 12,
                   "raw": "[ｧ-ﾝﾞﾟ\\-]*",
                   "min": 0,
-                  "max": null,
+                  "max": "$$Infinity",
                   "greedy": true,
                   "element": {
                     "type": "CharacterClass",
@@ -10455,7 +10455,7 @@
                   "end": 15,
                   "raw": "[^\\x20-\\x7e]*",
                   "min": 0,
-                  "max": null,
+                  "max": "$$Infinity",
                   "greedy": true,
                   "element": {
                     "type": "CharacterClass",
@@ -10554,7 +10554,7 @@
                   "end": 34,
                   "raw": "[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+",
                   "min": 1,
-                  "max": null,
+                  "max": "$$Infinity",
                   "greedy": true,
                   "element": {
                     "type": "CharacterClass",
@@ -10811,7 +10811,7 @@
                   "end": 48,
                   "raw": "[a-zA-Z0-9-]+",
                   "min": 1,
-                  "max": null,
+                  "max": "$$Infinity",
                   "greedy": true,
                   "element": {
                     "type": "CharacterClass",
@@ -10908,7 +10908,7 @@
                   "end": 68,
                   "raw": "(?:\\.[a-zA-Z0-9-]+)*",
                   "min": 0,
-                  "max": null,
+                  "max": "$$Infinity",
                   "greedy": true,
                   "element": {
                     "type": "Group",
@@ -10939,7 +10939,7 @@
                             "end": 66,
                             "raw": "[a-zA-Z0-9-]+",
                             "min": 1,
-                            "max": null,
+                            "max": "$$Infinity",
                             "greedy": true,
                             "element": {
                               "type": "CharacterClass",
@@ -11665,7 +11665,7 @@
                   "end": 5,
                   "raw": "\\s*",
                   "min": 0,
-                  "max": null,
+                  "max": "$$Infinity",
                   "greedy": true,
                   "element": {
                     "type": "CharacterSet",
@@ -11693,7 +11693,7 @@
                   "end": 9,
                   "raw": "\\s*",
                   "min": 0,
-                  "max": null,
+                  "max": "$$Infinity",
                   "greedy": true,
                   "element": {
                     "type": "CharacterSet",

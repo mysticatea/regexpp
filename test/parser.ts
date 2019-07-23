@@ -4,13 +4,7 @@ import { cloneWithoutCircular } from "../scripts/clone-without-circular"
 import { Fixtures } from "./fixtures/parser/literal"
 
 function generateAST(source: string, options: RegExpParser.Options): object {
-    return JSON.parse(
-        Buffer.from(
-            JSON.stringify(
-                cloneWithoutCircular(parseRegExpLiteral(source, options)),
-            ),
-        ).toString(),
-    )
+    return cloneWithoutCircular(parseRegExpLiteral(source, options))
 }
 
 describe("parseRegExpLiteral function:", () => {

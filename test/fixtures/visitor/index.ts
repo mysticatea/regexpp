@@ -21,6 +21,7 @@ export const Fixtures: FixtureData = fs
         (fixtures, filename) => {
             fixtures[filename] = JSON.parse(
                 fs.readFileSync(path.join(fixturesRoot, filename), "utf8"),
+                (_, v) => (v === "$$Infinity" ? Infinity : v),
             )
             return fixtures
         },
@@ -30,7 +31,11 @@ export function save(): void {
     for (const filename of Object.keys(Fixtures)) {
         fs.writeFileSync(
             path.join(fixturesRoot, filename),
-            JSON.stringify(Fixtures[filename], null, 2),
+            JSON.stringify(
+                Fixtures[filename],
+                (_, v) => (v === Infinity ? "$$Infinity" : v),
+                2,
+            ),
         )
     }
 }
