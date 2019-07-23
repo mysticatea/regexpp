@@ -17,16 +17,13 @@ const fixturesRoot = __dirname
 export const Fixtures: FixtureData = fs
     .readdirSync(fixturesRoot)
     .filter(filename => path.extname(filename) === ".json")
-    .reduce(
-        (fixtures, filename) => {
-            fixtures[filename] = JSON.parse(
-                fs.readFileSync(path.join(fixturesRoot, filename), "utf8"),
-                (_, v) => (v === "$$Infinity" ? Infinity : v),
-            )
-            return fixtures
-        },
-        {} as FixtureData,
-    )
+    .reduce<FixtureData>((fixtures, filename) => {
+        fixtures[filename] = JSON.parse(
+            fs.readFileSync(path.join(fixturesRoot, filename), "utf8"),
+            (_, v) => (v === "$$Infinity" ? Infinity : v),
+        )
+        return fixtures
+    }, {})
 export function save(): void {
     for (const filename of Object.keys(Fixtures)) {
         fs.writeFileSync(

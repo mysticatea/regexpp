@@ -1,8 +1,9 @@
+root: true
 extends:
-  - plugin:mysticatea/es2018
+  - plugin:@mysticatea/es2018
 
-overrides:
-  - files: "*.ts"
-    rules:
-      require-jsdoc: off
-      mysticatea/ts/no-use-before-define: off
+rules:
+  # tsc does.
+  "no-redeclare": "off"
+  # https://github.com/typescript-eslint/typescript-eslint/issues/743
+  "@mysticatea/ts/unbound-method": "off"

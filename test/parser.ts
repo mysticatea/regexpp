@@ -13,14 +13,14 @@ describe("parseRegExpLiteral function:", () => {
         const options = fixture.options
 
         describe(`${filename} (options=${JSON.stringify(options)})`, () => {
-            if (filename.indexOf("-valid") !== -1) {
+            if (filename.includes("-valid")) {
                 it("should not contain any invalid test case", () => {
                     for (const source of Object.keys(fixture.patterns)) {
                         const result = fixture.patterns[source]
                         assert("ast" in result, `${source} is invalid`)
                     }
                 })
-            } else if (filename.indexOf("-invalid") !== -1) {
+            } else if (filename.includes("-invalid")) {
                 it("should not contain any valid test case", () => {
                     for (const source of Object.keys(fixture.patterns)) {
                         const result = fixture.patterns[source]
@@ -43,9 +43,7 @@ describe("parseRegExpLiteral function:", () => {
                         assert.strictEqual(
                             expected.message.slice(0, 27),
                             "Invalid regular expression:",
-                            `The error message '${
-                                expected.message
-                            }' was not syntax error.`,
+                            `The error message '${expected.message}' was not syntax error.`,
                         )
                         try {
                             parseRegExpLiteral(source, options)
@@ -62,8 +60,8 @@ describe("parseRegExpLiteral function:", () => {
     }
 
     it("should parse RegExp object", () => {
-        const actual = cloneWithoutCircular(parseRegExpLiteral(/[A-Z]+/))
-        const expected = cloneWithoutCircular(parseRegExpLiteral("/[A-Z]+/"))
+        const actual = cloneWithoutCircular(parseRegExpLiteral(/[A-Z]+/u))
+        const expected = cloneWithoutCircular(parseRegExpLiteral("/[A-Z]+/u"))
 
         assert.deepStrictEqual(actual, expected)
     })
@@ -74,7 +72,7 @@ describe("RegExpParser:", () => {
         it("should throw syntax error on '\\'.", () => {
             assert.throws(
                 () => new RegExpParser().parsePattern("\\"),
-                /\\ at end of pattern/,
+                /\\ at end of pattern/u,
             )
         })
     })

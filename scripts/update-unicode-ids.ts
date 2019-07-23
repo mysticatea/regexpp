@@ -4,8 +4,8 @@ import { CLIEngine } from "eslint"
 
 const DB_URL = "http://unicode.org/Public/UNIDATA/DerivedCoreProperties.txt"
 const FILE_PATH = "src/unicode/ids.ts"
-const ID_START = /^([0-9a-z]+)(?:\.\.([0-9a-z]+))?[^;]*; ID_Start /i
-const ID_CONTINUE = /^([0-9a-z]+)(?:\.\.([0-9a-z]+))?[^;]*; ID_Continue /i
+const ID_START = /^([0-9a-z]+)(?:\.\.([0-9a-z]+))?[^;]*; ID_Start /iu
+const ID_CONTINUE = /^([0-9a-z]+)(?:\.\.([0-9a-z]+))?[^;]*; ID_Continue /iu
 const BORDER = 0x7f
 const logger = console
 
@@ -19,10 +19,10 @@ enum Mode {
 ;(async () => {
     let banner = ""
     const idStartSet: Set<string> = new Set()
-    const idStartSmall: Array<[number, number]> = []
-    const idStartLarge: Array<[number, number]> = []
-    const idContinueSmall: Array<[number, number]> = []
-    const idContinueLarge: Array<[number, number]> = []
+    const idStartSmall: [number, number][] = []
+    const idStartLarge: [number, number][] = []
+    const idContinueSmall: [number, number][] = []
+    const idContinueLarge: [number, number][] = []
 
     logger.log("Fetching data... (%s)", DB_URL)
     await processEachLine(line => {
@@ -86,30 +86,28 @@ ${makeCondition(idContinueLarge, Mode.Former)}
 
 function processEachLine(cb: (line: string) => void): Promise<void> {
     return new Promise((resolve, reject) => {
-        http
-            .get(DB_URL, res => {
-                let buffer = ""
-                res.setEncoding("utf8")
-                res.on("data", chunk => {
-                    const lines = (buffer + chunk).split("\n")
-                    if (lines.length === 1) {
-                        buffer = lines[0]
-                    } else {
-                        buffer = lines.pop()!
-                        for (const line of lines) {
-                            cb(line)
-                        }
+        http.get(DB_URL, res => {
+            let buffer = ""
+            res.setEncoding("utf8")
+            res.on("data", chunk => {
+                const lines = (buffer + String(chunk)).split("\n")
+                if (lines.length === 1) {
+                    buffer = lines[0]
+                } else {
+                    buffer = lines.pop()!
+                    for (const line of lines) {
+                        cb(line)
                     }
-                })
-                res.on("end", () => {
-                    if (buffer) {
-                        cb(buffer)
-                    }
-                    resolve()
-                })
-                res.on("error", reject)
+                }
             })
-            .on("error", reject)
+            res.on("end", () => {
+                if (buffer) {
+                    cb(buffer)
+                }
+                resolve()
+            })
+            res.on("error", reject)
+        }).on("error", reject)
     })
 }
 
@@ -148,10 +146,8 @@ function makeSmallCondtion(ranges: [number, number][], mode: Mode): string {
 
 function save(content: string): Promise<void> {
     return new Promise((resolve, reject) => {
-        fs.writeFile(
-            FILE_PATH,
-            content,
-            error => (error ? reject(error) : resolve()),
+        fs.writeFile(FILE_PATH, content, error =>
+            error ? reject(error) : resolve(),
         )
     })
 }

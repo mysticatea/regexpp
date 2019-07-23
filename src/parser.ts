@@ -23,9 +23,9 @@ type AppendableNode =
     | CharacterClass
     | LookaroundAssertion
 
-const DummyPattern = {} as Pattern
-const DummyFlags = {} as Flags
-const DummyCapturingGroup = {} as CapturingGroup
+const DummyPattern: Pattern = {} as any
+const DummyFlags: Flags = {} as any
+const DummyCapturingGroup: CapturingGroup = {} as any
 
 class RegExpParserState {
     public readonly strict: boolean
@@ -251,7 +251,7 @@ class RegExpParserState {
             throw new Error("UnknownError")
         }
 
-        this._node = {
+        const node: LookaroundAssertion = (this._node = {
             type: "Assertion",
             parent,
             start,
@@ -260,8 +260,8 @@ class RegExpParserState {
             kind,
             negate,
             alternatives: [],
-        } as LookaroundAssertion
-        parent.elements.push(this._node)
+        })
+        parent.elements.push(node)
     }
 
     public onLookaroundAssertionLeave(start: number, end: number): void {

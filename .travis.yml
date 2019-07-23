@@ -7,5 +7,17 @@ node_js:
   - "10"
   - "12"
 
+script:
+  # eslint and nyc don't support Node 6.
+  - |
+    if [ $TRAVIS_NODE_VERSION != "6.5" ]; then
+      npm test
+    else
+      npm run -s test:node6
+    fi
+
 after_success:
-  - npm run coveralls
+  - |
+    if [ $TRAVIS_NODE_VERSION != "6.5" ]; then
+      npm run coveralls
+    fi

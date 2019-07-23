@@ -449,7 +449,7 @@ export class RegExpValidator {
         this.onLiteralEnter(start)
         if (this.eat(Solidus) && this.eatRegExpBody() && this.eat(Solidus)) {
             const flagStart = this.index
-            const uFlag = source.indexOf("u", flagStart) !== -1
+            const uFlag = source.includes("u", flagStart)
             this.validateFlags(source, flagStart, end)
             this.validatePattern(source, start + 1, flagStart - 1, uFlag)
         } else if (start >= end) {

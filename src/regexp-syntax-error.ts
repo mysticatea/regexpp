@@ -8,7 +8,7 @@ export class RegExpSyntaxError extends SyntaxError {
     ) {
         /*eslint-disable no-param-reassign */
         if (source) {
-            if (source[0] !== "/") {
+            if (!source.startsWith("/")) {
                 source = `/${source}/${uFlag ? "u" : ""}`
             }
             source = `: ${source}`

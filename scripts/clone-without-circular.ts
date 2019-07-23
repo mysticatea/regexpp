@@ -1,4 +1,4 @@
-const relative = require("path").posix.relative
+import { posix } from "path"
 
 function resolveLocation(
     obj: any,
@@ -61,10 +61,10 @@ function getRelativePath(
         return to.map(el => getRelativePath(from, el, pathMap))
     }
 
-    const fromPath = pathMap.get(from)
-    const toPath = pathMap.get(to)
+    const fromPath = pathMap.get(from)!
+    const toPath = pathMap.get(to)!
     try {
-        return `♻️${relative(fromPath, toPath).replace(/\/$/u, "")}`
+        return `♻️${posix.relative(fromPath, toPath).replace(/\/$/u, "")}`
     } catch (err) {
         console.error(fromPath, toPath, err.stack)
         return "💥💥💥💥💥💥💥💥"
