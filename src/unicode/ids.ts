@@ -1,7 +1,10 @@
 /* Generated from DerivedCoreProperties-12.1.0.txt */
 
-let largeIdStartPattern: RegExp | null = null
-let largeIdContinuePattern: RegExp | null = null
+let largeIdStartPatternSymbols: Set<number> | null = null
+let largeIdStartPatternRanges: [number, number][] | null = null
+
+let largeIdContinuePatternSymbols: Set<number> | null = null
+let largeIdContinuePatternRanges: [number, number][] | null = null
 
 export function isIdStart(cp: number): boolean {
     if (cp < 0x41) return false
@@ -22,257 +25,1070 @@ export function isIdContinue(cp: number): boolean {
 }
 
 function isLargeIdStart(cp: number): boolean {
-    if (!largeIdStartPattern) {
-        largeIdStartPattern = new RegExp(
-            "^[\xaa\xb5\xba\xc0-\xd6\xd8-\xf6\xf8-\u02c1\u02c6-\u02d1" +
-                "\u02e0-\u02e4\u02ec\u02ee\u0370-\u0374\u0376\u0377" +
-                "\u037a-\u037d\u037f\u0386\u0388-\u038a\u038c\u038e-\u03a1" +
-                "\u03a3-\u03f5\u03f7-\u0481\u048a-\u052f\u0531-\u0556\u0559" +
-                "\u0560-\u0588\u05d0-\u05ea\u05ef-\u05f2\u0620-\u064a" +
-                "\u066e\u066f\u0671-\u06d3\u06d5\u06e5\u06e6\u06ee\u06ef" +
-                "\u06fa-\u06fc\u06ff\u0710\u0712-\u072f\u074d-\u07a5\u07b1" +
-                "\u07ca-\u07ea\u07f4\u07f5\u07fa\u0800-\u0815\u081a\u0824" +
-                "\u0828\u0840-\u0858\u0860-\u086a\u08a0-\u08b4\u08b6-\u08bd" +
-                "\u0904-\u0939\u093d\u0950\u0958-\u0961\u0971-\u0980" +
-                "\u0985-\u098c\u098f\u0990\u0993-\u09a8\u09aa-\u09b0\u09b2" +
-                "\u09b6-\u09b9\u09bd\u09ce\u09dc\u09dd\u09df-\u09e1" +
-                "\u09f0\u09f1\u09fc\u0a05-\u0a0a\u0a0f\u0a10\u0a13-\u0a28" +
-                "\u0a2a-\u0a30\u0a32\u0a33\u0a35\u0a36\u0a38\u0a39" +
-                "\u0a59-\u0a5c\u0a5e\u0a72-\u0a74\u0a85-\u0a8d\u0a8f-\u0a91" +
-                "\u0a93-\u0aa8\u0aaa-\u0ab0\u0ab2\u0ab3\u0ab5-\u0ab9\u0abd" +
-                "\u0ad0\u0ae0\u0ae1\u0af9\u0b05-\u0b0c\u0b0f\u0b10" +
-                "\u0b13-\u0b28\u0b2a-\u0b30\u0b32\u0b33\u0b35-\u0b39\u0b3d" +
-                "\u0b5c\u0b5d\u0b5f-\u0b61\u0b71\u0b83\u0b85-\u0b8a" +
-                "\u0b8e-\u0b90\u0b92-\u0b95\u0b99\u0b9a\u0b9c\u0b9e\u0b9f" +
-                "\u0ba3\u0ba4\u0ba8-\u0baa\u0bae-\u0bb9\u0bd0\u0c05-\u0c0c" +
-                "\u0c0e-\u0c10\u0c12-\u0c28\u0c2a-\u0c39\u0c3d\u0c58-\u0c5a" +
-                "\u0c60\u0c61\u0c80\u0c85-\u0c8c\u0c8e-\u0c90\u0c92-\u0ca8" +
-                "\u0caa-\u0cb3\u0cb5-\u0cb9\u0cbd\u0cde\u0ce0\u0ce1" +
-                "\u0cf1\u0cf2\u0d05-\u0d0c\u0d0e-\u0d10\u0d12-\u0d3a\u0d3d" +
-                "\u0d4e\u0d54-\u0d56\u0d5f-\u0d61\u0d7a-\u0d7f\u0d85-\u0d96" +
-                "\u0d9a-\u0db1\u0db3-\u0dbb\u0dbd\u0dc0-\u0dc6\u0e01-\u0e30" +
-                "\u0e32\u0e33\u0e40-\u0e46\u0e81\u0e82\u0e84\u0e86-\u0e8a" +
-                "\u0e8c-\u0ea3\u0ea5\u0ea7-\u0eb0\u0eb2\u0eb3\u0ebd" +
-                "\u0ec0-\u0ec4\u0ec6\u0edc-\u0edf\u0f00\u0f40-\u0f47" +
-                "\u0f49-\u0f6c\u0f88-\u0f8c\u1000-\u102a\u103f\u1050-\u1055" +
-                "\u105a-\u105d\u1061\u1065\u1066\u106e-\u1070\u1075-\u1081" +
-                "\u108e\u10a0-\u10c5\u10c7\u10cd\u10d0-\u10fa\u10fc-\u1248" +
-                "\u124a-\u124d\u1250-\u1256\u1258\u125a-\u125d\u1260-\u1288" +
-                "\u128a-\u128d\u1290-\u12b0\u12b2-\u12b5\u12b8-\u12be\u12c0" +
-                "\u12c2-\u12c5\u12c8-\u12d6\u12d8-\u1310\u1312-\u1315" +
-                "\u1318-\u135a\u1380-\u138f\u13a0-\u13f5\u13f8-\u13fd" +
-                "\u1401-\u166c\u166f-\u167f\u1681-\u169a\u16a0-\u16ea" +
-                "\u16ee-\u16f8\u1700-\u170c\u170e-\u1711\u1720-\u1731" +
-                "\u1740-\u1751\u1760-\u176c\u176e-\u1770\u1780-\u17b3\u17d7" +
-                "\u17dc\u1820-\u1878\u1880-\u18a8\u18aa\u18b0-\u18f5" +
-                "\u1900-\u191e\u1950-\u196d\u1970-\u1974\u1980-\u19ab" +
-                "\u19b0-\u19c9\u1a00-\u1a16\u1a20-\u1a54\u1aa7\u1b05-\u1b33" +
-                "\u1b45-\u1b4b\u1b83-\u1ba0\u1bae\u1baf\u1bba-\u1be5" +
-                "\u1c00-\u1c23\u1c4d-\u1c4f\u1c5a-\u1c7d\u1c80-\u1c88" +
-                "\u1c90-\u1cba\u1cbd-\u1cbf\u1ce9-\u1cec\u1cee-\u1cf3" +
-                "\u1cf5\u1cf6\u1cfa\u1d00-\u1dbf\u1e00-\u1f15\u1f18-\u1f1d" +
-                "\u1f20-\u1f45\u1f48-\u1f4d\u1f50-\u1f57\u1f59\u1f5b\u1f5d" +
-                "\u1f5f-\u1f7d\u1f80-\u1fb4\u1fb6-\u1fbc\u1fbe\u1fc2-\u1fc4" +
-                "\u1fc6-\u1fcc\u1fd0-\u1fd3\u1fd6-\u1fdb\u1fe0-\u1fec" +
-                "\u1ff2-\u1ff4\u1ff6-\u1ffc\u2071\u207f\u2090-\u209c\u2102" +
-                "\u2107\u210a-\u2113\u2115\u2118-\u211d\u2124\u2126\u2128" +
-                "\u212a-\u2139\u213c-\u213f\u2145-\u2149\u214e\u2160-\u2188" +
-                "\u2c00-\u2c2e\u2c30-\u2c5e\u2c60-\u2ce4\u2ceb-\u2cee" +
-                "\u2cf2\u2cf3\u2d00-\u2d25\u2d27\u2d2d\u2d30-\u2d67\u2d6f" +
-                "\u2d80-\u2d96\u2da0-\u2da6\u2da8-\u2dae\u2db0-\u2db6" +
-                "\u2db8-\u2dbe\u2dc0-\u2dc6\u2dc8-\u2dce\u2dd0-\u2dd6" +
-                "\u2dd8-\u2dde\u3005-\u3007\u3021-\u3029\u3031-\u3035" +
-                "\u3038-\u303c\u3041-\u3096\u309b-\u309f\u30a1-\u30fa" +
-                "\u30fc-\u30ff\u3105-\u312f\u3131-\u318e\u31a0-\u31ba" +
-                "\u31f0-\u31ff\u3400-\u4db5\u4e00-\u9fef\ua000-\ua48c" +
-                "\ua4d0-\ua4fd\ua500-\ua60c\ua610-\ua61f\ua62a\ua62b" +
-                "\ua640-\ua66e\ua67f-\ua69d\ua6a0-\ua6ef\ua717-\ua71f" +
-                "\ua722-\ua788\ua78b-\ua7bf\ua7c2-\ua7c6\ua7f7-\ua801" +
-                "\ua803-\ua805\ua807-\ua80a\ua80c-\ua822\ua840-\ua873" +
-                "\ua882-\ua8b3\ua8f2-\ua8f7\ua8fb\ua8fd\ua8fe\ua90a-\ua925" +
-                "\ua930-\ua946\ua960-\ua97c\ua984-\ua9b2\ua9cf\ua9e0-\ua9e4" +
-                "\ua9e6-\ua9ef\ua9fa-\ua9fe\uaa00-\uaa28\uaa40-\uaa42" +
-                "\uaa44-\uaa4b\uaa60-\uaa76\uaa7a\uaa7e-\uaaaf\uaab1" +
-                "\uaab5\uaab6\uaab9-\uaabd\uaac0\uaac2\uaadb-\uaadd" +
-                "\uaae0-\uaaea\uaaf2-\uaaf4\uab01-\uab06\uab09-\uab0e" +
-                "\uab11-\uab16\uab20-\uab26\uab28-\uab2e\uab30-\uab5a" +
-                "\uab5c-\uab67\uab70-\uabe2\uac00-\ud7a3\ud7b0-\ud7c6" +
-                "\ud7cb-\ud7fb\uf900-\ufa6d\ufa70-\ufad9\ufb00-\ufb06" +
-                "\ufb13-\ufb17\ufb1d\ufb1f-\ufb28\ufb2a-\ufb36\ufb38-\ufb3c" +
-                "\ufb3e\ufb40\ufb41\ufb43\ufb44\ufb46-\ufbb1\ufbd3-\ufd3d" +
-                "\ufd50-\ufd8f\ufd92-\ufdc7\ufdf0-\ufdfb\ufe70-\ufe74" +
-                "\ufe76-\ufefc\uff21-\uff3a\uff41-\uff5a\uff66-\uffbe" +
-                "\uffc2-\uffc7\uffca-\uffcf\uffd2-\uffd7\uffda-\uffdc" +
-                "\u{10000}-\u{1000b}\u{1000d}-\u{10026}\u{10028}-\u{1003a}" +
-                "\u{1003c}\u{1003d}\u{1003f}-\u{1004d}\u{10050}-\u{1005d}" +
-                "\u{10080}-\u{100fa}\u{10140}-\u{10174}\u{10280}-\u{1029c}" +
-                "\u{102a0}-\u{102d0}\u{10300}-\u{1031f}\u{1032d}-\u{1034a}" +
-                "\u{10350}-\u{10375}\u{10380}-\u{1039d}\u{103a0}-\u{103c3}" +
-                "\u{103c8}-\u{103cf}\u{103d1}-\u{103d5}\u{10400}-\u{1049d}" +
-                "\u{104b0}-\u{104d3}\u{104d8}-\u{104fb}\u{10500}-\u{10527}" +
-                "\u{10530}-\u{10563}\u{10600}-\u{10736}\u{10740}-\u{10755}" +
-                "\u{10760}-\u{10767}\u{10800}-\u{10805}\u{10808}" +
-                "\u{1080a}-\u{10835}\u{10837}\u{10838}\u{1083c}" +
-                "\u{1083f}-\u{10855}\u{10860}-\u{10876}\u{10880}-\u{1089e}" +
-                "\u{108e0}-\u{108f2}\u{108f4}\u{108f5}\u{10900}-\u{10915}" +
-                "\u{10920}-\u{10939}\u{10980}-\u{109b7}\u{109be}\u{109bf}" +
-                "\u{10a00}\u{10a10}-\u{10a13}\u{10a15}-\u{10a17}" +
-                "\u{10a19}-\u{10a35}\u{10a60}-\u{10a7c}\u{10a80}-\u{10a9c}" +
-                "\u{10ac0}-\u{10ac7}\u{10ac9}-\u{10ae4}\u{10b00}-\u{10b35}" +
-                "\u{10b40}-\u{10b55}\u{10b60}-\u{10b72}\u{10b80}-\u{10b91}" +
-                "\u{10c00}-\u{10c48}\u{10c80}-\u{10cb2}\u{10cc0}-\u{10cf2}" +
-                "\u{10d00}-\u{10d23}\u{10f00}-\u{10f1c}\u{10f27}" +
-                "\u{10f30}-\u{10f45}\u{10fe0}-\u{10ff6}\u{11003}-\u{11037}" +
-                "\u{11083}-\u{110af}\u{110d0}-\u{110e8}\u{11103}-\u{11126}" +
-                "\u{11144}\u{11150}-\u{11172}\u{11176}\u{11183}-\u{111b2}" +
-                "\u{111c1}-\u{111c4}\u{111da}\u{111dc}\u{11200}-\u{11211}" +
-                "\u{11213}-\u{1122b}\u{11280}-\u{11286}\u{11288}" +
-                "\u{1128a}-\u{1128d}\u{1128f}-\u{1129d}\u{1129f}-\u{112a8}" +
-                "\u{112b0}-\u{112de}\u{11305}-\u{1130c}\u{1130f}\u{11310}" +
-                "\u{11313}-\u{11328}\u{1132a}-\u{11330}\u{11332}\u{11333}" +
-                "\u{11335}-\u{11339}\u{1133d}\u{11350}\u{1135d}-\u{11361}" +
-                "\u{11400}-\u{11434}\u{11447}-\u{1144a}\u{1145f}" +
-                "\u{11480}-\u{114af}\u{114c4}\u{114c5}\u{114c7}" +
-                "\u{11580}-\u{115ae}\u{115d8}-\u{115db}\u{11600}-\u{1162f}" +
-                "\u{11644}\u{11680}-\u{116aa}\u{116b8}\u{11700}-\u{1171a}" +
-                "\u{11800}-\u{1182b}\u{118a0}-\u{118df}\u{118ff}" +
-                "\u{119a0}-\u{119a7}\u{119aa}-\u{119d0}\u{119e1}\u{119e3}" +
-                "\u{11a00}\u{11a0b}-\u{11a32}\u{11a3a}\u{11a50}" +
-                "\u{11a5c}-\u{11a89}\u{11a9d}\u{11ac0}-\u{11af8}" +
-                "\u{11c00}-\u{11c08}\u{11c0a}-\u{11c2e}\u{11c40}" +
-                "\u{11c72}-\u{11c8f}\u{11d00}-\u{11d06}\u{11d08}\u{11d09}" +
-                "\u{11d0b}-\u{11d30}\u{11d46}\u{11d60}-\u{11d65}" +
-                "\u{11d67}\u{11d68}\u{11d6a}-\u{11d89}\u{11d98}" +
-                "\u{11ee0}-\u{11ef2}\u{12000}-\u{12399}\u{12400}-\u{1246e}" +
-                "\u{12480}-\u{12543}\u{13000}-\u{1342e}\u{14400}-\u{14646}" +
-                "\u{16800}-\u{16a38}\u{16a40}-\u{16a5e}\u{16ad0}-\u{16aed}" +
-                "\u{16b00}-\u{16b2f}\u{16b40}-\u{16b43}\u{16b63}-\u{16b77}" +
-                "\u{16b7d}-\u{16b8f}\u{16e40}-\u{16e7f}\u{16f00}-\u{16f4a}" +
-                "\u{16f50}\u{16f93}-\u{16f9f}\u{16fe0}\u{16fe1}\u{16fe3}" +
-                "\u{17000}-\u{187f7}\u{18800}-\u{18af2}\u{1b000}-\u{1b11e}" +
-                "\u{1b150}-\u{1b152}\u{1b164}-\u{1b167}\u{1b170}-\u{1b2fb}" +
-                "\u{1bc00}-\u{1bc6a}\u{1bc70}-\u{1bc7c}\u{1bc80}-\u{1bc88}" +
-                "\u{1bc90}-\u{1bc99}\u{1d400}-\u{1d454}\u{1d456}-\u{1d49c}" +
-                "\u{1d49e}\u{1d49f}\u{1d4a2}\u{1d4a5}\u{1d4a6}" +
-                "\u{1d4a9}-\u{1d4ac}\u{1d4ae}-\u{1d4b9}\u{1d4bb}" +
-                "\u{1d4bd}-\u{1d4c3}\u{1d4c5}-\u{1d505}\u{1d507}-\u{1d50a}" +
-                "\u{1d50d}-\u{1d514}\u{1d516}-\u{1d51c}\u{1d51e}-\u{1d539}" +
-                "\u{1d53b}-\u{1d53e}\u{1d540}-\u{1d544}\u{1d546}" +
-                "\u{1d54a}-\u{1d550}\u{1d552}-\u{1d6a5}\u{1d6a8}-\u{1d6c0}" +
-                "\u{1d6c2}-\u{1d6da}\u{1d6dc}-\u{1d6fa}\u{1d6fc}-\u{1d714}" +
-                "\u{1d716}-\u{1d734}\u{1d736}-\u{1d74e}\u{1d750}-\u{1d76e}" +
-                "\u{1d770}-\u{1d788}\u{1d78a}-\u{1d7a8}\u{1d7aa}-\u{1d7c2}" +
-                "\u{1d7c4}-\u{1d7cb}\u{1e100}-\u{1e12c}\u{1e137}-\u{1e13d}" +
-                "\u{1e14e}\u{1e2c0}-\u{1e2eb}\u{1e800}-\u{1e8c4}" +
-                "\u{1e900}-\u{1e943}\u{1e94b}\u{1ee00}-\u{1ee03}" +
-                "\u{1ee05}-\u{1ee1f}\u{1ee21}\u{1ee22}\u{1ee24}\u{1ee27}" +
-                "\u{1ee29}-\u{1ee32}\u{1ee34}-\u{1ee37}\u{1ee39}\u{1ee3b}" +
-                "\u{1ee42}\u{1ee47}\u{1ee49}\u{1ee4b}\u{1ee4d}-\u{1ee4f}" +
-                "\u{1ee51}\u{1ee52}\u{1ee54}\u{1ee57}\u{1ee59}\u{1ee5b}" +
-                "\u{1ee5d}\u{1ee5f}\u{1ee61}\u{1ee62}\u{1ee64}" +
-                "\u{1ee67}-\u{1ee6a}\u{1ee6c}-\u{1ee72}\u{1ee74}-\u{1ee77}" +
-                "\u{1ee79}-\u{1ee7c}\u{1ee7e}\u{1ee80}-\u{1ee89}" +
-                "\u{1ee8b}-\u{1ee9b}\u{1eea1}-\u{1eea3}\u{1eea5}-\u{1eea9}" +
-                "\u{1eeab}-\u{1eebb}\u{20000}-\u{2a6d6}\u{2a700}-\u{2b734}" +
-                "\u{2b740}-\u{2b81d}\u{2b820}-\u{2cea1}\u{2ceb0}-\u{2ebe0}" +
-                "\u{2f800}-\u{2fa1d}]$",
-            "u",
-        )
+    if (largeIdStartPatternSymbols === null) {
+        largeIdStartPatternSymbols = new Set([
+            0xaa,
+            0xb5,
+            0xba,
+            0x2ec,
+            0x2ee,
+            0x376,
+            0x377,
+            0x37f,
+            0x386,
+            0x38c,
+            0x559,
+            0x66e,
+            0x66f,
+            0x6d5,
+            0x6e5,
+            0x6e6,
+            0x6ee,
+            0x6ef,
+            0x6ff,
+            0x710,
+            0x7b1,
+            0x7f4,
+            0x7f5,
+            0x7fa,
+            0x81a,
+            0x824,
+            0x828,
+            0x93d,
+            0x950,
+            0x98f,
+            0x990,
+            0x9b2,
+            0x9bd,
+            0x9ce,
+            0x9dc,
+            0x9dd,
+            0x9f0,
+            0x9f1,
+            0x9fc,
+            0xa0f,
+            0xa10,
+            0xa32,
+            0xa33,
+            0xa35,
+            0xa36,
+            0xa38,
+            0xa39,
+            0xa5e,
+            0xab2,
+            0xab3,
+            0xabd,
+            0xad0,
+            0xae0,
+            0xae1,
+            0xaf9,
+            0xb0f,
+            0xb10,
+            0xb32,
+            0xb33,
+            0xb3d,
+            0xb5c,
+            0xb5d,
+            0xb71,
+            0xb83,
+            0xb99,
+            0xb9a,
+            0xb9c,
+            0xb9e,
+            0xb9f,
+            0xba3,
+            0xba4,
+            0xbd0,
+            0xc3d,
+            0xc60,
+            0xc61,
+            0xc80,
+            0xcbd,
+            0xcde,
+            0xce0,
+            0xce1,
+            0xcf1,
+            0xcf2,
+            0xd3d,
+            0xd4e,
+            0xdbd,
+            0xe32,
+            0xe33,
+            0xe81,
+            0xe82,
+            0xe84,
+            0xea5,
+            0xeb2,
+            0xeb3,
+            0xebd,
+            0xec6,
+            0xf00,
+            0x103f,
+            0x1061,
+            0x1065,
+            0x1066,
+            0x108e,
+            0x10c7,
+            0x10cd,
+            0x1258,
+            0x12c0,
+            0x17d7,
+            0x17dc,
+            0x18aa,
+            0x1aa7,
+            0x1bae,
+            0x1baf,
+            0x1cf5,
+            0x1cf6,
+            0x1cfa,
+            0x1f59,
+            0x1f5b,
+            0x1f5d,
+            0x1fbe,
+            0x2071,
+            0x207f,
+            0x2102,
+            0x2107,
+            0x2115,
+            0x2124,
+            0x2126,
+            0x2128,
+            0x214e,
+            0x2cf2,
+            0x2cf3,
+            0x2d27,
+            0x2d2d,
+            0x2d6f,
+            0xa62a,
+            0xa62b,
+            0xa8fb,
+            0xa8fd,
+            0xa8fe,
+            0xa9cf,
+            0xaa7a,
+            0xaab1,
+            0xaab5,
+            0xaab6,
+            0xaac0,
+            0xaac2,
+            0xfb1d,
+            0xfb3e,
+            0xfb40,
+            0xfb41,
+            0xfb43,
+            0xfb44,
+            0x1003c,
+            0x1003d,
+            0x10808,
+            0x10837,
+            0x10838,
+            0x1083c,
+            0x108f4,
+            0x108f5,
+            0x109be,
+            0x109bf,
+            0x10a00,
+            0x10f27,
+            0x11144,
+            0x11176,
+            0x111da,
+            0x111dc,
+            0x11288,
+            0x1130f,
+            0x11310,
+            0x11332,
+            0x11333,
+            0x1133d,
+            0x11350,
+            0x1145f,
+            0x114c4,
+            0x114c5,
+            0x114c7,
+            0x11644,
+            0x116b8,
+            0x118ff,
+            0x119e1,
+            0x119e3,
+            0x11a00,
+            0x11a3a,
+            0x11a50,
+            0x11a9d,
+            0x11c40,
+            0x11d08,
+            0x11d09,
+            0x11d46,
+            0x11d67,
+            0x11d68,
+            0x11d98,
+            0x16f50,
+            0x16fe0,
+            0x16fe1,
+            0x16fe3,
+            0x1d49e,
+            0x1d49f,
+            0x1d4a2,
+            0x1d4a5,
+            0x1d4a6,
+            0x1d4bb,
+            0x1d546,
+            0x1e14e,
+            0x1e94b,
+            0x1ee21,
+            0x1ee22,
+            0x1ee24,
+            0x1ee27,
+            0x1ee39,
+            0x1ee3b,
+            0x1ee42,
+            0x1ee47,
+            0x1ee49,
+            0x1ee4b,
+            0x1ee51,
+            0x1ee52,
+            0x1ee54,
+            0x1ee57,
+            0x1ee59,
+            0x1ee5b,
+            0x1ee5d,
+            0x1ee5f,
+            0x1ee61,
+            0x1ee62,
+            0x1ee64,
+            0x1ee7e,
+        ])
+        largeIdStartPatternRanges = [
+            [0xc0, 0xd6],
+            [0xd8, 0xf6],
+            [0xf8, 0x2c1],
+            [0x2c6, 0x2d1],
+            [0x2e0, 0x2e4],
+            [0x370, 0x374],
+            [0x37a, 0x37d],
+            [0x388, 0x38a],
+            [0x38e, 0x3a1],
+            [0x3a3, 0x3f5],
+            [0x3f7, 0x481],
+            [0x48a, 0x52f],
+            [0x531, 0x556],
+            [0x560, 0x588],
+            [0x5d0, 0x5ea],
+            [0x5ef, 0x5f2],
+            [0x620, 0x64a],
+            [0x671, 0x6d3],
+            [0x6fa, 0x6fc],
+            [0x712, 0x72f],
+            [0x74d, 0x7a5],
+            [0x7ca, 0x7ea],
+            [0x800, 0x815],
+            [0x840, 0x858],
+            [0x860, 0x86a],
+            [0x8a0, 0x8b4],
+            [0x8b6, 0x8bd],
+            [0x904, 0x939],
+            [0x958, 0x961],
+            [0x971, 0x980],
+            [0x985, 0x98c],
+            [0x993, 0x9a8],
+            [0x9aa, 0x9b0],
+            [0x9b6, 0x9b9],
+            [0x9df, 0x9e1],
+            [0xa05, 0xa0a],
+            [0xa13, 0xa28],
+            [0xa2a, 0xa30],
+            [0xa59, 0xa5c],
+            [0xa72, 0xa74],
+            [0xa85, 0xa8d],
+            [0xa8f, 0xa91],
+            [0xa93, 0xaa8],
+            [0xaaa, 0xab0],
+            [0xab5, 0xab9],
+            [0xb05, 0xb0c],
+            [0xb13, 0xb28],
+            [0xb2a, 0xb30],
+            [0xb35, 0xb39],
+            [0xb5f, 0xb61],
+            [0xb85, 0xb8a],
+            [0xb8e, 0xb90],
+            [0xb92, 0xb95],
+            [0xba8, 0xbaa],
+            [0xbae, 0xbb9],
+            [0xc05, 0xc0c],
+            [0xc0e, 0xc10],
+            [0xc12, 0xc28],
+            [0xc2a, 0xc39],
+            [0xc58, 0xc5a],
+            [0xc85, 0xc8c],
+            [0xc8e, 0xc90],
+            [0xc92, 0xca8],
+            [0xcaa, 0xcb3],
+            [0xcb5, 0xcb9],
+            [0xd05, 0xd0c],
+            [0xd0e, 0xd10],
+            [0xd12, 0xd3a],
+            [0xd54, 0xd56],
+            [0xd5f, 0xd61],
+            [0xd7a, 0xd7f],
+            [0xd85, 0xd96],
+            [0xd9a, 0xdb1],
+            [0xdb3, 0xdbb],
+            [0xdc0, 0xdc6],
+            [0xe01, 0xe30],
+            [0xe40, 0xe46],
+            [0xe86, 0xe8a],
+            [0xe8c, 0xea3],
+            [0xea7, 0xeb0],
+            [0xec0, 0xec4],
+            [0xedc, 0xedf],
+            [0xf40, 0xf47],
+            [0xf49, 0xf6c],
+            [0xf88, 0xf8c],
+            [0x1000, 0x102a],
+            [0x1050, 0x1055],
+            [0x105a, 0x105d],
+            [0x106e, 0x1070],
+            [0x1075, 0x1081],
+            [0x10a0, 0x10c5],
+            [0x10d0, 0x10fa],
+            [0x10fc, 0x1248],
+            [0x124a, 0x124d],
+            [0x1250, 0x1256],
+            [0x125a, 0x125d],
+            [0x1260, 0x1288],
+            [0x128a, 0x128d],
+            [0x1290, 0x12b0],
+            [0x12b2, 0x12b5],
+            [0x12b8, 0x12be],
+            [0x12c2, 0x12c5],
+            [0x12c8, 0x12d6],
+            [0x12d8, 0x1310],
+            [0x1312, 0x1315],
+            [0x1318, 0x135a],
+            [0x1380, 0x138f],
+            [0x13a0, 0x13f5],
+            [0x13f8, 0x13fd],
+            [0x1401, 0x166c],
+            [0x166f, 0x167f],
+            [0x1681, 0x169a],
+            [0x16a0, 0x16ea],
+            [0x16ee, 0x16f8],
+            [0x1700, 0x170c],
+            [0x170e, 0x1711],
+            [0x1720, 0x1731],
+            [0x1740, 0x1751],
+            [0x1760, 0x176c],
+            [0x176e, 0x1770],
+            [0x1780, 0x17b3],
+            [0x1820, 0x1878],
+            [0x1880, 0x18a8],
+            [0x18b0, 0x18f5],
+            [0x1900, 0x191e],
+            [0x1950, 0x196d],
+            [0x1970, 0x1974],
+            [0x1980, 0x19ab],
+            [0x19b0, 0x19c9],
+            [0x1a00, 0x1a16],
+            [0x1a20, 0x1a54],
+            [0x1b05, 0x1b33],
+            [0x1b45, 0x1b4b],
+            [0x1b83, 0x1ba0],
+            [0x1bba, 0x1be5],
+            [0x1c00, 0x1c23],
+            [0x1c4d, 0x1c4f],
+            [0x1c5a, 0x1c7d],
+            [0x1c80, 0x1c88],
+            [0x1c90, 0x1cba],
+            [0x1cbd, 0x1cbf],
+            [0x1ce9, 0x1cec],
+            [0x1cee, 0x1cf3],
+            [0x1d00, 0x1dbf],
+            [0x1e00, 0x1f15],
+            [0x1f18, 0x1f1d],
+            [0x1f20, 0x1f45],
+            [0x1f48, 0x1f4d],
+            [0x1f50, 0x1f57],
+            [0x1f5f, 0x1f7d],
+            [0x1f80, 0x1fb4],
+            [0x1fb6, 0x1fbc],
+            [0x1fc2, 0x1fc4],
+            [0x1fc6, 0x1fcc],
+            [0x1fd0, 0x1fd3],
+            [0x1fd6, 0x1fdb],
+            [0x1fe0, 0x1fec],
+            [0x1ff2, 0x1ff4],
+            [0x1ff6, 0x1ffc],
+            [0x2090, 0x209c],
+            [0x210a, 0x2113],
+            [0x2118, 0x211d],
+            [0x212a, 0x2139],
+            [0x213c, 0x213f],
+            [0x2145, 0x2149],
+            [0x2160, 0x2188],
+            [0x2c00, 0x2c2e],
+            [0x2c30, 0x2c5e],
+            [0x2c60, 0x2ce4],
+            [0x2ceb, 0x2cee],
+            [0x2d00, 0x2d25],
+            [0x2d30, 0x2d67],
+            [0x2d80, 0x2d96],
+            [0x2da0, 0x2da6],
+            [0x2da8, 0x2dae],
+            [0x2db0, 0x2db6],
+            [0x2db8, 0x2dbe],
+            [0x2dc0, 0x2dc6],
+            [0x2dc8, 0x2dce],
+            [0x2dd0, 0x2dd6],
+            [0x2dd8, 0x2dde],
+            [0x3005, 0x3007],
+            [0x3021, 0x3029],
+            [0x3031, 0x3035],
+            [0x3038, 0x303c],
+            [0x3041, 0x3096],
+            [0x309b, 0x309f],
+            [0x30a1, 0x30fa],
+            [0x30fc, 0x30ff],
+            [0x3105, 0x312f],
+            [0x3131, 0x318e],
+            [0x31a0, 0x31ba],
+            [0x31f0, 0x31ff],
+            [0x3400, 0x4db5],
+            [0x4e00, 0x9fef],
+            [0xa000, 0xa48c],
+            [0xa4d0, 0xa4fd],
+            [0xa500, 0xa60c],
+            [0xa610, 0xa61f],
+            [0xa640, 0xa66e],
+            [0xa67f, 0xa69d],
+            [0xa6a0, 0xa6ef],
+            [0xa717, 0xa71f],
+            [0xa722, 0xa788],
+            [0xa78b, 0xa7bf],
+            [0xa7c2, 0xa7c6],
+            [0xa7f7, 0xa801],
+            [0xa803, 0xa805],
+            [0xa807, 0xa80a],
+            [0xa80c, 0xa822],
+            [0xa840, 0xa873],
+            [0xa882, 0xa8b3],
+            [0xa8f2, 0xa8f7],
+            [0xa90a, 0xa925],
+            [0xa930, 0xa946],
+            [0xa960, 0xa97c],
+            [0xa984, 0xa9b2],
+            [0xa9e0, 0xa9e4],
+            [0xa9e6, 0xa9ef],
+            [0xa9fa, 0xa9fe],
+            [0xaa00, 0xaa28],
+            [0xaa40, 0xaa42],
+            [0xaa44, 0xaa4b],
+            [0xaa60, 0xaa76],
+            [0xaa7e, 0xaaaf],
+            [0xaab9, 0xaabd],
+            [0xaadb, 0xaadd],
+            [0xaae0, 0xaaea],
+            [0xaaf2, 0xaaf4],
+            [0xab01, 0xab06],
+            [0xab09, 0xab0e],
+            [0xab11, 0xab16],
+            [0xab20, 0xab26],
+            [0xab28, 0xab2e],
+            [0xab30, 0xab5a],
+            [0xab5c, 0xab67],
+            [0xab70, 0xabe2],
+            [0xac00, 0xd7a3],
+            [0xd7b0, 0xd7c6],
+            [0xd7cb, 0xd7fb],
+            [0xf900, 0xfa6d],
+            [0xfa70, 0xfad9],
+            [0xfb00, 0xfb06],
+            [0xfb13, 0xfb17],
+            [0xfb1f, 0xfb28],
+            [0xfb2a, 0xfb36],
+            [0xfb38, 0xfb3c],
+            [0xfb46, 0xfbb1],
+            [0xfbd3, 0xfd3d],
+            [0xfd50, 0xfd8f],
+            [0xfd92, 0xfdc7],
+            [0xfdf0, 0xfdfb],
+            [0xfe70, 0xfe74],
+            [0xfe76, 0xfefc],
+            [0xff21, 0xff3a],
+            [0xff41, 0xff5a],
+            [0xff66, 0xffbe],
+            [0xffc2, 0xffc7],
+            [0xffca, 0xffcf],
+            [0xffd2, 0xffd7],
+            [0xffda, 0xffdc],
+            [0x10000, 0x1000b],
+            [0x1000d, 0x10026],
+            [0x10028, 0x1003a],
+            [0x1003f, 0x1004d],
+            [0x10050, 0x1005d],
+            [0x10080, 0x100fa],
+            [0x10140, 0x10174],
+            [0x10280, 0x1029c],
+            [0x102a0, 0x102d0],
+            [0x10300, 0x1031f],
+            [0x1032d, 0x1034a],
+            [0x10350, 0x10375],
+            [0x10380, 0x1039d],
+            [0x103a0, 0x103c3],
+            [0x103c8, 0x103cf],
+            [0x103d1, 0x103d5],
+            [0x10400, 0x1049d],
+            [0x104b0, 0x104d3],
+            [0x104d8, 0x104fb],
+            [0x10500, 0x10527],
+            [0x10530, 0x10563],
+            [0x10600, 0x10736],
+            [0x10740, 0x10755],
+            [0x10760, 0x10767],
+            [0x10800, 0x10805],
+            [0x1080a, 0x10835],
+            [0x1083f, 0x10855],
+            [0x10860, 0x10876],
+            [0x10880, 0x1089e],
+            [0x108e0, 0x108f2],
+            [0x10900, 0x10915],
+            [0x10920, 0x10939],
+            [0x10980, 0x109b7],
+            [0x10a10, 0x10a13],
+            [0x10a15, 0x10a17],
+            [0x10a19, 0x10a35],
+            [0x10a60, 0x10a7c],
+            [0x10a80, 0x10a9c],
+            [0x10ac0, 0x10ac7],
+            [0x10ac9, 0x10ae4],
+            [0x10b00, 0x10b35],
+            [0x10b40, 0x10b55],
+            [0x10b60, 0x10b72],
+            [0x10b80, 0x10b91],
+            [0x10c00, 0x10c48],
+            [0x10c80, 0x10cb2],
+            [0x10cc0, 0x10cf2],
+            [0x10d00, 0x10d23],
+            [0x10f00, 0x10f1c],
+            [0x10f30, 0x10f45],
+            [0x10fe0, 0x10ff6],
+            [0x11003, 0x11037],
+            [0x11083, 0x110af],
+            [0x110d0, 0x110e8],
+            [0x11103, 0x11126],
+            [0x11150, 0x11172],
+            [0x11183, 0x111b2],
+            [0x111c1, 0x111c4],
+            [0x11200, 0x11211],
+            [0x11213, 0x1122b],
+            [0x11280, 0x11286],
+            [0x1128a, 0x1128d],
+            [0x1128f, 0x1129d],
+            [0x1129f, 0x112a8],
+            [0x112b0, 0x112de],
+            [0x11305, 0x1130c],
+            [0x11313, 0x11328],
+            [0x1132a, 0x11330],
+            [0x11335, 0x11339],
+            [0x1135d, 0x11361],
+            [0x11400, 0x11434],
+            [0x11447, 0x1144a],
+            [0x11480, 0x114af],
+            [0x11580, 0x115ae],
+            [0x115d8, 0x115db],
+            [0x11600, 0x1162f],
+            [0x11680, 0x116aa],
+            [0x11700, 0x1171a],
+            [0x11800, 0x1182b],
+            [0x118a0, 0x118df],
+            [0x119a0, 0x119a7],
+            [0x119aa, 0x119d0],
+            [0x11a0b, 0x11a32],
+            [0x11a5c, 0x11a89],
+            [0x11ac0, 0x11af8],
+            [0x11c00, 0x11c08],
+            [0x11c0a, 0x11c2e],
+            [0x11c72, 0x11c8f],
+            [0x11d00, 0x11d06],
+            [0x11d0b, 0x11d30],
+            [0x11d60, 0x11d65],
+            [0x11d6a, 0x11d89],
+            [0x11ee0, 0x11ef2],
+            [0x12000, 0x12399],
+            [0x12400, 0x1246e],
+            [0x12480, 0x12543],
+            [0x13000, 0x1342e],
+            [0x14400, 0x14646],
+            [0x16800, 0x16a38],
+            [0x16a40, 0x16a5e],
+            [0x16ad0, 0x16aed],
+            [0x16b00, 0x16b2f],
+            [0x16b40, 0x16b43],
+            [0x16b63, 0x16b77],
+            [0x16b7d, 0x16b8f],
+            [0x16e40, 0x16e7f],
+            [0x16f00, 0x16f4a],
+            [0x16f93, 0x16f9f],
+            [0x17000, 0x187f7],
+            [0x18800, 0x18af2],
+            [0x1b000, 0x1b11e],
+            [0x1b150, 0x1b152],
+            [0x1b164, 0x1b167],
+            [0x1b170, 0x1b2fb],
+            [0x1bc00, 0x1bc6a],
+            [0x1bc70, 0x1bc7c],
+            [0x1bc80, 0x1bc88],
+            [0x1bc90, 0x1bc99],
+            [0x1d400, 0x1d454],
+            [0x1d456, 0x1d49c],
+            [0x1d4a9, 0x1d4ac],
+            [0x1d4ae, 0x1d4b9],
+            [0x1d4bd, 0x1d4c3],
+            [0x1d4c5, 0x1d505],
+            [0x1d507, 0x1d50a],
+            [0x1d50d, 0x1d514],
+            [0x1d516, 0x1d51c],
+            [0x1d51e, 0x1d539],
+            [0x1d53b, 0x1d53e],
+            [0x1d540, 0x1d544],
+            [0x1d54a, 0x1d550],
+            [0x1d552, 0x1d6a5],
+            [0x1d6a8, 0x1d6c0],
+            [0x1d6c2, 0x1d6da],
+            [0x1d6dc, 0x1d6fa],
+            [0x1d6fc, 0x1d714],
+            [0x1d716, 0x1d734],
+            [0x1d736, 0x1d74e],
+            [0x1d750, 0x1d76e],
+            [0x1d770, 0x1d788],
+            [0x1d78a, 0x1d7a8],
+            [0x1d7aa, 0x1d7c2],
+            [0x1d7c4, 0x1d7cb],
+            [0x1e100, 0x1e12c],
+            [0x1e137, 0x1e13d],
+            [0x1e2c0, 0x1e2eb],
+            [0x1e800, 0x1e8c4],
+            [0x1e900, 0x1e943],
+            [0x1ee00, 0x1ee03],
+            [0x1ee05, 0x1ee1f],
+            [0x1ee29, 0x1ee32],
+            [0x1ee34, 0x1ee37],
+            [0x1ee4d, 0x1ee4f],
+            [0x1ee67, 0x1ee6a],
+            [0x1ee6c, 0x1ee72],
+            [0x1ee74, 0x1ee77],
+            [0x1ee79, 0x1ee7c],
+            [0x1ee80, 0x1ee89],
+            [0x1ee8b, 0x1ee9b],
+            [0x1eea1, 0x1eea3],
+            [0x1eea5, 0x1eea9],
+            [0x1eeab, 0x1eebb],
+            [0x20000, 0x2a6d6],
+            [0x2a700, 0x2b734],
+            [0x2b740, 0x2b81d],
+            [0x2b820, 0x2cea1],
+            [0x2ceb0, 0x2ebe0],
+            [0x2f800, 0x2fa1d],
+        ]
     }
-    return largeIdStartPattern.test(String.fromCodePoint(cp))
+    return (
+        largeIdStartPatternSymbols.has(cp) ||
+        largeIdStartPatternRanges!.some(([r1, r2]) => r1 <= cp && cp <= r2)
+    )
 }
 
 function isLargeIdContinue(cp: number): boolean {
-    if (!largeIdContinuePattern) {
-        largeIdContinuePattern = new RegExp(
-            "^[\xb7\u0300-\u036f\u0387\u0483-\u0487\u0591-\u05bd\u05bf" +
-                "\u05c1\u05c2\u05c4\u05c5\u05c7\u0610-\u061a\u064b-\u0669" +
-                "\u0670\u06d6-\u06dc\u06df-\u06e4\u06e7\u06e8\u06ea-\u06ed" +
-                "\u06f0-\u06f9\u0711\u0730-\u074a\u07a6-\u07b0\u07c0-\u07c9" +
-                "\u07eb-\u07f3\u07fd\u0816-\u0819\u081b-\u0823\u0825-\u0827" +
-                "\u0829-\u082d\u0859-\u085b\u08d3-\u08e1\u08e3-\u0903" +
-                "\u093a-\u093c\u093e-\u094f\u0951-\u0957\u0962\u0963" +
-                "\u0966-\u096f\u0981-\u0983\u09bc\u09be-\u09c4\u09c7\u09c8" +
-                "\u09cb-\u09cd\u09d7\u09e2\u09e3\u09e6-\u09ef\u09fe" +
-                "\u0a01-\u0a03\u0a3c\u0a3e-\u0a42\u0a47\u0a48\u0a4b-\u0a4d" +
-                "\u0a51\u0a66-\u0a71\u0a75\u0a81-\u0a83\u0abc\u0abe-\u0ac5" +
-                "\u0ac7-\u0ac9\u0acb-\u0acd\u0ae2\u0ae3\u0ae6-\u0aef" +
-                "\u0afa-\u0aff\u0b01-\u0b03\u0b3c\u0b3e-\u0b44\u0b47\u0b48" +
-                "\u0b4b-\u0b4d\u0b56\u0b57\u0b62\u0b63\u0b66-\u0b6f\u0b82" +
-                "\u0bbe-\u0bc2\u0bc6-\u0bc8\u0bca-\u0bcd\u0bd7\u0be6-\u0bef" +
-                "\u0c00-\u0c04\u0c3e-\u0c44\u0c46-\u0c48\u0c4a-\u0c4d" +
-                "\u0c55\u0c56\u0c62\u0c63\u0c66-\u0c6f\u0c81-\u0c83\u0cbc" +
-                "\u0cbe-\u0cc4\u0cc6-\u0cc8\u0cca-\u0ccd\u0cd5\u0cd6" +
-                "\u0ce2\u0ce3\u0ce6-\u0cef\u0d00-\u0d03\u0d3b\u0d3c" +
-                "\u0d3e-\u0d44\u0d46-\u0d48\u0d4a-\u0d4d\u0d57\u0d62\u0d63" +
-                "\u0d66-\u0d6f\u0d82\u0d83\u0dca\u0dcf-\u0dd4\u0dd6" +
-                "\u0dd8-\u0ddf\u0de6-\u0def\u0df2\u0df3\u0e31\u0e34-\u0e3a" +
-                "\u0e47-\u0e4e\u0e50-\u0e59\u0eb1\u0eb4-\u0ebc\u0ec8-\u0ecd" +
-                "\u0ed0-\u0ed9\u0f18\u0f19\u0f20-\u0f29\u0f35\u0f37\u0f39" +
-                "\u0f3e\u0f3f\u0f71-\u0f84\u0f86\u0f87\u0f8d-\u0f97" +
-                "\u0f99-\u0fbc\u0fc6\u102b-\u103e\u1040-\u1049\u1056-\u1059" +
-                "\u105e-\u1060\u1062-\u1064\u1067-\u106d\u1071-\u1074" +
-                "\u1082-\u108d\u108f-\u109d\u135d-\u135f\u1369-\u1371" +
-                "\u1712-\u1714\u1732-\u1734\u1752\u1753\u1772\u1773" +
-                "\u17b4-\u17d3\u17dd\u17e0-\u17e9\u180b-\u180d\u1810-\u1819" +
-                "\u18a9\u1920-\u192b\u1930-\u193b\u1946-\u194f\u19d0-\u19da" +
-                "\u1a17-\u1a1b\u1a55-\u1a5e\u1a60-\u1a7c\u1a7f-\u1a89" +
-                "\u1a90-\u1a99\u1ab0-\u1abd\u1b00-\u1b04\u1b34-\u1b44" +
-                "\u1b50-\u1b59\u1b6b-\u1b73\u1b80-\u1b82\u1ba1-\u1bad" +
-                "\u1bb0-\u1bb9\u1be6-\u1bf3\u1c24-\u1c37\u1c40-\u1c49" +
-                "\u1c50-\u1c59\u1cd0-\u1cd2\u1cd4-\u1ce8\u1ced\u1cf4" +
-                "\u1cf7-\u1cf9\u1dc0-\u1df9\u1dfb-\u1dff\u203f\u2040\u2054" +
-                "\u20d0-\u20dc\u20e1\u20e5-\u20f0\u2cef-\u2cf1\u2d7f" +
-                "\u2de0-\u2dff\u302a-\u302f\u3099\u309a\ua620-\ua629\ua66f" +
-                "\ua674-\ua67d\ua69e\ua69f\ua6f0\ua6f1\ua802\ua806\ua80b" +
-                "\ua823-\ua827\ua880\ua881\ua8b4-\ua8c5\ua8d0-\ua8d9" +
-                "\ua8e0-\ua8f1\ua8ff-\ua909\ua926-\ua92d\ua947-\ua953" +
-                "\ua980-\ua983\ua9b3-\ua9c0\ua9d0-\ua9d9\ua9e5\ua9f0-\ua9f9" +
-                "\uaa29-\uaa36\uaa43\uaa4c\uaa4d\uaa50-\uaa59\uaa7b-\uaa7d" +
-                "\uaab0\uaab2-\uaab4\uaab7\uaab8\uaabe\uaabf\uaac1" +
-                "\uaaeb-\uaaef\uaaf5\uaaf6\uabe3-\uabea\uabec\uabed" +
-                "\uabf0-\uabf9\ufb1e\ufe00-\ufe0f\ufe20-\ufe2f\ufe33\ufe34" +
-                "\ufe4d-\ufe4f\uff10-\uff19\uff3f\u{101fd}\u{102e0}" +
-                "\u{10376}-\u{1037a}\u{104a0}-\u{104a9}\u{10a01}-\u{10a03}" +
-                "\u{10a05}\u{10a06}\u{10a0c}-\u{10a0f}\u{10a38}-\u{10a3a}" +
-                "\u{10a3f}\u{10ae5}\u{10ae6}\u{10d24}-\u{10d27}" +
-                "\u{10d30}-\u{10d39}\u{10f46}-\u{10f50}\u{11000}-\u{11002}" +
-                "\u{11038}-\u{11046}\u{11066}-\u{1106f}\u{1107f}-\u{11082}" +
-                "\u{110b0}-\u{110ba}\u{110f0}-\u{110f9}\u{11100}-\u{11102}" +
-                "\u{11127}-\u{11134}\u{11136}-\u{1113f}\u{11145}\u{11146}" +
-                "\u{11173}\u{11180}-\u{11182}\u{111b3}-\u{111c0}" +
-                "\u{111c9}-\u{111cc}\u{111d0}-\u{111d9}\u{1122c}-\u{11237}" +
-                "\u{1123e}\u{112df}-\u{112ea}\u{112f0}-\u{112f9}" +
-                "\u{11300}-\u{11303}\u{1133b}\u{1133c}\u{1133e}-\u{11344}" +
-                "\u{11347}\u{11348}\u{1134b}-\u{1134d}\u{11357}" +
-                "\u{11362}\u{11363}\u{11366}-\u{1136c}\u{11370}-\u{11374}" +
-                "\u{11435}-\u{11446}\u{11450}-\u{11459}\u{1145e}" +
-                "\u{114b0}-\u{114c3}\u{114d0}-\u{114d9}\u{115af}-\u{115b5}" +
-                "\u{115b8}-\u{115c0}\u{115dc}\u{115dd}\u{11630}-\u{11640}" +
-                "\u{11650}-\u{11659}\u{116ab}-\u{116b7}\u{116c0}-\u{116c9}" +
-                "\u{1171d}-\u{1172b}\u{11730}-\u{11739}\u{1182c}-\u{1183a}" +
-                "\u{118e0}-\u{118e9}\u{119d1}-\u{119d7}\u{119da}-\u{119e0}" +
-                "\u{119e4}\u{11a01}-\u{11a0a}\u{11a33}-\u{11a39}" +
-                "\u{11a3b}-\u{11a3e}\u{11a47}\u{11a51}-\u{11a5b}" +
-                "\u{11a8a}-\u{11a99}\u{11c2f}-\u{11c36}\u{11c38}-\u{11c3f}" +
-                "\u{11c50}-\u{11c59}\u{11c92}-\u{11ca7}\u{11ca9}-\u{11cb6}" +
-                "\u{11d31}-\u{11d36}\u{11d3a}\u{11d3c}\u{11d3d}" +
-                "\u{11d3f}-\u{11d45}\u{11d47}\u{11d50}-\u{11d59}" +
-                "\u{11d8a}-\u{11d8e}\u{11d90}\u{11d91}\u{11d93}-\u{11d97}" +
-                "\u{11da0}-\u{11da9}\u{11ef3}-\u{11ef6}\u{16a60}-\u{16a69}" +
-                "\u{16af0}-\u{16af4}\u{16b30}-\u{16b36}\u{16b50}-\u{16b59}" +
-                "\u{16f4f}\u{16f51}-\u{16f87}\u{16f8f}-\u{16f92}" +
-                "\u{1bc9d}\u{1bc9e}\u{1d165}-\u{1d169}\u{1d16d}-\u{1d172}" +
-                "\u{1d17b}-\u{1d182}\u{1d185}-\u{1d18b}\u{1d1aa}-\u{1d1ad}" +
-                "\u{1d242}-\u{1d244}\u{1d7ce}-\u{1d7ff}\u{1da00}-\u{1da36}" +
-                "\u{1da3b}-\u{1da6c}\u{1da75}\u{1da84}\u{1da9b}-\u{1da9f}" +
-                "\u{1daa1}-\u{1daaf}\u{1e000}-\u{1e006}\u{1e008}-\u{1e018}" +
-                "\u{1e01b}-\u{1e021}\u{1e023}\u{1e024}\u{1e026}-\u{1e02a}" +
-                "\u{1e130}-\u{1e136}\u{1e140}-\u{1e149}\u{1e2ec}-\u{1e2f9}" +
-                "\u{1e8d0}-\u{1e8d6}\u{1e944}-\u{1e94a}\u{1e950}-\u{1e959}" +
-                "\u{e0100}-\u{e01ef}]$",
-            "u",
-        )
+    if (largeIdContinuePatternSymbols === null) {
+        largeIdContinuePatternSymbols = new Set([
+            0xb7,
+            0x387,
+            0x5bf,
+            0x5c1,
+            0x5c2,
+            0x5c4,
+            0x5c5,
+            0x5c7,
+            0x670,
+            0x6e7,
+            0x6e8,
+            0x711,
+            0x7fd,
+            0x962,
+            0x963,
+            0x9bc,
+            0x9c7,
+            0x9c8,
+            0x9d7,
+            0x9e2,
+            0x9e3,
+            0x9fe,
+            0xa3c,
+            0xa47,
+            0xa48,
+            0xa51,
+            0xa75,
+            0xabc,
+            0xae2,
+            0xae3,
+            0xb3c,
+            0xb47,
+            0xb48,
+            0xb56,
+            0xb57,
+            0xb62,
+            0xb63,
+            0xb82,
+            0xbd7,
+            0xc55,
+            0xc56,
+            0xc62,
+            0xc63,
+            0xcbc,
+            0xcd5,
+            0xcd6,
+            0xce2,
+            0xce3,
+            0xd3b,
+            0xd3c,
+            0xd57,
+            0xd62,
+            0xd63,
+            0xd82,
+            0xd83,
+            0xdca,
+            0xdd6,
+            0xdf2,
+            0xdf3,
+            0xe31,
+            0xeb1,
+            0xf18,
+            0xf19,
+            0xf35,
+            0xf37,
+            0xf39,
+            0xf3e,
+            0xf3f,
+            0xf86,
+            0xf87,
+            0xfc6,
+            0x1752,
+            0x1753,
+            0x1772,
+            0x1773,
+            0x17dd,
+            0x18a9,
+            0x1ced,
+            0x1cf4,
+            0x203f,
+            0x2040,
+            0x2054,
+            0x20e1,
+            0x2d7f,
+            0x3099,
+            0x309a,
+            0xa66f,
+            0xa69e,
+            0xa69f,
+            0xa6f0,
+            0xa6f1,
+            0xa802,
+            0xa806,
+            0xa80b,
+            0xa880,
+            0xa881,
+            0xa9e5,
+            0xaa43,
+            0xaa4c,
+            0xaa4d,
+            0xaab0,
+            0xaab7,
+            0xaab8,
+            0xaabe,
+            0xaabf,
+            0xaac1,
+            0xaaf5,
+            0xaaf6,
+            0xabec,
+            0xabed,
+            0xfb1e,
+            0xfe33,
+            0xfe34,
+            0xff3f,
+            0x101fd,
+            0x102e0,
+            0x10a05,
+            0x10a06,
+            0x10a3f,
+            0x10ae5,
+            0x10ae6,
+            0x11145,
+            0x11146,
+            0x11173,
+            0x1123e,
+            0x1133b,
+            0x1133c,
+            0x11347,
+            0x11348,
+            0x11357,
+            0x11362,
+            0x11363,
+            0x1145e,
+            0x115dc,
+            0x115dd,
+            0x119e4,
+            0x11a47,
+            0x11d3a,
+            0x11d3c,
+            0x11d3d,
+            0x11d47,
+            0x11d90,
+            0x11d91,
+            0x16f4f,
+            0x1bc9d,
+            0x1bc9e,
+            0x1da75,
+            0x1da84,
+            0x1e023,
+            0x1e024,
+        ])
+        largeIdContinuePatternRanges = [
+            [0x300, 0x36f],
+            [0x483, 0x487],
+            [0x591, 0x5bd],
+            [0x610, 0x61a],
+            [0x64b, 0x669],
+            [0x6d6, 0x6dc],
+            [0x6df, 0x6e4],
+            [0x6ea, 0x6ed],
+            [0x6f0, 0x6f9],
+            [0x730, 0x74a],
+            [0x7a6, 0x7b0],
+            [0x7c0, 0x7c9],
+            [0x7eb, 0x7f3],
+            [0x816, 0x819],
+            [0x81b, 0x823],
+            [0x825, 0x827],
+            [0x829, 0x82d],
+            [0x859, 0x85b],
+            [0x8d3, 0x8e1],
+            [0x8e3, 0x903],
+            [0x93a, 0x93c],
+            [0x93e, 0x94f],
+            [0x951, 0x957],
+            [0x966, 0x96f],
+            [0x981, 0x983],
+            [0x9be, 0x9c4],
+            [0x9cb, 0x9cd],
+            [0x9e6, 0x9ef],
+            [0xa01, 0xa03],
+            [0xa3e, 0xa42],
+            [0xa4b, 0xa4d],
+            [0xa66, 0xa71],
+            [0xa81, 0xa83],
+            [0xabe, 0xac5],
+            [0xac7, 0xac9],
+            [0xacb, 0xacd],
+            [0xae6, 0xaef],
+            [0xafa, 0xaff],
+            [0xb01, 0xb03],
+            [0xb3e, 0xb44],
+            [0xb4b, 0xb4d],
+            [0xb66, 0xb6f],
+            [0xbbe, 0xbc2],
+            [0xbc6, 0xbc8],
+            [0xbca, 0xbcd],
+            [0xbe6, 0xbef],
+            [0xc00, 0xc04],
+            [0xc3e, 0xc44],
+            [0xc46, 0xc48],
+            [0xc4a, 0xc4d],
+            [0xc66, 0xc6f],
+            [0xc81, 0xc83],
+            [0xcbe, 0xcc4],
+            [0xcc6, 0xcc8],
+            [0xcca, 0xccd],
+            [0xce6, 0xcef],
+            [0xd00, 0xd03],
+            [0xd3e, 0xd44],
+            [0xd46, 0xd48],
+            [0xd4a, 0xd4d],
+            [0xd66, 0xd6f],
+            [0xdcf, 0xdd4],
+            [0xdd8, 0xddf],
+            [0xde6, 0xdef],
+            [0xe34, 0xe3a],
+            [0xe47, 0xe4e],
+            [0xe50, 0xe59],
+            [0xeb4, 0xebc],
+            [0xec8, 0xecd],
+            [0xed0, 0xed9],
+            [0xf20, 0xf29],
+            [0xf71, 0xf84],
+            [0xf8d, 0xf97],
+            [0xf99, 0xfbc],
+            [0x102b, 0x103e],
+            [0x1040, 0x1049],
+            [0x1056, 0x1059],
+            [0x105e, 0x1060],
+            [0x1062, 0x1064],
+            [0x1067, 0x106d],
+            [0x1071, 0x1074],
+            [0x1082, 0x108d],
+            [0x108f, 0x109d],
+            [0x135d, 0x135f],
+            [0x1369, 0x1371],
+            [0x1712, 0x1714],
+            [0x1732, 0x1734],
+            [0x17b4, 0x17d3],
+            [0x17e0, 0x17e9],
+            [0x180b, 0x180d],
+            [0x1810, 0x1819],
+            [0x1920, 0x192b],
+            [0x1930, 0x193b],
+            [0x1946, 0x194f],
+            [0x19d0, 0x19da],
+            [0x1a17, 0x1a1b],
+            [0x1a55, 0x1a5e],
+            [0x1a60, 0x1a7c],
+            [0x1a7f, 0x1a89],
+            [0x1a90, 0x1a99],
+            [0x1ab0, 0x1abd],
+            [0x1b00, 0x1b04],
+            [0x1b34, 0x1b44],
+            [0x1b50, 0x1b59],
+            [0x1b6b, 0x1b73],
+            [0x1b80, 0x1b82],
+            [0x1ba1, 0x1bad],
+            [0x1bb0, 0x1bb9],
+            [0x1be6, 0x1bf3],
+            [0x1c24, 0x1c37],
+            [0x1c40, 0x1c49],
+            [0x1c50, 0x1c59],
+            [0x1cd0, 0x1cd2],
+            [0x1cd4, 0x1ce8],
+            [0x1cf7, 0x1cf9],
+            [0x1dc0, 0x1df9],
+            [0x1dfb, 0x1dff],
+            [0x20d0, 0x20dc],
+            [0x20e5, 0x20f0],
+            [0x2cef, 0x2cf1],
+            [0x2de0, 0x2dff],
+            [0x302a, 0x302f],
+            [0xa620, 0xa629],
+            [0xa674, 0xa67d],
+            [0xa823, 0xa827],
+            [0xa8b4, 0xa8c5],
+            [0xa8d0, 0xa8d9],
+            [0xa8e0, 0xa8f1],
+            [0xa8ff, 0xa909],
+            [0xa926, 0xa92d],
+            [0xa947, 0xa953],
+            [0xa980, 0xa983],
+            [0xa9b3, 0xa9c0],
+            [0xa9d0, 0xa9d9],
+            [0xa9f0, 0xa9f9],
+            [0xaa29, 0xaa36],
+            [0xaa50, 0xaa59],
+            [0xaa7b, 0xaa7d],
+            [0xaab2, 0xaab4],
+            [0xaaeb, 0xaaef],
+            [0xabe3, 0xabea],
+            [0xabf0, 0xabf9],
+            [0xfe00, 0xfe0f],
+            [0xfe20, 0xfe2f],
+            [0xfe4d, 0xfe4f],
+            [0xff10, 0xff19],
+            [0x10376, 0x1037a],
+            [0x104a0, 0x104a9],
+            [0x10a01, 0x10a03],
+            [0x10a0c, 0x10a0f],
+            [0x10a38, 0x10a3a],
+            [0x10d24, 0x10d27],
+            [0x10d30, 0x10d39],
+            [0x10f46, 0x10f50],
+            [0x11000, 0x11002],
+            [0x11038, 0x11046],
+            [0x11066, 0x1106f],
+            [0x1107f, 0x11082],
+            [0x110b0, 0x110ba],
+            [0x110f0, 0x110f9],
+            [0x11100, 0x11102],
+            [0x11127, 0x11134],
+            [0x11136, 0x1113f],
+            [0x11180, 0x11182],
+            [0x111b3, 0x111c0],
+            [0x111c9, 0x111cc],
+            [0x111d0, 0x111d9],
+            [0x1122c, 0x11237],
+            [0x112df, 0x112ea],
+            [0x112f0, 0x112f9],
+            [0x11300, 0x11303],
+            [0x1133e, 0x11344],
+            [0x1134b, 0x1134d],
+            [0x11366, 0x1136c],
+            [0x11370, 0x11374],
+            [0x11435, 0x11446],
+            [0x11450, 0x11459],
+            [0x114b0, 0x114c3],
+            [0x114d0, 0x114d9],
+            [0x115af, 0x115b5],
+            [0x115b8, 0x115c0],
+            [0x11630, 0x11640],
+            [0x11650, 0x11659],
+            [0x116ab, 0x116b7],
+            [0x116c0, 0x116c9],
+            [0x1171d, 0x1172b],
+            [0x11730, 0x11739],
+            [0x1182c, 0x1183a],
+            [0x118e0, 0x118e9],
+            [0x119d1, 0x119d7],
+            [0x119da, 0x119e0],
+            [0x11a01, 0x11a0a],
+            [0x11a33, 0x11a39],
+            [0x11a3b, 0x11a3e],
+            [0x11a51, 0x11a5b],
+            [0x11a8a, 0x11a99],
+            [0x11c2f, 0x11c36],
+            [0x11c38, 0x11c3f],
+            [0x11c50, 0x11c59],
+            [0x11c92, 0x11ca7],
+            [0x11ca9, 0x11cb6],
+            [0x11d31, 0x11d36],
+            [0x11d3f, 0x11d45],
+            [0x11d50, 0x11d59],
+            [0x11d8a, 0x11d8e],
+            [0x11d93, 0x11d97],
+            [0x11da0, 0x11da9],
+            [0x11ef3, 0x11ef6],
+            [0x16a60, 0x16a69],
+            [0x16af0, 0x16af4],
+            [0x16b30, 0x16b36],
+            [0x16b50, 0x16b59],
+            [0x16f51, 0x16f87],
+            [0x16f8f, 0x16f92],
+            [0x1d165, 0x1d169],
+            [0x1d16d, 0x1d172],
+            [0x1d17b, 0x1d182],
+            [0x1d185, 0x1d18b],
+            [0x1d1aa, 0x1d1ad],
+            [0x1d242, 0x1d244],
+            [0x1d7ce, 0x1d7ff],
+            [0x1da00, 0x1da36],
+            [0x1da3b, 0x1da6c],
+            [0x1da9b, 0x1da9f],
+            [0x1daa1, 0x1daaf],
+            [0x1e000, 0x1e006],
+            [0x1e008, 0x1e018],
+            [0x1e01b, 0x1e021],
+            [0x1e026, 0x1e02a],
+            [0x1e130, 0x1e136],
+            [0x1e140, 0x1e149],
+            [0x1e2ec, 0x1e2f9],
+            [0x1e8d0, 0x1e8d6],
+            [0x1e944, 0x1e94a],
+            [0x1e950, 0x1e959],
+            [0xe0100, 0xe01ef],
+        ]
     }
-    return largeIdContinuePattern.test(String.fromCodePoint(cp))
+    return (
+        largeIdContinuePatternSymbols.has(cp) ||
+        largeIdContinuePatternRanges!.some(([r1, r2]) => r1 <= cp && cp <= r2)
+    )
 }

@@ -87,34 +87,34 @@ type Datum = {
     logger.log("Generating code...")
     let code = `/* This file was generated with ECMAScript specifications. */
 
-const gcNamePattern = /^(?:General_Category|gc)$/u
-const scNamePattern = /^(?:Script(?:_Extensions)?|scx?)$/u
+const gcNamePattern = new Set(["General_Category", "gc"])
+const scNamePattern = new Set(["Script", "Script_Extensions", "sc", "scx"])
 const gcValuePatterns = {
     ${Array.from(
         Object.keys(data),
-        version => `es${version}: null as RegExp | null,`,
+        version => `es${version}: null as Set<string> | null,`,
     ).join("\n")}
 }
 const scValuePatterns = {
     ${Array.from(
         Object.keys(data),
-        version => `es${version}: null as RegExp | null,`,
+        version => `es${version}: null as Set<string> | null,`,
     ).join("\n")}
 }
 const binPropertyPatterns = {
     ${Array.from(
         Object.keys(data),
-        version => `es${version}: null as RegExp | null,`,
+        version => `es${version}: null as Set<string> | null,`,
     ).join("\n")}
 }
 
 export function isValidUnicodeProperty(version: number, name: string, value: string): boolean {
-    if (gcNamePattern.test(name)) {
+    if (gcNamePattern.has(name)) {
         ${Array.from(Object.entries(data), ([version, { gcValues }]) =>
             makeVerificationCode(version, "gcValuePatterns", gcValues, 52),
         ).join("\n")}
     }
-    if (scNamePattern.test(name)) {
+    if (scNamePattern.has(name)) {
         ${Array.from(Object.entries(data), ([version, { scValues }]) =>
             makeVerificationCode(version, "scValuePatterns", scValues, 52),
         ).join("\n")}
@@ -175,33 +175,16 @@ function makeVerificationCode(
 
     return `
         if (version >= ${version}) {
-            if (!${patternVar}.es${version}) {
-                ${patternVar}.es${version} = new RegExp(
-                    ${makeRegExpPatternCode(values, maxLen)},
-                    "u"
-                )
+            if (${patternVar}.es${version} === null) {
+                ${patternVar}.es${version} = new Set([${values
+        .map(v => `"${v}"`)
+        .join()}])
             }
-            if (${patternVar}.es${version}.test(value)) {
+            if (${patternVar}.es${version}.has(value)) {
                 return true
             }
         }
     `
-}
-
-function makeRegExpPatternCode(names: string[], maxLen: number): string {
-    const lines = ["^(?:"]
-    for (const name of names) {
-        const line = lines[lines.length - 1]
-        const part = `${name}|`
-
-        if (line.length + part.length > maxLen) {
-            lines.push(part)
-        } else {
-            lines[lines.length - 1] += part
-        }
-    }
-    lines[lines.length - 1] = `${lines[lines.length - 1].replace(/\|$/u, "")})$`
-    return lines.map(line => `"${line}"`).join("+")
 }
 
 function save(content: string): Promise<void> {
