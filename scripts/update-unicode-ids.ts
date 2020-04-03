@@ -51,10 +51,21 @@ const logger = console
     normalizeRanges(idContinueLarge)
 
     logger.log("Generating code...")
+    const { set: setStart, ranges: rangesStart } = makeLargePattern(
+        idStartLarge,
+    )
+
+    const { set: setContinue, ranges: rangesContinue } = makeLargePattern(
+        idContinueLarge,
+    )
+
     let code = `${banner}
 
-let largeIdStartPattern: RegExp | null = null;
-let largeIdContinuePattern: RegExp | null = null;
+let largeIdStartPatternSymbols: Set<number> | null = null
+let largeIdStartPatternRanges: [number, number][] | null = null
+
+let largeIdContinuePatternSymbols: Set<number> | null = null
+let largeIdContinuePatternRanges: [number, number][] | null = null
 
 export function isIdStart(cp: number): boolean {
     ${makeSmallCondtion(idStartSmall)}
@@ -65,18 +76,18 @@ export function isIdContinue(cp: number): boolean {
     return isLargeIdStart(cp) || isLargeIdContinue(cp)
 }
 function isLargeIdStart(cp: number): boolean {
-    if (!largeIdStartPattern) {
-        largeIdStartPattern = new RegExp(${makeLargePattern(idStartLarge)}, "u")
+    if (largeIdStartPatternSymbols === null) {
+        largeIdStartPatternSymbols = ${setStart};
+        largeIdStartPatternRanges = ${rangesStart};
     }
-    return largeIdStartPattern.test(String.fromCodePoint(cp))
+    return largeIdStartPatternSymbols.has(cp) || largeIdStartPatternRanges!.some(([r1, r2]) => r1 <= cp && cp <= r2);
 }
 function isLargeIdContinue(cp: number): boolean {
-    if (!largeIdContinuePattern) {
-        largeIdContinuePattern = new RegExp(${makeLargePattern(
-            idContinueLarge,
-        )}, "u")
+    if (largeIdContinuePatternSymbols === null) {
+        largeIdContinuePatternSymbols = ${setContinue};
+        largeIdContinuePatternRanges = ${rangesContinue};
     }
-    return largeIdContinuePattern.test(String.fromCodePoint(cp))
+    return largeIdContinuePatternSymbols.has(cp) || largeIdContinuePatternRanges!.some(([r1, r2]) => r1 <= cp && cp <= r2);
 }`
 
     logger.log("Formatting code...")
@@ -147,35 +158,24 @@ function makeSmallCondtion(ranges: [number, number][]): string {
     return conditions.join("\n")
 }
 
-function makeLargePattern(ranges: [number, number][]): string {
-    const lines = ["^["]
-    for (const [min, max] of ranges) {
-        const line = lines[lines.length - 1]
-        const part =
-            min === max
-                ? esc(min)
-                : min + 1 === max
-                ? `${esc(min)}${esc(max)}`
-                : `${esc(min)}-${esc(max)}`
+function makeLargePattern(ranges: [number, number][]) {
+    const symbols: string[] = []
+    const symbolRanges: string[] = []
 
-        if (line.length + part.length > 60) {
-            lines.push(part)
+    for (const [min, max] of ranges) {
+        if (min === max) {
+            symbols.push(`0x${min.toString(16)}`)
+        } else if (min + 1 === max) {
+            symbols.push(`0x${min.toString(16)}`, `0x${max.toString(16)}`)
         } else {
-            lines[lines.length - 1] += part
+            symbolRanges.push(`[0x${min.toString(16)}, 0x${max.toString(16)}]`)
         }
     }
-    lines[lines.length - 1] += "]$"
-    return lines.map(line => `"${line}"`).join("+")
-}
 
-function esc(cp: number): string {
-    if (cp <= 0xff) {
-        return `\\x${cp.toString(16).padStart(2, "0")}`
+    return {
+        set: `new Set([${symbols.join()}])`,
+        ranges: `[${symbolRanges.join()}]`,
     }
-    if (cp <= 0xffff) {
-        return `\\u${cp.toString(16).padStart(4, "0")}`
-    }
-    return `\\u{${cp.toString(16)}}`
 }
 
 function save(content: string): Promise<void> {
