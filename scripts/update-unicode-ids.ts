@@ -51,43 +51,48 @@ const logger = console
     normalizeRanges(idContinueLarge)
 
     logger.log("Generating code...")
-    const { set: setStart, ranges: rangesStart } = makeLargePattern(
-        idStartLarge,
-    )
-
-    const { set: setContinue, ranges: rangesContinue } = makeLargePattern(
-        idContinueLarge,
-    )
-
     let code = `${banner}
 
-let largeIdStartPatternSymbols: Set<number> | null = null
-let largeIdStartPatternRanges: [number, number][] | null = null
-
-let largeIdContinuePatternSymbols: Set<number> | null = null
-let largeIdContinuePatternRanges: [number, number][] | null = null
+// Each two-element represents a range.
+// Even indices are minimum values and odd indices are maximum values.
+let largeIdStartRanges: number[] | undefined = undefined
+let largeIdContinueRanges: number[] | undefined = undefined
 
 export function isIdStart(cp: number): boolean {
-    ${makeSmallCondtion(idStartSmall)}
+    ${makeSmallCondition(idStartSmall)}
     return isLargeIdStart(cp)
 }
 export function isIdContinue(cp: number): boolean {
-    ${makeSmallCondtion(idContinueSmall)}
+    ${makeSmallCondition(idContinueSmall)}
     return isLargeIdStart(cp) || isLargeIdContinue(cp)
 }
 function isLargeIdStart(cp: number): boolean {
-    if (largeIdStartPatternSymbols === null) {
-        largeIdStartPatternSymbols = ${setStart};
-        largeIdStartPatternRanges = ${rangesStart};
-    }
-    return largeIdStartPatternSymbols.has(cp) || largeIdStartPatternRanges!.some(([r1, r2]) => r1 <= cp && cp <= r2);
+    return isInRange(cp, largeIdStartRanges || (largeIdStartRanges = initLargeIdStartRanges()))
 }
 function isLargeIdContinue(cp: number): boolean {
-    if (largeIdContinuePatternSymbols === null) {
-        largeIdContinuePatternSymbols = ${setContinue};
-        largeIdContinuePatternRanges = ${rangesContinue};
+    return isInRange(cp, largeIdContinueRanges || (largeIdContinueRanges = initLargeIdContinueRanges()))
+}
+function initLargeIdStartRanges(): number[] {
+    ${makeInitLargeIdRanges(idStartLarge)}
+}
+function initLargeIdContinueRanges(): number[] {
+    ${makeInitLargeIdRanges(idContinueLarge)}
+}
+function isInRange(cp: number, ranges: number[]): boolean {
+    let l = 0, r = ranges.length / 2 | 0, i = 0, min = 0, max = 0
+    while (l < r) {
+        i = (l + r) / 2 | 0
+        min = ranges[2 * i]
+        max = ranges[2 * i + 1]
+        if (cp < min) {
+            r = i
+        } else if (cp > max) {
+            l = i + 1
+        } else {
+            return true
+        }
     }
-    return largeIdContinuePatternSymbols.has(cp) || largeIdContinuePatternRanges!.some(([r1, r2]) => r1 <= cp && cp <= r2);
+    return false
 }`
 
     logger.log("Formatting code...")
@@ -145,7 +150,7 @@ function normalizeRanges(ranges: [number, number][]): void {
     }
 }
 
-function makeSmallCondtion(ranges: [number, number][]): string {
+function makeSmallCondition(ranges: [number, number][]): string {
     const conditions: string[] = []
     for (const [min, max] of ranges) {
         if (min === max) {
@@ -158,24 +163,13 @@ function makeSmallCondtion(ranges: [number, number][]): string {
     return conditions.join("\n")
 }
 
-function makeLargePattern(ranges: [number, number][]) {
-    const symbols: string[] = []
-    const symbolRanges: string[] = []
-
+function makeInitLargeIdRanges(ranges: [number, number][]): string {
+    const lines: string[] = ["return ["]
     for (const [min, max] of ranges) {
-        if (min === max) {
-            symbols.push(`0x${min.toString(16)}`)
-        } else if (min + 1 === max) {
-            symbols.push(`0x${min.toString(16)}`, `0x${max.toString(16)}`)
-        } else {
-            symbolRanges.push(`[0x${min.toString(16)}, 0x${max.toString(16)}]`)
-        }
+        lines.push(`0x${min.toString(16)}, 0x${max.toString(16)},`)
     }
-
-    return {
-        set: `new Set([${symbols.join()}])`,
-        ranges: `[${symbolRanges.join()}]`,
-    }
+    lines.push("]")
+    return lines.join("\n")
 }
 
 function save(content: string): Promise<void> {
