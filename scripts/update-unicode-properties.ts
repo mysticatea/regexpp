@@ -67,7 +67,7 @@ type Datum = {
                 if (!error || error.message !== "Error: socket hang up") {
                     throw error
                 }
-                logger.log("Failed: %s", error)
+                logger.log(error.message, "then retry.")
                 await new Promise(resolve => setTimeout(resolve, 2000))
             }
         } while (window == null)
@@ -149,10 +149,9 @@ function collectValues(
     id: string,
     existingSet: Set<string>,
 ): string[] {
-    return Array.from(
-        window.document.querySelectorAll(`${id} td:nth-child(1) code`),
-        node => node.textContent || "",
-    )
+    const selector = `${id} td:nth-child(1) code`
+    const nodes = window.document.querySelectorAll(selector)
+    const values = Array.from(nodes, node => node.textContent || "")
         .filter(value => {
             if (existingSet.has(value)) {
                 return false
@@ -161,6 +160,16 @@ function collectValues(
             return true
         })
         .sort(undefined)
+
+    logger.log(
+        "%o nodes of %o were found, then %o adopted and %o ignored as duplication.",
+        nodes.length,
+        selector,
+        values.length,
+        nodes.length - values.length,
+    )
+
+    return values
 }
 
 function makeVerificationCode(
