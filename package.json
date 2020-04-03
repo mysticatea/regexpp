@@ -79,5 +79,6 @@
   "bugs": {
     "url": "https://github.com/mysticatea/regexpp/issues"
   },
-  "homepage": "https://github.com/mysticatea/regexpp#readme"
+  "homepage": "https://github.com/mysticatea/regexpp#readme",
+  "funding": "https://github.com/sponsors/mysticatea"
 }
