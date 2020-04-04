@@ -525,7 +525,7 @@ export class RegExpValidator {
         this._uFlag = uFlag && this.ecmaVersion >= 2015
         this._nFlag = uFlag && this.ecmaVersion >= 2018
         this.reset(source, start, end)
-        this.pattern()
+        this.consumePattern()
 
         if (
             !this._nFlag &&
@@ -534,7 +534,7 @@ export class RegExpValidator {
         ) {
             this._nFlag = true
             this.rewind(start)
-            this.pattern()
+            this.consumePattern()
         }
     }
 
@@ -881,15 +881,21 @@ export class RegExpValidator {
         return this.index !== start
     }
 
-    // https://www.ecma-international.org/ecma-262/8.0/#prod-Pattern
-    private pattern(): void {
+    /**
+     * Validate the next characters as a RegExp `Pattern` production.
+     * ```
+     * Pattern[U, N]::
+     *      Disjunction[?U, ?N]
+     * ```
+     */
+    private consumePattern(): void {
         const start = this.index
         this._numCapturingParens = this.countCapturingParens()
         this._groupNames.clear()
         this._backreferenceNames.clear()
 
         this.onPatternEnter(start)
-        this.disjunction()
+        this.consumeDisjunction()
 
         const cp = this.currentCodePoint
         if (this.currentCodePoint !== -1) {
@@ -913,6 +919,10 @@ export class RegExpValidator {
         this.onPatternLeave(start, this.index)
     }
 
+    /**
+     * Count capturing groups in the current source code.
+     * @returns The number of capturing groups.
+     */
     private countCapturingParens(): number {
         const start = this.index
         let inClass = false
@@ -946,18 +956,24 @@ export class RegExpValidator {
         return count
     }
 
-    // https://www.ecma-international.org/ecma-262/8.0/#prod-Disjunction
-    private disjunction(): void {
+    /**
+     * Validate the next characters as a RegExp `Disjunction` production.
+     * ```
+     * Disjunction[U, N]::
+     *      Alternative[?U, ?N]
+     *      Alternative[?U, ?N] `|` Disjunction[?U, ?N]
+     * ```
+     */
+    private consumeDisjunction(): void {
         const start = this.index
         let i = 0
 
         this.onDisjunctionEnter(start)
-        this.alternative(i++)
-        while (this.eat(VerticalLine)) {
-            this.alternative(i++)
-        }
+        do {
+            this.consumeAlternative(i++)
+        } while (this.eat(VerticalLine))
 
-        if (this.eatQuantifier(true)) {
+        if (this.consumeQuantifier(true)) {
             this.raise("Nothing to repeat")
         }
         if (this.eat(LeftCurlyBracket)) {
@@ -966,39 +982,84 @@ export class RegExpValidator {
         this.onDisjunctionLeave(start, this.index)
     }
 
-    // https://www.ecma-international.org/ecma-262/8.0/#prod-Alternative
-    private alternative(i: number): void {
+    /**
+     * Validate the next characters as a RegExp `Alternative` production.
+     * ```
+     * Alternative[U, N]::
+     *      ε
+     *      Alternative[?U, ?N] Term[?U, ?N]
+     * ```
+     */
+    private consumeAlternative(i: number): void {
         const start = this.index
 
         this.onAlternativeEnter(start, i)
-        while (this.currentCodePoint !== -1 && this.eatTerm()) {
+        while (this.currentCodePoint !== -1 && this.consumeTerm()) {
             // do nothing.
         }
         this.onAlternativeLeave(start, this.index, i)
     }
 
-    // https://www.ecma-international.org/ecma-262/8.0/#prod-strict-Term
-    private eatTerm(): boolean {
-        if (this.eatAssertion()) {
-            // Handle `QuantifiableAssertion Quantifier` alternative.
-            // `this.lastAssertionIsQuantifiable` is true if the last eaten
-            // Assertion is a QuantifiableAssertion.
-            if (this._lastAssertionIsQuantifiable) {
-                this.eatQuantifier()
-            }
-            return true
+    /**
+     * Validate the next characters as a RegExp `Term` production if possible.
+     * ```
+     * Term[U, N]::
+     *      [strict] Assertion[+U, ?N]
+     *      [strict] Atom[+U, ?N]
+     *      [strict] Atom[+U, ?N] Quantifier
+     *      [annexB][+U] Assertion[+U, ?N]
+     *      [annexB][+U] Atom[+U, ?N]
+     *      [annexB][+U] Atom[+U, ?N] Quantifier
+     *      [annexB][~U] QuantifiableAssertion[?N] Quantifier
+     *      [annexB][~U] Assertion[~U, ?N]
+     *      [annexB][~U] ExtendedAtom[?N] Quantifier
+     *      [annexB][~U] ExtendedAtom[?N]
+     * ```
+     * @returns `true` if it consumed the next characters successfully.
+     */
+    private consumeTerm(): boolean {
+        if (this._uFlag || this.strict) {
+            return (
+                this.consumeAssertion() ||
+                (this.consumeAtom() && this.consumeOptionalQuantifier())
+            )
         }
-
-        if (this.strict ? this.eatAtom() : this.eatExtendedAtom()) {
-            this.eatQuantifier()
-            return true
-        }
-
-        return false
+        return (
+            (this.consumeAssertion() &&
+                (!this._lastAssertionIsQuantifiable ||
+                    this.consumeOptionalQuantifier())) ||
+            (this.consumeExtendedAtom() && this.consumeOptionalQuantifier())
+        )
+    }
+    private consumeOptionalQuantifier(): boolean {
+        this.consumeQuantifier()
+        return true
     }
 
-    // https://www.ecma-international.org/ecma-262/8.0/#prod-strict-Assertion
-    private eatAssertion(): boolean {
+    /**
+     * Validate the next characters as a RegExp `Term` production if possible.
+     * Set `this._lastAssertionIsQuantifiable` if the consumed assertion was a
+     * `QuantifiableAssertion` production.
+     * ```
+     * Assertion[U, N]::
+     *      `^`
+     *      `$`
+     *      `\b`
+     *      `\B`
+     *      [strict] `(?=` Disjunction[+U, ?N] `)`
+     *      [strict] `(?!` Disjunction[+U, ?N] `)`
+     *      [annexB][+U] `(?=` Disjunction[+U, ?N] `)`
+     *      [annexB][+U] `(?!` Disjunction[+U, ?N] `)`
+     *      [annexB][~U] QuantifiableAssertion[?N]
+     *      `(?<=` Disjunction[?U, ?N] `)`
+     *      `(?<!` Disjunction[?U, ?N] `)`
+     * QuantifiableAssertion[N]::
+     *      `(?=` Disjunction[~U, ?N] `)`
+     *      `(?!` Disjunction[~U, ?N] `)`
+     * ```
+     * @returns `true` if it consumed the next characters successfully.
+     */
+    private consumeAssertion(): boolean {
         const start = this.index
         this._lastAssertionIsQuantifiable = false
 
@@ -1028,7 +1089,7 @@ export class RegExpValidator {
             if (this.eat(EqualsSign) || (negate = this.eat(ExclamationMark))) {
                 const kind = lookbehind ? "lookbehind" : "lookahead"
                 this.onLookaroundAssertionEnter(start, kind, negate)
-                this.disjunction()
+                this.consumeDisjunction()
                 if (!this.eat(RightParenthesis)) {
                     this.raise("Unterminated group")
                 }
@@ -1042,14 +1103,30 @@ export class RegExpValidator {
         return false
     }
 
-    // https://www.ecma-international.org/ecma-262/8.0/#prod-Quantifier
-    // https://www.ecma-international.org/ecma-262/8.0/#prod-QuantifierPrefix
-    private eatQuantifier(noError = false): boolean {
+    /**
+     * Validate the next characters as a RegExp `Quantifier` production if
+     * possible.
+     * ```
+     * Quantifier::
+     *      QuantifierPrefix
+     *      QuantifierPrefix `?`
+     * QuantifierPrefix::
+     *      `*`
+     *      `+`
+     *      `?`
+     *      `{` DecimalDigits `}`
+     *      `{` DecimalDigits `,}`
+     *      `{` DecimalDigits `,` DecimalDigits `}`
+     * ```
+     * @returns `true` if it consumed the next characters successfully.
+     */
+    private consumeQuantifier(noConsume = false): boolean {
         const start = this.index
         let min = 0
         let max = 0
         let greedy = false
 
+        // QuantifierPrefix
         if (this.eat(Asterisk)) {
             min = 0
             max = Number.POSITIVE_INFINITY
@@ -1059,20 +1136,33 @@ export class RegExpValidator {
         } else if (this.eat(QuestionMark)) {
             min = 0
             max = 1
-        } else if (this.eatBracedQuantifier(noError)) {
+        } else if (this.eatBracedQuantifier(noConsume)) {
             min = this._lastMinValue
             max = this._lastMaxValue
         } else {
             return false
         }
+
+        // `?`
         greedy = !this.eat(QuestionMark)
 
-        if (!noError) {
+        if (!noConsume) {
             this.onQuantifier(start, this.index, min, max, greedy)
         }
         return true
     }
 
+    /**
+     * Eat the next characters as the following alternatives if possible.
+     * Set `this._lastMinValue` and `this._lastMaxValue` if it consumed the next
+     * characters successfully.
+     * ```
+     *      `{` DecimalDigits `}`
+     *      `{` DecimalDigits `,}`
+     *      `{` DecimalDigits `,` DecimalDigits `}`
+     * ```
+     * @returns `true` if it consumed the next characters successfully.
+     */
     private eatBracedQuantifier(noError: boolean): boolean {
         const start = this.index
         if (this.eat(LeftCurlyBracket)) {
@@ -1092,7 +1182,7 @@ export class RegExpValidator {
                     return true
                 }
             }
-            if (!noError && this.strict) {
+            if (!noError && (this._uFlag || this.strict)) {
                 this.raise("Incomplete quantifier")
             }
             this.rewind(start)
@@ -1100,19 +1190,38 @@ export class RegExpValidator {
         return false
     }
 
-    // https://www.ecma-international.org/ecma-262/8.0/#prod-Atom
-    private eatAtom(): boolean {
+    /**
+     * Validate the next characters as a RegExp `Atom` production if possible.
+     * ```
+     * Atom[U, N]::
+     *      PatternCharacter
+     *      `.`
+     *      `\\` AtomEscape[?U, ?N]
+     *      CharacterClass[?U]
+     *      `(?:` Disjunction[?U, ?N] )
+     *      `(` GroupSpecifier[?U] Disjunction[?U, ?N] `)`
+     * ```
+     * @returns `true` if it consumed the next characters successfully.
+     */
+    private consumeAtom(): boolean {
         return (
-            this.eatPatternCharacter() ||
-            this.eatDot() ||
-            this.eatReverseSolidusAtomEscape() ||
-            this.eatCharacterClass() ||
-            this.eatUncapturingGroup() ||
-            this.eatCapturingGroup()
+            this.consumePatternCharacter() ||
+            this.consumeDot() ||
+            this.consumeReverseSolidusAtomEscape() ||
+            this.consumeCharacterClass() ||
+            this.consumeUncapturingGroup() ||
+            this.consumeCapturingGroup()
         )
     }
 
-    private eatDot(): boolean {
+    /**
+     * Validate the next characters as the following alternatives if possible.
+     * ```
+     *      `.`
+     * ```
+     * @returns `true` if it consumed the next characters successfully.
+     */
+    private consumeDot(): boolean {
         if (this.eat(FullStop)) {
             this.onAnyCharacterSet(this.index - 1, this.index, "any")
             return true
@@ -1120,10 +1229,17 @@ export class RegExpValidator {
         return false
     }
 
-    private eatReverseSolidusAtomEscape(): boolean {
+    /**
+     * Validate the next characters as the following alternatives if possible.
+     * ```
+     *      `\\` AtomEscape[?U, ?N]
+     * ```
+     * @returns `true` if it consumed the next characters successfully.
+     */
+    private consumeReverseSolidusAtomEscape(): boolean {
         const start = this.index
         if (this.eat(ReverseSolidus)) {
-            if (this.eatAtomEscape()) {
+            if (this.consumeAtomEscape()) {
                 return true
             }
             this.rewind(start)
@@ -1131,11 +1247,18 @@ export class RegExpValidator {
         return false
     }
 
-    private eatUncapturingGroup(): boolean {
+    /**
+     * Validate the next characters as the following alternatives if possible.
+     * ```
+     *      `(?:` Disjunction[?U, ?N] )
+     * ```
+     * @returns `true` if it consumed the next characters successfully.
+     */
+    private consumeUncapturingGroup(): boolean {
         const start = this.index
         if (this.eat3(LeftParenthesis, QuestionMark, Colon)) {
             this.onGroupEnter(start)
-            this.disjunction()
+            this.consumeDisjunction()
             if (!this.eat(RightParenthesis)) {
                 this.raise("Unterminated group")
             }
@@ -1145,19 +1268,27 @@ export class RegExpValidator {
         return false
     }
 
-    private eatCapturingGroup(): boolean {
+    /**
+     * Validate the next characters as the following alternatives if possible.
+     * ```
+     *      `(` GroupSpecifier[?U] Disjunction[?U, ?N] `)`
+     * ```
+     * @returns `true` if it consumed the next characters successfully.
+     */
+    private consumeCapturingGroup(): boolean {
         const start = this.index
         if (this.eat(LeftParenthesis)) {
-            this._lastStrValue = ""
+            let name: string | null = null
             if (this.ecmaVersion >= 2018) {
-                this.groupSpecifier()
+                if (this.consumeGroupSpecifier()) {
+                    name = this._lastStrValue
+                }
             } else if (this.currentCodePoint === QuestionMark) {
                 this.raise("Invalid group")
             }
-            const name = this._lastStrValue || null
 
             this.onCapturingGroupEnter(start, name)
-            this.disjunction()
+            this.consumeDisjunction()
             if (!this.eat(RightParenthesis)) {
                 this.raise("Unterminated group")
             }
@@ -1168,54 +1299,84 @@ export class RegExpValidator {
         return false
     }
 
-    // https://www.ecma-international.org/ecma-262/8.0/#prod-strict-ExtendedAtom
-    private eatExtendedAtom(): boolean {
+    /**
+     * Validate the next characters as a RegExp `ExtendedAtom` production if
+     * possible.
+     * ```
+     * ExtendedAtom[N]::
+     *      `.`
+     *      `\` AtomEscape[~U, ?N]
+     *      `\` [lookahead = c]
+     *      CharacterClass[~U]
+     *      `(?:` Disjunction[~U, ?N] `)`
+     *      `(` Disjunction[~U, ?N] `)`
+     *      InvalidBracedQuantifier
+     *      ExtendedPatternCharacter
+     * ```
+     * @returns `true` if it consumed the next characters successfully.
+     */
+    private consumeExtendedAtom(): boolean {
         return (
-            this.eatDot() ||
-            this.eatReverseSolidusAtomEscape() ||
-            this.eatReverseSolidusFollowedByC() ||
-            this.eatCharacterClass() ||
-            this.eatUncapturingGroup() ||
-            this.eatCapturingGroup() ||
-            this.eatInvalidBracedQuantifier() ||
-            this.eatExtendedPatternCharacter()
+            this.consumeDot() ||
+            this.consumeReverseSolidusAtomEscape() ||
+            this.consumeReverseSolidusFollowedByC() ||
+            this.consumeCharacterClass() ||
+            this.consumeUncapturingGroup() ||
+            this.consumeCapturingGroup() ||
+            this.consumeInvalidBracedQuantifier() ||
+            this.consumeExtendedPatternCharacter()
         )
     }
 
-    // \ [lookahead = c]
-    private eatReverseSolidusFollowedByC(): boolean {
+    /**
+     * Validate the next characters as the following alternatives if possible.
+     * ```
+     *      `\` [lookahead = c]
+     * ```
+     * @returns `true` if it consumed the next characters successfully.
+     */
+    private consumeReverseSolidusFollowedByC(): boolean {
+        const start = this.index
         if (
             this.currentCodePoint === ReverseSolidus &&
             this.nextCodePoint === LatinSmallLetterC
         ) {
             this._lastIntValue = this.currentCodePoint
             this.advance()
-            this.onCharacter(this.index - 1, this.index, ReverseSolidus)
+            this.onCharacter(start, this.index, ReverseSolidus)
             return true
         }
         return false
     }
 
-    // https://www.ecma-international.org/ecma-262/8.0/#prod-strict-InvalidBracedQuantifier
-    private eatInvalidBracedQuantifier(): boolean {
-        if (this.eatBracedQuantifier(true)) {
+    /**
+     * Validate the next characters as a RegExp `InvalidBracedQuantifier`
+     * production if possible.
+     * ```
+     * InvalidBracedQuantifier::
+     *      `{` DecimalDigits `}`
+     *      `{` DecimalDigits `,}`
+     *      `{` DecimalDigits `,` DecimalDigits `}`
+     * ```
+     * @returns `true` if it consumed the next characters successfully.
+     */
+    private consumeInvalidBracedQuantifier(): boolean {
+        if (this.eatBracedQuantifier(/* noError= */ true)) {
             this.raise("Nothing to repeat")
         }
         return false
     }
 
-    // https://www.ecma-international.org/ecma-262/8.0/#prod-SyntaxCharacter
-    private eatSyntaxCharacter(): boolean {
-        if (isSyntaxCharacter(this.currentCodePoint)) {
-            this._lastIntValue = this.currentCodePoint
-            this.advance()
-            return true
-        }
-        return false
-    }
-
-    // https://www.ecma-international.org/ecma-262/8.0/#prod-PatternCharacter
-    private eatPatternCharacter(): boolean {
+    /**
+     * Validate the next characters as a RegExp `PatternCharacter` production if
+     * possible.
+     * ```
+     * PatternCharacter::
+     *      SourceCharacter but not SyntaxCharacter
+     * ```
+     * @returns `true` if it consumed the next characters successfully.
+     */
+    private consumePatternCharacter(): boolean {
         const start = this.index
         const cp = this.currentCodePoint
         if (cp !== -1 && !isSyntaxCharacter(cp)) {
@@ -1226,8 +1387,16 @@ export class RegExpValidator {
         return false
     }
 
-    // https://www.ecma-international.org/ecma-262/8.0/#prod-strict-ExtendedPatternCharacter
-    private eatExtendedPatternCharacter(): boolean {
+    /**
+     * Validate the next characters as a RegExp `ExtendedPatternCharacter`
+     * production if possible.
+     * ```
+     * ExtendedPatternCharacter::
+     *      SourceCharacter but not one of ^ $ \ . * + ? ( ) [ |
+     * ```
+     * @returns `true` if it consumed the next characters successfully.
+     */
+    private consumeExtendedPatternCharacter(): boolean {
         const start = this.index
         const cp = this.currentCodePoint
         if (
@@ -1251,108 +1420,51 @@ export class RegExpValidator {
         return false
     }
 
-    // GroupSpecifier[U] ::
-    //   [empty]
-    //   `?` GroupName[?U]
-    private groupSpecifier(): void {
-        this._lastStrValue = ""
+    /**
+     * Validate the next characters as a RegExp `GroupSpecifier` production.
+     * Set `this._lastStrValue` if the group name existed.
+     * ```
+     * GroupSpecifier[U]::
+     *      ε
+     *      `?` GroupName[?U]
+     * ```
+     * @returns `true` if the group name existed.
+     */
+    private consumeGroupSpecifier(): boolean {
         if (this.eat(QuestionMark)) {
             if (this.eatGroupName()) {
                 if (!this._groupNames.has(this._lastStrValue)) {
                     this._groupNames.add(this._lastStrValue)
-                    return
+                    return true
                 }
                 this.raise("Duplicate capture group name")
             }
             this.raise("Invalid group")
         }
-    }
-
-    // GroupName[U] ::
-    //   `<` RegExpIdentifierName[?U] `>`
-    private eatGroupName(): boolean {
-        this._lastStrValue = ""
-        if (this.eat(LessThanSign)) {
-            if (this.eatRegExpIdentifierName() && this.eat(GreaterThanSign)) {
-                return true
-            }
-            this.raise("Invalid capture group name")
-        }
         return false
     }
 
-    // RegExpIdentifierName[U] ::
-    //   RegExpIdentifierStart[?U]
-    //   RegExpIdentifierName[?U] RegExpIdentifierPart[?U]
-    private eatRegExpIdentifierName(): boolean {
-        this._lastStrValue = ""
-        if (this.eatRegExpIdentifierStart()) {
-            this._lastStrValue += String.fromCodePoint(this._lastIntValue)
-            while (this.eatRegExpIdentifierPart()) {
-                this._lastStrValue += String.fromCodePoint(this._lastIntValue)
-            }
-            return true
-        }
-        return false
-    }
-
-    // RegExpIdentifierStart[U] ::
-    //   UnicodeIDStart
-    //   `$`
-    //   `_`
-    //   `\` RegExpUnicodeEscapeSequence[?U]
-    private eatRegExpIdentifierStart(): boolean {
-        const start = this.index
-        let cp = this.currentCodePoint
-        this.advance()
-
-        if (cp === ReverseSolidus && this.eatRegExpUnicodeEscapeSequence()) {
-            cp = this._lastIntValue
-        }
-        if (isRegExpIdentifierStart(cp)) {
-            this._lastIntValue = cp
-            return true
-        }
-
-        if (this.index !== start) {
-            this.rewind(start)
-        }
-        return false
-    }
-
-    // RegExpIdentifierPart[U] ::
-    //   UnicodeIDContinue
-    //   `$`
-    //   `_`
-    //   `\` RegExpUnicodeEscapeSequence[?U]
-    //   <Zwnj>
-    //   <Zwj>
-    private eatRegExpIdentifierPart(): boolean {
-        const start = this.index
-        let cp = this.currentCodePoint
-        this.advance()
-
-        if (cp === ReverseSolidus && this.eatRegExpUnicodeEscapeSequence()) {
-            cp = this._lastIntValue
-        }
-        if (isRegExpIdentifierPart(cp)) {
-            this._lastIntValue = cp
-            return true
-        }
-
-        if (this.index !== start) {
-            this.rewind(start)
-        }
-        return false
-    }
-
-    // https://www.ecma-international.org/ecma-262/8.0/#prod-strict-AtomEscape
-    private eatAtomEscape(): boolean {
+    /**
+     * Validate the next characters as a RegExp `AtomEscape` production if
+     * possible.
+     * ```
+     * AtomEscape[U, N]::
+     *      [strict] DecimalEscape
+     *      [annexB][+U] DecimalEscape
+     *      [annexB][~U] DecimalEscape but only if the CapturingGroupNumber of DecimalEscape is <= NcapturingParens
+     *      CharacterClassEscape[?U]
+     *      [strict] CharacterEscape[?U]
+     *      [annexB] CharacterEscape[?U, ?N]
+     *      [+N] `k` GroupName[?U]
+     * ```
+     * @returns `true` if it consumed the next characters successfully.
+     */
+    private consumeAtomEscape(): boolean {
         if (
-            this.eatBackreference() ||
-            this.eatCharacterClassEscape() ||
-            this.eatCharacterEscape() ||
-            (this._nFlag && this.eatKGroupName())
+            this.consumeBackreference() ||
+            this.consumeCharacterClassEscape() ||
+            this.consumeCharacterEscape() ||
+            (this._nFlag && this.consumeKGroupName())
         ) {
             return true
         }
@@ -1362,7 +1474,16 @@ export class RegExpValidator {
         return false
     }
 
-    private eatBackreference(): boolean {
+    /**
+     * Validate the next characters as the follwoing alternatives if possible.
+     * ```
+     *      [strict] DecimalEscape
+     *      [annexB][+U] DecimalEscape
+     *      [annexB][~U] DecimalEscape but only if the CapturingGroupNumber of DecimalEscape is <= NcapturingParens
+     * ```
+     * @returns `true` if it consumed the next characters successfully.
+     */
+    private consumeBackreference(): boolean {
         const start = this.index
         if (this.eatDecimalEscape()) {
             const n = this._lastIntValue
@@ -1370,7 +1491,7 @@ export class RegExpValidator {
                 this.onBackreference(start - 1, this.index, n)
                 return true
             }
-            if (this.strict) {
+            if (this.strict || this._uFlag) {
                 this.raise("Invalid escape")
             }
             this.rewind(start)
@@ -1378,197 +1499,25 @@ export class RegExpValidator {
         return false
     }
 
-    private eatKGroupName(): boolean {
-        const start = this.index
-        if (this.eat(LatinSmallLetterK)) {
-            if (this.eatGroupName()) {
-                const groupName = this._lastStrValue
-                this._backreferenceNames.add(groupName)
-                this.onBackreference(start - 1, this.index, groupName)
-                return true
-            }
-            this.raise("Invalid named reference")
-        }
-        return false
-    }
-
-    // https://www.ecma-international.org/ecma-262/8.0/#prod-strict-CharacterEscape
-    private eatCharacterEscape(): boolean {
-        const start = this.index
-        if (
-            this.eatControlEscape() ||
-            this.eatCControlLetter() ||
-            this.eatZero() ||
-            this.eatHexEscapeSequence() ||
-            this.eatRegExpUnicodeEscapeSequence() ||
-            (!this.strict && this.eatLegacyOctalEscapeSequence()) ||
-            this.eatIdentityEscape()
-        ) {
-            this.onCharacter(start - 1, this.index, this._lastIntValue)
-            return true
-        }
-        return false
-    }
-
-    private eatCControlLetter(): boolean {
-        const start = this.index
-        if (this.eat(LatinSmallLetterC)) {
-            if (this.eatControlLetter()) {
-                return true
-            }
-            this.rewind(start)
-        }
-        return false
-    }
-
-    private eatZero(): boolean {
-        if (
-            this.currentCodePoint === DigitZero &&
-            !isDecimalDigit(this.nextCodePoint)
-        ) {
-            this._lastIntValue = 0
-            this.advance()
-            return true
-        }
-        return false
-    }
-
-    // https://www.ecma-international.org/ecma-262/8.0/#prod-ControlEscape
-    private eatControlEscape(): boolean {
-        if (this.eat(LatinSmallLetterT)) {
-            this._lastIntValue = CharacterTabulation
-            return true
-        }
-        if (this.eat(LatinSmallLetterN)) {
-            this._lastIntValue = LineFeed
-            return true
-        }
-        if (this.eat(LatinSmallLetterV)) {
-            this._lastIntValue = LineTabulation
-            return true
-        }
-        if (this.eat(LatinSmallLetterF)) {
-            this._lastIntValue = FormFeed
-            return true
-        }
-        if (this.eat(LatinSmallLetterR)) {
-            this._lastIntValue = CarriageReturn
-            return true
-        }
-        return false
-    }
-
-    // https://www.ecma-international.org/ecma-262/8.0/#prod-ControlLetter
-    private eatControlLetter(): boolean {
-        const cp = this.currentCodePoint
-        if (isLatinLetter(cp)) {
-            this.advance()
-            this._lastIntValue = cp % 0x20
-            return true
-        }
-        return false
-    }
-
-    // https://www.ecma-international.org/ecma-262/8.0/#prod-RegExpUnicodeEscapeSequence
-    //eslint-disable-next-line complexity
-    private eatRegExpUnicodeEscapeSequence(): boolean {
-        const start = this.index
-
-        if (this.eat(LatinSmallLetterU)) {
-            if (this.eatFixedHexDigits(4)) {
-                const lead = this._lastIntValue
-                if (this._uFlag && lead >= 0xd800 && lead <= 0xdbff) {
-                    const leadSurrogateEnd = this.index
-                    if (
-                        this.eat(ReverseSolidus) &&
-                        this.eat(LatinSmallLetterU) &&
-                        this.eatFixedHexDigits(4)
-                    ) {
-                        const trail = this._lastIntValue
-                        if (trail >= 0xdc00 && trail <= 0xdfff) {
-                            this._lastIntValue =
-                                (lead - 0xd800) * 0x400 +
-                                (trail - 0xdc00) +
-                                0x10000
-                            return true
-                        }
-                    }
-                    this.rewind(leadSurrogateEnd)
-                    this._lastIntValue = lead
-                }
-                return true
-            }
-            if (
-                this._uFlag &&
-                this.eat(LeftCurlyBracket) &&
-                this.eatHexDigits() &&
-                this.eat(RightCurlyBracket) &&
-                isValidUnicode(this._lastIntValue)
-            ) {
-                return true
-            }
-            if (this.strict || this._uFlag) {
-                this.raise("Invalid unicode escape")
-            }
-            this.rewind(start)
-        }
-
-        return false
-    }
-
-    // https://www.ecma-international.org/ecma-262/8.0/#prod-strict-IdentityEscape
-    private eatIdentityEscape(): boolean {
-        if (this._uFlag) {
-            if (this.eatSyntaxCharacter()) {
-                return true
-            }
-            if (this.eat(Solidus)) {
-                this._lastIntValue = Solidus
-                return true
-            }
-            return false
-        }
-
-        if (this.isValidIdentityEscape(this.currentCodePoint)) {
-            this._lastIntValue = this.currentCodePoint
-            this.advance()
-            return true
-        }
-
-        return false
-    }
-    private isValidIdentityEscape(cp: number): boolean {
-        if (cp === -1) {
-            return false
-        }
-        if (this.strict) {
-            return !isIdContinue(cp)
-        }
-        return (
-            cp !== LatinSmallLetterC &&
-            (!this._nFlag || cp !== LatinSmallLetterK)
-        )
-    }
-
-    // https://www.ecma-international.org/ecma-262/8.0/#prod-DecimalEscape
-    private eatDecimalEscape(): boolean {
-        this._lastIntValue = 0
-        let cp = this.currentCodePoint
-        if (cp >= DigitOne && cp <= DigitNine) {
-            do {
-                this._lastIntValue = 10 * this._lastIntValue + (cp - DigitZero)
-                this.advance()
-            } while (
-                (cp = this.currentCodePoint) >= DigitZero &&
-                cp <= DigitNine
-            )
-            return true
-        }
-        return false
-    }
-
-    // https://www.ecma-international.org/ecma-262/8.0/#prod-CharacterClassEscape
-    private eatCharacterClassEscape(): boolean {
+    /**
+     * Validate the next characters as a RegExp `DecimalEscape` production if
+     * possible.
+     * Set `-1` to `this._lastIntValue` as meaning of a character set if it ate
+     * the next characters successfully.
+     * ```
+     * CharacterClassEscape[U]::
+     *      `d`
+     *      `D`
+     *      `s`
+     *      `S`
+     *      `w`
+     *      `W`
+     *      [+U] `p{` UnicodePropertyValueExpression `}`
+     *      [+U] `P{` UnicodePropertyValueExpression `}`
+     * ```
+     * @returns `true` if it consumed the next characters successfully.
+     */
+    private consumeCharacterClassEscape(): boolean {
         const start = this.index
 
         if (this.eat(LatinSmallLetterD)) {
@@ -1631,9 +1580,611 @@ export class RegExpValidator {
         return false
     }
 
-    // UnicodePropertyValueExpression ::
-    //   UnicodePropertyName `=` UnicodePropertyValue
-    //   LoneUnicodePropertyNameOrValue
+    /**
+     * Validate the next characters as a RegExp `CharacterEscape` production if
+     * possible.
+     * ```
+     * CharacterEscape[U, N]::
+     *      ControlEscape
+     *      `c` ControlLetter
+     *      `0` [lookahead ∉ DecimalDigit]
+     *      HexEscapeSequence
+     *      RegExpUnicodeEscapeSequence[?U]
+     *      [annexB][~U] LegacyOctalEscapeSequence
+     *      IdentityEscape[?U, ?N]
+     * ```
+     * @returns `true` if it consumed the next characters successfully.
+     */
+    private consumeCharacterEscape(): boolean {
+        const start = this.index
+        if (
+            this.eatControlEscape() ||
+            this.eatCControlLetter() ||
+            this.eatZero() ||
+            this.eatHexEscapeSequence() ||
+            this.eatRegExpUnicodeEscapeSequence() ||
+            (!this.strict &&
+                !this._uFlag &&
+                this.eatLegacyOctalEscapeSequence()) ||
+            this.eatIdentityEscape()
+        ) {
+            this.onCharacter(start - 1, this.index, this._lastIntValue)
+            return true
+        }
+        return false
+    }
+
+    /**
+     * Validate the next characters as the follwoing alternatives if possible.
+     * ```
+     *      `k` GroupName[?U]
+     * ```
+     * @returns `true` if it consumed the next characters successfully.
+     */
+    private consumeKGroupName(): boolean {
+        const start = this.index
+        if (this.eat(LatinSmallLetterK)) {
+            if (this.eatGroupName()) {
+                const groupName = this._lastStrValue
+                this._backreferenceNames.add(groupName)
+                this.onBackreference(start - 1, this.index, groupName)
+                return true
+            }
+            this.raise("Invalid named reference")
+        }
+        return false
+    }
+
+    /**
+     * Validate the next characters as a RegExp `CharacterClass` production if
+     * possible.
+     * ```
+     * CharacterClass[U]::
+     *      `[` [lookahead ≠ ^] ClassRanges[?U] `]`
+     *      `[^` ClassRanges[?U] `]`
+     * ```
+     * @returns `true` if it consumed the next characters successfully.
+     */
+    private consumeCharacterClass(): boolean {
+        const start = this.index
+        if (this.eat(LeftSquareBracket)) {
+            const negate = this.eat(CircumflexAccent)
+            this.onCharacterClassEnter(start, negate)
+            this.consumeClassRanges()
+            if (!this.eat(RightSquareBracket)) {
+                this.raise("Unterminated character class")
+            }
+            this.onCharacterClassLeave(start, this.index, negate)
+            return true
+        }
+        return false
+    }
+
+    /**
+     * Validate the next characters as a RegExp `ClassRanges` production.
+     * ```
+     * ClassRanges[U]::
+     *      ε
+     *      NonemptyClassRanges[?U]
+     * NonemptyClassRanges[U]::
+     *      ClassAtom[?U]
+     *      ClassAtom[?U] NonemptyClassRangesNoDash[?U]
+     *      ClassAtom[?U] `-` ClassAtom[?U] ClassRanges[?U]
+     * NonemptyClassRangesNoDash[U]::
+     *      ClassAtom[?U]
+     *      ClassAtomNoDash[?U] NonemptyClassRangesNoDash[?U]
+     *      ClassAtomNoDash[?U] `-` ClassAtom[?U] ClassRanges[?U]
+     * ```
+     */
+    private consumeClassRanges(): void {
+        const strict = this.strict || this._uFlag
+        for (;;) {
+            // Consume the first ClassAtom
+            const rangeStart = this.index
+            if (!this.consumeClassAtom()) {
+                break
+            }
+            const min = this._lastIntValue
+
+            // Consume `-`
+            if (!this.eat(HyphenMinus)) {
+                continue
+            }
+            this.onCharacter(this.index - 1, this.index, HyphenMinus)
+
+            // Consume the second ClassAtom
+            if (!this.consumeClassAtom()) {
+                break
+            }
+            const max = this._lastIntValue
+
+            // Validate
+            if (min === -1 || max === -1) {
+                if (strict) {
+                    this.raise("Invalid character class")
+                }
+                continue
+            }
+            if (min > max) {
+                this.raise("Range out of order in character class")
+            }
+
+            this.onCharacterClassRange(rangeStart, this.index, min, max)
+        }
+    }
+
+    /**
+     * Validate the next characters as a RegExp `ClassAtom` production if
+     * possible.
+     * Set `this._lastIntValue` if it consumed the next characters successfully.
+     * ```
+     * ClassAtom[U, N]::
+     *      `-`
+     *      ClassAtomNoDash[?U, ?N]
+     * ClassAtomNoDash[U, N]::
+     *      SourceCharacter but not one of \ ] -
+     *      `\` ClassEscape[?U, ?N]
+     *      [annexB] `\` [lookahead = c]
+     * ```
+     * @returns `true` if it consumed the next characters successfully.
+     */
+    private consumeClassAtom(): boolean {
+        const start = this.index
+        const cp = this.currentCodePoint
+
+        if (cp !== -1 && cp !== ReverseSolidus && cp !== RightSquareBracket) {
+            this.advance()
+            this._lastIntValue = cp
+            this.onCharacter(start, this.index, this._lastIntValue)
+            return true
+        }
+
+        if (this.eat(ReverseSolidus)) {
+            if (this.consumeClassEscape()) {
+                return true
+            }
+            if (!this.strict && this.currentCodePoint === LatinSmallLetterC) {
+                this._lastIntValue = ReverseSolidus
+                this.onCharacter(start, this.index, this._lastIntValue)
+                return true
+            }
+            if (this.strict || this._uFlag) {
+                this.raise("Invalid escape")
+            }
+            this.rewind(start)
+        }
+
+        return false
+    }
+
+    /**
+     * Validate the next characters as a RegExp `ClassEscape` production if
+     * possible.
+     * Set `this._lastIntValue` if it consumed the next characters successfully.
+     * ```
+     * ClassEscape[U, N]::
+     *      `b`
+     *      [+U] `-`
+     *      [annexB][~U] `c` ClassControlLetter
+     *      CharacterClassEscape[?U]
+     *      CharacterEscape[?U, ?N]
+     * ClassControlLetter::
+     *      DecimalDigit
+     *      `_`
+     * ```
+     * @returns `true` if it consumed the next characters successfully.
+     */
+    private consumeClassEscape(): boolean {
+        const start = this.index
+
+        // `b`
+        if (this.eat(LatinSmallLetterB)) {
+            this._lastIntValue = Backspace
+            this.onCharacter(start - 1, this.index, this._lastIntValue)
+            return true
+        }
+
+        // [+U] `-`
+        if (this._uFlag && this.eat(HyphenMinus)) {
+            this._lastIntValue = HyphenMinus
+            this.onCharacter(start - 1, this.index, this._lastIntValue)
+            return true
+        }
+
+        // [annexB][~U] `c` ClassControlLetter
+        let cp = 0
+        if (
+            !this.strict &&
+            !this._uFlag &&
+            this.currentCodePoint === LatinSmallLetterC &&
+            (isDecimalDigit((cp = this.nextCodePoint)) || cp === LowLine)
+        ) {
+            this.advance()
+            this.advance()
+            this._lastIntValue = cp % 0x20
+            this.onCharacter(start - 1, this.index, this._lastIntValue)
+            return true
+        }
+
+        return (
+            this.consumeCharacterClassEscape() || this.consumeCharacterEscape()
+        )
+    }
+
+    /**
+     * Eat the next characters as a RegExp `GroupName` production if possible.
+     * Set `this._lastStrValue` if the group name existed.
+     * ```
+     * GroupName[U]::
+     *      `<` RegExpIdentifierName[?U] `>`
+     * ```
+     * @returns `true` if it ate the next characters successfully.
+     */
+    private eatGroupName(): boolean {
+        if (this.eat(LessThanSign)) {
+            if (this.eatRegExpIdentifierName() && this.eat(GreaterThanSign)) {
+                return true
+            }
+            this.raise("Invalid capture group name")
+        }
+        return false
+    }
+
+    /**
+     * Eat the next characters as a RegExp `RegExpIdentifierName` production if
+     * possible.
+     * Set `this._lastStrValue` if the identifier name existed.
+     * ```
+     * RegExpIdentifierName[U]::
+     *      RegExpIdentifierStart[?U]
+     *      RegExpIdentifierName[?U] RegExpIdentifierPart[?U]
+     * ```
+     * @returns `true` if it ate the next characters successfully.
+     */
+    private eatRegExpIdentifierName(): boolean {
+        if (this.eatRegExpIdentifierStart()) {
+            this._lastStrValue = String.fromCodePoint(this._lastIntValue)
+            while (this.eatRegExpIdentifierPart()) {
+                this._lastStrValue += String.fromCodePoint(this._lastIntValue)
+            }
+            return true
+        }
+        return false
+    }
+
+    /**
+     * Eat the next characters as a RegExp `RegExpIdentifierStart` production if
+     * possible.
+     * Set `this._lastIntValue` if the identifier start existed.
+     * ```
+     * RegExpIdentifierStart[U] ::
+     *      UnicodeIDStart
+     *      `$`
+     *      `_`
+     *      `\` RegExpUnicodeEscapeSequence[?U]
+     * ```
+     * @returns `true` if it ate the next characters successfully.
+     */
+    private eatRegExpIdentifierStart(): boolean {
+        const start = this.index
+        let cp = this.currentCodePoint
+        this.advance()
+
+        if (cp === ReverseSolidus && this.eatRegExpUnicodeEscapeSequence()) {
+            cp = this._lastIntValue
+        }
+        if (isRegExpIdentifierStart(cp)) {
+            this._lastIntValue = cp
+            return true
+        }
+
+        if (this.index !== start) {
+            this.rewind(start)
+        }
+        return false
+    }
+
+    /**
+     * Eat the next characters as a RegExp `RegExpIdentifierPart` production if
+     * possible.
+     * Set `this._lastIntValue` if the identifier part existed.
+     * ```
+     * RegExpIdentifierPart[U] ::
+     *      UnicodeIDContinue
+     *      `$`
+     *      `_`
+     *      `\` RegExpUnicodeEscapeSequence[?U]
+     *      <ZWNJ>
+     *      <ZWJ>
+     * ```
+     * @returns `true` if it ate the next characters successfully.
+     */
+    private eatRegExpIdentifierPart(): boolean {
+        const start = this.index
+        let cp = this.currentCodePoint
+        this.advance()
+
+        if (cp === ReverseSolidus && this.eatRegExpUnicodeEscapeSequence()) {
+            cp = this._lastIntValue
+        }
+        if (isRegExpIdentifierPart(cp)) {
+            this._lastIntValue = cp
+            return true
+        }
+
+        if (this.index !== start) {
+            this.rewind(start)
+        }
+        return false
+    }
+
+    /**
+     * Eat the next characters as the follwoing alternatives if possible.
+     * Set `this._lastIntValue` if it ate the next characters successfully.
+     * ```
+     *      `c` ControlLetter
+     * ```
+     * @returns `true` if it ate the next characters successfully.
+     */
+    private eatCControlLetter(): boolean {
+        const start = this.index
+        if (this.eat(LatinSmallLetterC)) {
+            if (this.eatControlLetter()) {
+                return true
+            }
+            this.rewind(start)
+        }
+        return false
+    }
+
+    /**
+     * Eat the next characters as the follwoing alternatives if possible.
+     * Set `this._lastIntValue` if it ate the next characters successfully.
+     * ```
+     *      `0` [lookahead ∉ DecimalDigit]
+     * ```
+     * @returns `true` if it ate the next characters successfully.
+     */
+    private eatZero(): boolean {
+        if (
+            this.currentCodePoint === DigitZero &&
+            !isDecimalDigit(this.nextCodePoint)
+        ) {
+            this._lastIntValue = 0
+            this.advance()
+            return true
+        }
+        return false
+    }
+
+    /**
+     * Eat the next characters as a RegExp `ControlEscape` production if
+     * possible.
+     * Set `this._lastIntValue` if it ate the next characters successfully.
+     * ```
+     * ControlEscape:: one of
+     *      f n r t v
+     * ```
+     * @returns `true` if it ate the next characters successfully.
+     */
+    private eatControlEscape(): boolean {
+        if (this.eat(LatinSmallLetterF)) {
+            this._lastIntValue = FormFeed
+            return true
+        }
+        if (this.eat(LatinSmallLetterN)) {
+            this._lastIntValue = LineFeed
+            return true
+        }
+        if (this.eat(LatinSmallLetterR)) {
+            this._lastIntValue = CarriageReturn
+            return true
+        }
+        if (this.eat(LatinSmallLetterT)) {
+            this._lastIntValue = CharacterTabulation
+            return true
+        }
+        if (this.eat(LatinSmallLetterV)) {
+            this._lastIntValue = LineTabulation
+            return true
+        }
+        return false
+    }
+
+    /**
+     * Eat the next characters as a RegExp `ControlLetter` production if
+     * possible.
+     * Set `this._lastIntValue` if it ate the next characters successfully.
+     * ```
+     * ControlLetter:: one of
+     *      a b c d e f g h i j k l m n o p q r s t u v w x y z
+     *      A B C D E F G H I J K L M N O P Q R S T U V W X Y Z
+     * ```
+     * @returns `true` if it ate the next characters successfully.
+     */
+    private eatControlLetter(): boolean {
+        const cp = this.currentCodePoint
+        if (isLatinLetter(cp)) {
+            this.advance()
+            this._lastIntValue = cp % 0x20
+            return true
+        }
+        return false
+    }
+
+    /**
+     * Eat the next characters as a RegExp `RegExpUnicodeEscapeSequence`
+     * production if possible.
+     * Set `this._lastIntValue` if it ate the next characters successfully.
+     * ```
+     * RegExpUnicodeEscapeSequence[U]::
+     *      [+U] `u` LeadSurrogate `\u` TrailSurrogate
+     *      [+U] `u` LeadSurrogate
+     *      [+U] `u` TrailSurrogate
+     *      [+U] `u` NonSurrogate
+     *      [~U] `u` Hex4Digits
+     *      [+U] `u{` CodePoint `}`
+     * ```
+     * @returns `true` if it ate the next characters successfully.
+     */
+    private eatRegExpUnicodeEscapeSequence(): boolean {
+        const start = this.index
+
+        if (this.eat(LatinSmallLetterU)) {
+            if (
+                (this._uFlag && this.eatRegExpUnicodeSurrogatePairEscape()) ||
+                this.eatFixedHexDigits(4) ||
+                (this._uFlag && this.eatRegExpUnicodeCodePointEscape())
+            ) {
+                return true
+            }
+
+            if (this.strict || this._uFlag) {
+                this.raise("Invalid unicode escape")
+            }
+            this.rewind(start)
+        }
+
+        return false
+    }
+
+    /**
+     * Eat the next characters as the following alternatives if possible.
+     * Set `this._lastIntValue` if it ate the next characters successfully.
+     * ```
+     *      LeadSurrogate `\u` TrailSurrogate
+     * ```
+     * @returns `true` if it ate the next characters successfully.
+     */
+    private eatRegExpUnicodeSurrogatePairEscape(): boolean {
+        const start = this.index
+
+        if (this.eatFixedHexDigits(4)) {
+            const lead = this._lastIntValue
+            if (
+                lead >= 0xd800 &&
+                lead <= 0xdbff &&
+                this.eat(ReverseSolidus) &&
+                this.eat(LatinSmallLetterU) &&
+                this.eatFixedHexDigits(4)
+            ) {
+                const trail = this._lastIntValue
+                if (trail >= 0xdc00 && trail <= 0xdfff) {
+                    this._lastIntValue =
+                        (lead - 0xd800) * 0x400 + (trail - 0xdc00) + 0x10000
+                    return true
+                }
+            }
+
+            this.rewind(start)
+        }
+
+        return false
+    }
+
+    /**
+     * Eat the next characters as the following alternatives if possible.
+     * Set `this._lastIntValue` if it ate the next characters successfully.
+     * ```
+     *      `{` CodePoint `}`
+     * ```
+     * @returns `true` if it ate the next characters successfully.
+     */
+    private eatRegExpUnicodeCodePointEscape(): boolean {
+        const start = this.index
+
+        if (
+            this.eat(LeftCurlyBracket) &&
+            this.eatHexDigits() &&
+            this.eat(RightCurlyBracket) &&
+            isValidUnicode(this._lastIntValue)
+        ) {
+            return true
+        }
+
+        this.rewind(start)
+        return false
+    }
+
+    /**
+     * Eat the next characters as a RegExp `IdentityEscape` production if
+     * possible.
+     * Set `this._lastIntValue` if it ate the next characters successfully.
+     * ```
+     * IdentityEscape[U, N]::
+     *      [+U] SyntaxCharacter
+     *      [+U] `/`
+     *      [strict][~U] SourceCharacter but not UnicodeIDContinue
+     *      [annexB][~U] SourceCharacterIdentityEscape[?N]
+     * SourceCharacterIdentityEscape[N]::
+     *      [~N] SourceCharacter but not c
+     *      [+N] SourceCharacter but not one of c k
+     * ```
+     * @returns `true` if it ate the next characters successfully.
+     */
+    private eatIdentityEscape(): boolean {
+        const cp = this.currentCodePoint
+        if (this.isValidIdentityEscape(cp)) {
+            this._lastIntValue = cp
+            this.advance()
+            return true
+        }
+        return false
+    }
+    private isValidIdentityEscape(cp: number): boolean {
+        if (cp === -1) {
+            return false
+        }
+        if (this._uFlag) {
+            return isSyntaxCharacter(cp) || cp === Solidus
+        }
+        if (this.strict) {
+            return !isIdContinue(cp)
+        }
+        if (this._nFlag) {
+            return !(cp === LatinSmallLetterC || cp === LatinSmallLetterK)
+        }
+        return cp !== LatinSmallLetterC
+    }
+
+    /**
+     * Eat the next characters as a RegExp `DecimalEscape` production if
+     * possible.
+     * Set `this._lastIntValue` if it ate the next characters successfully.
+     * ```
+     * DecimalEscape::
+     *      NonZeroDigit DecimalDigits(opt) [lookahead ∉ DecimalDigit]
+     * ```
+     * @returns `true` if it ate the next characters successfully.
+     */
+    private eatDecimalEscape(): boolean {
+        this._lastIntValue = 0
+        let cp = this.currentCodePoint
+        if (cp >= DigitOne && cp <= DigitNine) {
+            do {
+                this._lastIntValue = 10 * this._lastIntValue + (cp - DigitZero)
+                this.advance()
+            } while (
+                (cp = this.currentCodePoint) >= DigitZero &&
+                cp <= DigitNine
+            )
+            return true
+        }
+        return false
+    }
+
+    /**
+     * Eat the next characters as a RegExp `UnicodePropertyValueExpression`
+     * production if possible.
+     * Set `this._lastKeyValue` and `this._lastValValue` if it ate the next
+     * characters successfully.
+     * ```
+     * UnicodePropertyValueExpression::
+     *      UnicodePropertyName `=` UnicodePropertyValue
+     *      LoneUnicodePropertyNameOrValue
+     * ```
+     * @returns `true` if it ate the next characters successfully.
+     */
     private eatUnicodePropertyValueExpression(): boolean {
         const start = this.index
 
@@ -1680,8 +2231,16 @@ export class RegExpValidator {
         return false
     }
 
-    // UnicodePropertyName ::
-    //   UnicodePropertyNameCharacters
+    /**
+     * Eat the next characters as a RegExp `UnicodePropertyName` production if
+     * possible.
+     * Set `this._lastStrValue` if it ate the next characters successfully.
+     * ```
+     * UnicodePropertyName::
+     *      UnicodePropertyNameCharacters
+     * ```
+     * @returns `true` if it ate the next characters successfully.
+     */
     private eatUnicodePropertyName(): boolean {
         this._lastStrValue = ""
         while (isUnicodePropertyNameCharacter(this.currentCodePoint)) {
@@ -1691,8 +2250,16 @@ export class RegExpValidator {
         return this._lastStrValue !== ""
     }
 
-    // UnicodePropertyValue ::
-    //   UnicodePropertyValueCharacters
+    /**
+     * Eat the next characters as a RegExp `UnicodePropertyValue` production if
+     * possible.
+     * Set `this._lastStrValue` if it ate the next characters successfully.
+     * ```
+     * UnicodePropertyValue::
+     *      UnicodePropertyValueCharacters
+     * ```
+     * @returns `true` if it ate the next characters successfully.
+     */
     private eatUnicodePropertyValue(): boolean {
         this._lastStrValue = ""
         while (isUnicodePropertyValueCharacter(this.currentCodePoint)) {
@@ -1702,135 +2269,38 @@ export class RegExpValidator {
         return this._lastStrValue !== ""
     }
 
-    // LoneUnicodePropertyNameOrValue ::
-    //   UnicodePropertyValueCharacters
+    /**
+     * Eat the next characters as a RegExp `UnicodePropertyValue` production if
+     * possible.
+     * Set `this._lastStrValue` if it ate the next characters successfully.
+     * ```
+     * LoneUnicodePropertyNameOrValue::
+     *      UnicodePropertyValueCharacters
+     * ```
+     * @returns `true` if it ate the next characters successfully.
+     */
     private eatLoneUnicodePropertyNameOrValue(): boolean {
         return this.eatUnicodePropertyValue()
     }
 
-    // https://www.ecma-international.org/ecma-262/8.0/#prod-CharacterClass
-    private eatCharacterClass(): boolean {
-        const start = this.index
-        if (this.eat(LeftSquareBracket)) {
-            const negate = this.eat(CircumflexAccent)
-            this.onCharacterClassEnter(start, negate)
-            this.classRanges()
-            if (!this.eat(RightSquareBracket)) {
-                this.raise("Unterminated character class")
-            }
-            this.onCharacterClassLeave(start, this.index, negate)
-            return true
-        }
-        return false
-    }
-
-    // https://www.ecma-international.org/ecma-262/8.0/#prod-ClassRanges
-    // https://www.ecma-international.org/ecma-262/8.0/#prod-NonemptyClassRanges
-    // https://www.ecma-international.org/ecma-262/8.0/#prod-NonemptyClassRangesNoDash
-    private classRanges(): void {
-        let start = this.index
-        while (this.eatClassAtom()) {
-            const left = this._lastIntValue
-            const hyphenStart = this.index
-            if (this.eat(HyphenMinus)) {
-                this.onCharacter(hyphenStart, this.index, HyphenMinus)
-
-                if (this.eatClassAtom()) {
-                    const right = this._lastIntValue
-
-                    if (left === -1 || right === -1) {
-                        if (this.strict) {
-                            this.raise("Invalid character class")
-                        }
-                    } else if (left > right) {
-                        this.raise("Range out of order in character class")
-                    } else {
-                        this.onCharacterClassRange(
-                            start,
-                            this.index,
-                            left,
-                            right,
-                        )
-                    }
-                }
-            }
-
-            start = this.index
-        }
-    }
-
-    // https://www.ecma-international.org/ecma-262/8.0/#prod-ClassAtom
-    // https://www.ecma-international.org/ecma-262/8.0/#prod-ClassAtomNoDash
-    private eatClassAtom(): boolean {
-        const start = this.index
-
-        if (this.eat(ReverseSolidus)) {
-            if (this.eatClassEscape()) {
-                return true
-            }
-            if (this._uFlag) {
-                this.raise("Invalid escape")
-            }
-            this.rewind(start)
-        }
-
-        const cp = this.currentCodePoint
-        if (cp !== -1 && cp !== RightSquareBracket) {
-            this.advance()
-            this._lastIntValue = cp
-            this.onCharacter(start, this.index, cp)
-            return true
-        }
-
-        return false
-    }
-
-    // https://www.ecma-international.org/ecma-262/8.0/#prod-strict-ClassEscape
-    private eatClassEscape(): boolean {
-        const start = this.index
-
-        if (this.eat(LatinSmallLetterB)) {
-            this._lastIntValue = Backspace
-            this.onCharacter(start - 1, this.index, Backspace)
-            return true
-        }
-
-        if (this._uFlag && this.eat(HyphenMinus)) {
-            this._lastIntValue = HyphenMinus
-            this.onCharacter(start - 1, this.index, HyphenMinus)
-            return true
-        }
-
-        if (!this._uFlag && this.eat(LatinSmallLetterC)) {
-            if (this.eatClassControlLetter()) {
-                this.onCharacter(start - 1, this.index, this._lastIntValue)
-                return true
-            }
-            this.rewind(start)
-        }
-
-        return this.eatCharacterClassEscape() || this.eatCharacterEscape()
-    }
-
-    // https://www.ecma-international.org/ecma-262/8.0/#prod-strict-ClassControlLetter
-    private eatClassControlLetter(): boolean {
-        const cp = this.currentCodePoint
-        if (isDecimalDigit(cp) || cp === LowLine) {
-            this.advance()
-            this._lastIntValue = cp % 0x20
-            return true
-        }
-        return false
-    }
-
-    // https://www.ecma-international.org/ecma-262/8.0/#prod-HexEscapeSequence
+    /**
+     * Eat the next characters as a `HexEscapeSequence` production if possible.
+     * Set `this._lastIntValue` if it ate the next characters successfully.
+     * ```
+     * HexEscapeSequence::
+     *      `x` HexDigit HexDigit
+     * HexDigit:: one of
+     *      0 1 2 3 4 5 6 7 8 9 a b c d e f A B C D E F
+     * ```
+     * @returns `true` if it ate the next characters successfully.
+     */
     private eatHexEscapeSequence(): boolean {
         const start = this.index
         if (this.eat(LatinSmallLetterX)) {
             if (this.eatFixedHexDigits(2)) {
                 return true
             }
-            if (this._uFlag) {
+            if (this._uFlag || this.strict) {
                 this.raise("Invalid escape")
             }
             this.rewind(start)
@@ -1838,7 +2308,18 @@ export class RegExpValidator {
         return false
     }
 
-    // https://www.ecma-international.org/ecma-262/8.0/#prod-DecimalDigits
+    /**
+     * Eat the next characters as a `DecimalDigits` production if possible.
+     * Set `this._lastIntValue` if it ate the next characters successfully.
+     * ```
+     * DecimalDigits::
+     *      DecimalDigit
+     *      DecimalDigits DecimalDigit
+     * DecimalDigit:: one of
+     *      0 1 2 3 4 5 6 7 8 9
+     * ```
+     * @returns `true` if it ate the next characters successfully.
+     */
     private eatDecimalDigits(): boolean {
         const start = this.index
 
@@ -1852,7 +2333,18 @@ export class RegExpValidator {
         return this.index !== start
     }
 
-    // https://www.ecma-international.org/ecma-262/8.0/#prod-HexDigits
+    /**
+     * Eat the next characters as a `HexDigits` production if possible.
+     * Set `this._lastIntValue` if it ate the next characters successfully.
+     * ```
+     * HexDigits::
+     *      HexDigit
+     *      HexDigits HexDigit
+     * HexDigit:: one of
+     *      0 1 2 3 4 5 6 7 8 9 a b c d e f A B C D E F
+     * ```
+     * @returns `true` if it ate the next characters successfully.
+     */
     private eatHexDigits(): boolean {
         const start = this.index
         this._lastIntValue = 0
@@ -1864,8 +2356,24 @@ export class RegExpValidator {
         return this.index !== start
     }
 
-    // https://www.ecma-international.org/ecma-262/8.0/#prod-strict-LegacyOctalEscapeSequence
-    // Allows only 0-377(octal) i.e. 0-255(decimal).
+    /**
+     * Eat the next characters as a `HexDigits` production if possible.
+     * Set `this._lastIntValue` if it ate the next characters successfully.
+     * ```
+     * LegacyOctalEscapeSequence::
+     *      OctalDigit [lookahead ∉ OctalDigit]
+     *      ZeroToThree OctalDigit [lookahead ∉ OctalDigit]
+     *      FourToSeven OctalDigit
+     *      ZeroToThree OctalDigit OctalDigit
+     * OctalDigit:: one of
+     *      0 1 2 3 4 5 6 7
+     * ZeroToThree:: one of
+     *      0 1 2 3
+     * FourToSeven:: one of
+     *      4 5 6 7
+     * ```
+     * @returns `true` if it ate the next characters successfully.
+     */
     private eatLegacyOctalEscapeSequence(): boolean {
         if (this.eatOctalDigit()) {
             const n1 = this._lastIntValue
@@ -1884,7 +2392,15 @@ export class RegExpValidator {
         return false
     }
 
-    // https://www.ecma-international.org/ecma-262/8.0/#prod-OctalDigit
+    /**
+     * Eat the next characters as a `OctalDigit` production if possible.
+     * Set `this._lastIntValue` if it ate the next characters successfully.
+     * ```
+     * OctalDigit:: one of
+     *      0 1 2 3 4 5 6 7
+     * ```
+     * @returns `true` if it ate the next characters successfully.
+     */
     private eatOctalDigit(): boolean {
         const cp = this.currentCodePoint
         if (isOctalDigit(cp)) {
@@ -1896,9 +2412,16 @@ export class RegExpValidator {
         return false
     }
 
-    // https://www.ecma-international.org/ecma-262/8.0/#prod-Hex4Digits
-    // https://www.ecma-international.org/ecma-262/8.0/#prod-HexDigit
-    // And HexDigit HexDigit in https://www.ecma-international.org/ecma-262/8.0/#prod-HexEscapeSequence
+    /**
+     * Eat the next characters as the given number of `HexDigit` productions if
+     * possible.
+     * Set `this._lastIntValue` if it ate the next characters successfully.
+     * ```
+     * HexDigit:: one of
+     *      0 1 2 3 4 5 6 7 8 9 a b c d e f A B C D E F
+     * ```
+     * @returns `true` if it ate the next characters successfully.
+     */
     private eatFixedHexDigits(length: number): boolean {
         const start = this.index
         this._lastIntValue = 0

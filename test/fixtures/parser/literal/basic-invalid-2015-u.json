@@ -379,25 +379,25 @@
     "/\\u{/u": {
       "error": {
         "message": "Invalid regular expression: /\\u{/u: Invalid unicode escape",
-        "index": 4
+        "index": 3
       }
     },
     "/\\u{z/u": {
       "error": {
         "message": "Invalid regular expression: /\\u{z/u: Invalid unicode escape",
-        "index": 4
+        "index": 3
       }
     },
     "/\\u{20/u": {
       "error": {
         "message": "Invalid regular expression: /\\u{20/u: Invalid unicode escape",
-        "index": 6
+        "index": 3
       }
     },
     "/\\u{110000}/u": {
       "error": {
         "message": "Invalid regular expression: /\\u{110000}/u: Invalid unicode escape",
-        "index": 11
+        "index": 3
       }
     },
     "/\\377/u": {
@@ -487,25 +487,25 @@
     "/[\\u{]/u": {
       "error": {
         "message": "Invalid regular expression: /[\\u{]/u: Invalid unicode escape",
-        "index": 5
+        "index": 4
       }
     },
     "/[\\u{z]/u": {
       "error": {
         "message": "Invalid regular expression: /[\\u{z]/u: Invalid unicode escape",
-        "index": 5
+        "index": 4
       }
     },
     "/[\\u{20]/u": {
       "error": {
         "message": "Invalid regular expression: /[\\u{20]/u: Invalid unicode escape",
-        "index": 7
+        "index": 4
       }
     },
     "/[\\u{110000}]/u": {
       "error": {
         "message": "Invalid regular expression: /[\\u{110000}]/u: Invalid unicode escape",
-        "index": 12
+        "index": 4
       }
     },
     "/[\\77]/u": {
@@ -619,7 +619,7 @@
     "/[\\u{2-\\u{1}]/u": {
       "error": {
         "message": "Invalid regular expression: /[\\u{2-\\u{1}]/u: Invalid unicode escape",
-        "index": 6
+        "index": 4
       }
     },
     "/[\\a-\\z]/u": {

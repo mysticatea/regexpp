@@ -49,7 +49,7 @@
     "version": "npm run -s build",
     "postversion": "git push && git push --tags",
     "prewatch": "npm run -s clean",
-    "watch": "_mocha \"test/*.ts\" --require ts-node/register --reporter dot --timeout 10000 --watch-extensions .ts --watch --growl"
+    "watch": "_mocha \"test/*.ts\" --require ts-node/register --reporter dot --timeout 10000 --watch-extensions ts --watch --growl"
   },
   "repository": {
     "type": "git",
