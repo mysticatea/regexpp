@@ -1,0 +1,44 @@
+{
+  "options": {
+    "ecmaVersion": 2020,
+    "strict": false
+  },
+  "patterns": {
+    "/(?<\\ud83d\\ude80>.)/": {
+      "error": {
+        "message": "Invalid regular expression: /(?<\\ud83d\\ude80>.)/: Invalid capture group name",
+        "index": 4
+      }
+    },
+    "/(?<\\ud83d\\ude80>.)/u": {
+      "error": {
+        "message": "Invalid regular expression: /(?<\\ud83d\\ude80>.)/u: Invalid capture group name",
+        "index": 4
+      }
+    },
+    "/(?<\\u{1f680}>.)/": {
+      "error": {
+        "message": "Invalid regular expression: /(?<\\u{1f680}>.)/: Invalid capture group name",
+        "index": 4
+      }
+    },
+    "/(?<\\u{1f680}>.)/u": {
+      "error": {
+        "message": "Invalid regular expression: /(?<\\u{1f680}>.)/u: Invalid capture group name",
+        "index": 4
+      }
+    },
+    "/(?<🚀>.)/": {
+      "error": {
+        "message": "Invalid regular expression: /(?<🚀>.)/: Invalid capture group name",
+        "index": 4
+      }
+    },
+    "/(?<🚀>.)/u": {
+      "error": {
+        "message": "Invalid regular expression: /(?<🚀>.)/u: Invalid capture group name",
+        "index": 4
+      }
+    }
+  }
+}

@@ -119,3 +119,15 @@ export function digitToInt(code: number): number {
     }
     return code - DigitZero
 }
+
+export function isLeadSurrogate(code: number): boolean {
+    return code >= 0xd800 && code <= 0xdbff
+}
+
+export function isTrailSurrogate(code: number): boolean {
+    return code >= 0xdc00 && code <= 0xdfff
+}
+
+export function combineSurrogatePair(lead: number, trail: number): number {
+    return (lead - 0xd800) * 0x400 + (trail - 0xdc00) + 0x10000
+}

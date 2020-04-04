@@ -20,16 +20,6 @@ import {
     FullStop,
     GreaterThanSign,
     HyphenMinus,
-    isDecimalDigit,
-    isHexDigit,
-    isIdContinue,
-    isIdStart,
-    isLatinLetter,
-    isLineTerminator,
-    isOctalDigit,
-    isValidLoneUnicodeProperty,
-    isValidUnicodeProperty,
-    isValidUnicode,
     LatinCapitalLetterB,
     LatinCapitalLetterD,
     LatinCapitalLetterP,
@@ -70,6 +60,19 @@ import {
     VerticalLine,
     ZeroWidthJoiner,
     ZeroWidthNonJoiner,
+    combineSurrogatePair,
+    isDecimalDigit,
+    isHexDigit,
+    isIdContinue,
+    isIdStart,
+    isLatinLetter,
+    isLeadSurrogate,
+    isLineTerminator,
+    isOctalDigit,
+    isTrailSurrogate,
+    isValidLoneUnicodeProperty,
+    isValidUnicodeProperty,
+    isValidUnicode,
 } from "./unicode"
 
 function isSyntaxCharacter(cp: number): boolean {
@@ -1861,18 +1864,31 @@ export class RegExpValidator {
      *      UnicodeIDStart
      *      `$`
      *      `_`
-     *      `\` RegExpUnicodeEscapeSequence[?U]
+     *      `\` RegExpUnicodeEscapeSequence[+U]
+     *      [~U] UnicodeLeadSurrogate UnicodeTrailSurrogate
      * ```
      * @returns `true` if it ate the next characters successfully.
      */
     private eatRegExpIdentifierStart(): boolean {
         const start = this.index
+        const forceUFlag = !this._uFlag && this.ecmaVersion >= 2020
         let cp = this.currentCodePoint
         this.advance()
 
-        if (cp === ReverseSolidus && this.eatRegExpUnicodeEscapeSequence()) {
+        if (
+            cp === ReverseSolidus &&
+            this.eatRegExpUnicodeEscapeSequence(forceUFlag)
+        ) {
             cp = this._lastIntValue
+        } else if (
+            forceUFlag &&
+            isLeadSurrogate(cp) &&
+            isTrailSurrogate(this.currentCodePoint)
+        ) {
+            cp = combineSurrogatePair(cp, this.currentCodePoint)
+            this.advance()
         }
+
         if (isRegExpIdentifierStart(cp)) {
             this._lastIntValue = cp
             return true
@@ -1893,7 +1909,8 @@ export class RegExpValidator {
      *      UnicodeIDContinue
      *      `$`
      *      `_`
-     *      `\` RegExpUnicodeEscapeSequence[?U]
+     *      `\` RegExpUnicodeEscapeSequence[+U]
+     *      [~U] UnicodeLeadSurrogate UnicodeTrailSurrogate
      *      <ZWNJ>
      *      <ZWJ>
      * ```
@@ -1901,12 +1918,24 @@ export class RegExpValidator {
      */
     private eatRegExpIdentifierPart(): boolean {
         const start = this.index
+        const forceUFlag = !this._uFlag && this.ecmaVersion >= 2020
         let cp = this.currentCodePoint
         this.advance()
 
-        if (cp === ReverseSolidus && this.eatRegExpUnicodeEscapeSequence()) {
+        if (
+            cp === ReverseSolidus &&
+            this.eatRegExpUnicodeEscapeSequence(forceUFlag)
+        ) {
             cp = this._lastIntValue
+        } else if (
+            forceUFlag &&
+            isLeadSurrogate(cp) &&
+            isTrailSurrogate(this.currentCodePoint)
+        ) {
+            cp = combineSurrogatePair(cp, this.currentCodePoint)
+            this.advance()
         }
+
         if (isRegExpIdentifierPart(cp)) {
             this._lastIntValue = cp
             return true
@@ -2027,19 +2056,19 @@ export class RegExpValidator {
      * ```
      * @returns `true` if it ate the next characters successfully.
      */
-    private eatRegExpUnicodeEscapeSequence(): boolean {
+    private eatRegExpUnicodeEscapeSequence(forceUFlag = false): boolean {
         const start = this.index
+        const uFlag = forceUFlag || this._uFlag
 
         if (this.eat(LatinSmallLetterU)) {
             if (
-                (this._uFlag && this.eatRegExpUnicodeSurrogatePairEscape()) ||
+                (uFlag && this.eatRegExpUnicodeSurrogatePairEscape()) ||
                 this.eatFixedHexDigits(4) ||
-                (this._uFlag && this.eatRegExpUnicodeCodePointEscape())
+                (uFlag && this.eatRegExpUnicodeCodePointEscape())
             ) {
                 return true
             }
-
-            if (this.strict || this._uFlag) {
+            if (this.strict || uFlag) {
                 this.raise("Invalid unicode escape")
             }
             this.rewind(start)
@@ -2062,16 +2091,14 @@ export class RegExpValidator {
         if (this.eatFixedHexDigits(4)) {
             const lead = this._lastIntValue
             if (
-                lead >= 0xd800 &&
-                lead <= 0xdbff &&
+                isLeadSurrogate(lead) &&
                 this.eat(ReverseSolidus) &&
                 this.eat(LatinSmallLetterU) &&
                 this.eatFixedHexDigits(4)
             ) {
                 const trail = this._lastIntValue
-                if (trail >= 0xdc00 && trail <= 0xdfff) {
-                    this._lastIntValue =
-                        (lead - 0xd800) * 0x400 + (trail - 0xdc00) + 0x10000
+                if (isTrailSurrogate(trail)) {
+                    this._lastIntValue = combineSurrogatePair(lead, trail)
                     return true
                 }
             }
