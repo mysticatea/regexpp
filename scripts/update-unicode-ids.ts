@@ -62,22 +62,28 @@ export function isIdStart(cp: number): boolean {
     ${makeSmallCondition(idStartSmall)}
     return isLargeIdStart(cp)
 }
+
 export function isIdContinue(cp: number): boolean {
     ${makeSmallCondition(idContinueSmall)}
     return isLargeIdStart(cp) || isLargeIdContinue(cp)
 }
+
 function isLargeIdStart(cp: number): boolean {
     return isInRange(cp, largeIdStartRanges || (largeIdStartRanges = initLargeIdStartRanges()))
 }
+
 function isLargeIdContinue(cp: number): boolean {
     return isInRange(cp, largeIdContinueRanges || (largeIdContinueRanges = initLargeIdContinueRanges()))
 }
+
 function initLargeIdStartRanges(): number[] {
     ${makeInitLargeIdRanges(idStartLarge)}
 }
+
 function initLargeIdContinueRanges(): number[] {
     ${makeInitLargeIdRanges(idContinueLarge)}
 }
+
 function isInRange(cp: number, ranges: number[]): boolean {
     let l = 0, r = ranges.length / 2 | 0, i = 0, min = 0, max = 0
     while (l < r) {
@@ -93,7 +99,16 @@ function isInRange(cp: number, ranges: number[]): boolean {
         }
     }
     return false
-}`
+}
+
+function restoreRanges(diffs: number[]): number[] {
+    let last = 0
+    for (let i = 0; i < diffs.length; ++i) {
+        last = (diffs[i] += last)
+    }
+    return diffs
+}
+`
 
     logger.log("Formatting code...")
     const engine = new CLIEngine({
@@ -164,12 +179,14 @@ function makeSmallCondition(ranges: [number, number][]): string {
 }
 
 function makeInitLargeIdRanges(ranges: [number, number][]): string {
-    const lines: string[] = ["return ["]
+    const strings: string[] = ["return restoreRanges(["]
+    let last = 0
     for (const [min, max] of ranges) {
-        lines.push(`0x${min.toString(16)}, 0x${max.toString(16)},`)
+        strings.push(`${min - last},${max - min},`)
+        last = max
     }
-    lines.push("]")
-    return lines.join("\n")
+    strings.push("]) //eslint-disable-line @mysticatea/prettier")
+    return strings.join("")
 }
 
 function save(content: string): Promise<void> {
