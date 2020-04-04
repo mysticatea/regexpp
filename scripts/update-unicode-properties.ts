@@ -87,46 +87,47 @@ type Datum = {
     logger.log("Generating code...")
     let code = `/* This file was generated with ECMAScript specifications. */
 
-const gcNamePattern = new Set(["General_Category", "gc"])
-const scNamePattern = new Set(["Script", "Script_Extensions", "sc", "scx"])
-const gcValuePatterns = {
-    ${Array.from(
-        Object.keys(data),
-        version => `es${version}: null as Set<string> | null,`,
-    ).join("\n")}
-}
-const scValuePatterns = {
-    ${Array.from(
-        Object.keys(data),
-        version => `es${version}: null as Set<string> | null,`,
-    ).join("\n")}
-}
-const binPropertyPatterns = {
-    ${Array.from(
-        Object.keys(data),
-        version => `es${version}: null as Set<string> | null,`,
-    ).join("\n")}
-}
+${makeClassDeclarationCode(Object.keys(data))}
+
+const gcNameSet = new Set(["General_Category", "gc"])
+const scNameSet = new Set(["Script", "Script_Extensions", "sc", "scx"])
+const gcValueSets = new DataSet(${Object.values(data)
+        .map(d => makeDataCode(d.gcValues))
+        .join(",")})
+const scValueSets = new DataSet(${Object.values(data)
+        .map(d => makeDataCode(d.scValues))
+        .join(",")})
+const binPropertySets = new DataSet(${Object.values(data)
+        .map(d => makeDataCode(d.binProperties))
+        .join(",")})
 
 export function isValidUnicodeProperty(version: number, name: string, value: string): boolean {
-    if (gcNamePattern.has(name)) {
-        ${Array.from(Object.entries(data), ([version, { gcValues }]) =>
-            makeVerificationCode(version, "gcValuePatterns", gcValues, 52),
-        ).join("\n")}
+    if (gcNameSet.has(name)) {
+        return ${Object.entries(data)
+            .map(([version, { gcValues }]) =>
+                makeVerificationCode(version, "gcValueSets", gcValues),
+            )
+            .filter(Boolean)
+            .join(" || ")}
     }
-    if (scNamePattern.has(name)) {
-        ${Array.from(Object.entries(data), ([version, { scValues }]) =>
-            makeVerificationCode(version, "scValuePatterns", scValues, 52),
-        ).join("\n")}
+    if (scNameSet.has(name)) {
+        return ${Object.entries(data)
+            .map(([version, { scValues }]) =>
+                makeVerificationCode(version, "scValueSets", scValues),
+            )
+            .filter(Boolean)
+            .join(" || ")}
     }
     return false
 }
 
 export function isValidLoneUnicodeProperty(version: number, value: string): boolean {
-    ${Array.from(Object.entries(data), ([version, { binProperties }]) =>
-        makeVerificationCode(version, "binPropertyPatterns", binProperties, 56),
-    ).join("\n")}
-    return false
+    return ${Object.entries(data)
+        .map(([version, { binProperties }]) =>
+            makeVerificationCode(version, "binPropertySets", binProperties),
+        )
+        .filter(Boolean)
+        .join(" || ")}
 }
 `
 
@@ -172,28 +173,49 @@ function collectValues(
     return values
 }
 
+function makeClassDeclarationCode(versions: string[]): string {
+    const fields = versions
+        .map(
+            v =>
+                `private _raw${v}: string\nprivate _set${v}: Set<string> | undefined`,
+        )
+        .join("\n")
+    const parameters = versions.map(v => `raw${v}: string`).join(", ")
+    const init = versions.map(v => `this._raw${v} = raw${v}`).join("\n")
+    const getters = versions
+        .map(
+            v =>
+                `public get es${v}(): Set<string> { return this._set${v} || (this._set${v} = new Set(this._raw${v}.split(" "))) }`,
+        )
+        .join("\n")
+
+    return `
+        class DataSet {
+            ${fields}
+            public constructor(${parameters}) {
+                ${init}
+            }
+            ${getters}
+        }
+    `
+}
+
+function makeDataCode(values: string[]): string {
+    return `"${values
+        .map(value => JSON.stringify(value).slice(1, -1))
+        .join(" ")}"`
+}
+
 function makeVerificationCode(
     version: string,
     patternVar: string,
     values: string[],
-    maxLen: number,
 ): string {
     if (values.length === 0) {
         return ""
     }
 
-    return `
-        if (version >= ${version}) {
-            if (${patternVar}.es${version} === null) {
-                ${patternVar}.es${version} = new Set([${values
-        .map(v => `"${v}"`)
-        .join()}])
-            }
-            if (${patternVar}.es${version}.has(value)) {
-                return true
-            }
-        }
-    `
+    return `(version >= ${version} && ${patternVar}.es${version}.has(value))`
 }
 
 function save(content: string): Promise<void> {

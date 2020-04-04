@@ -101,12 +101,9 @@ function isInRange(cp: number, ranges: number[]): boolean {
     return false
 }
 
-function restoreRanges(diffs: number[]): number[] {
+function restoreRanges(data: string): number[] {
     let last = 0
-    for (let i = 0; i < diffs.length; ++i) {
-        last = (diffs[i] += last)
-    }
-    return diffs
+    return data.split(" ").map(s => (last += parseInt(s, 10) | 0))
 }
 `
 
@@ -179,14 +176,13 @@ function makeSmallCondition(ranges: [number, number][]): string {
 }
 
 function makeInitLargeIdRanges(ranges: [number, number][]): string {
-    const strings: string[] = ["return restoreRanges(["]
+    const diffs: number[] = []
     let last = 0
     for (const [min, max] of ranges) {
-        strings.push(`${min - last},${max - min},`)
+        diffs.push(min - last, max - min)
         last = max
     }
-    strings.push("]) //eslint-disable-line @mysticatea/prettier")
-    return strings.join("")
+    return `return restoreRanges("${diffs.join(" ")}")`
 }
 
 function save(content: string): Promise<void> {
