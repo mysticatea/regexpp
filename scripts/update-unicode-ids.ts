@@ -103,7 +103,7 @@ function isInRange(cp: number, ranges: number[]): boolean {
 
 function restoreRanges(data: string): number[] {
     let last = 0
-    return data.split(" ").map(s => (last += parseInt(s, 10) | 0))
+    return data.split(" ").map(s => (last += parseInt(s, 36) | 0))
 }
 `
 
@@ -176,10 +176,10 @@ function makeSmallCondition(ranges: [number, number][]): string {
 }
 
 function makeInitLargeIdRanges(ranges: [number, number][]): string {
-    const diffs: number[] = []
+    const diffs: string[] = []
     let last = 0
     for (const [min, max] of ranges) {
-        diffs.push(min - last, max - min)
+        diffs.push((min - last).toString(36), (max - min).toString(36))
         last = max
     }
     return `return restoreRanges("${diffs.join(" ")}")`
