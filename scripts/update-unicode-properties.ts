@@ -18,8 +18,15 @@ const DataSources = [
         scValues: "#table-unicode-script-values",
     },
     {
-        url: "https://tc39.es/ecma262/",
+        url: "https://www.ecma-international.org/ecma-262/11.0/",
         version: 2020,
+        binProperties: "#table-binary-unicode-properties",
+        gcValues: "#table-unicode-general-category-values",
+        scValues: "#table-unicode-script-values",
+    },
+    {
+        url: "https://tc39.es/ecma262/",
+        version: 2021,
         binProperties: "#table-binary-unicode-properties",
         gcValues: "#table-unicode-general-category-values",
         scValues: "#table-unicode-script-values",

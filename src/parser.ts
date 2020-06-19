@@ -506,7 +506,7 @@ export namespace RegExpParser {
          * - `2015` added `u` and `y` flags.
          * - `2018` added `s` flag, Named Capturing Group, Lookbehind Assertion,
          *   and Unicode Property Escape.
-         * - `2019` and `2020` added more valid Unicode Property Escapes.
+         * - `2019`, `2020`, and `2021` added more valid Unicode Property Escapes.
          */
         ecmaVersion?: EcmaVersion
     }
