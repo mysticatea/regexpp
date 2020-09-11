@@ -79,7 +79,7 @@ export class RegExpVisitor {
         }
     }
 
-    private visitAlternative(node: Alternative): void {
+    protected visitAlternative(node: Alternative): void {
         if (this._handlers.onAlternativeEnter) {
             this._handlers.onAlternativeEnter(node)
         }
@@ -88,7 +88,7 @@ export class RegExpVisitor {
             this._handlers.onAlternativeLeave(node)
         }
     }
-    private visitAssertion(node: Assertion): void {
+    protected visitAssertion(node: Assertion): void {
         if (this._handlers.onAssertionEnter) {
             this._handlers.onAssertionEnter(node)
         }
@@ -99,7 +99,7 @@ export class RegExpVisitor {
             this._handlers.onAssertionLeave(node)
         }
     }
-    private visitBackreference(node: Backreference): void {
+    protected visitBackreference(node: Backreference): void {
         if (this._handlers.onBackreferenceEnter) {
             this._handlers.onBackreferenceEnter(node)
         }
@@ -107,7 +107,7 @@ export class RegExpVisitor {
             this._handlers.onBackreferenceLeave(node)
         }
     }
-    private visitCapturingGroup(node: CapturingGroup): void {
+    protected visitCapturingGroup(node: CapturingGroup): void {
         if (this._handlers.onCapturingGroupEnter) {
             this._handlers.onCapturingGroupEnter(node)
         }
@@ -116,7 +116,7 @@ export class RegExpVisitor {
             this._handlers.onCapturingGroupLeave(node)
         }
     }
-    private visitCharacter(node: Character): void {
+    protected visitCharacter(node: Character): void {
         if (this._handlers.onCharacterEnter) {
             this._handlers.onCharacterEnter(node)
         }
@@ -124,7 +124,7 @@ export class RegExpVisitor {
             this._handlers.onCharacterLeave(node)
         }
     }
-    private visitCharacterClass(node: CharacterClass): void {
+    protected visitCharacterClass(node: CharacterClass): void {
         if (this._handlers.onCharacterClassEnter) {
             this._handlers.onCharacterClassEnter(node)
         }
@@ -133,7 +133,7 @@ export class RegExpVisitor {
             this._handlers.onCharacterClassLeave(node)
         }
     }
-    private visitCharacterClassRange(node: CharacterClassRange): void {
+    protected visitCharacterClassRange(node: CharacterClassRange): void {
         if (this._handlers.onCharacterClassRangeEnter) {
             this._handlers.onCharacterClassRangeEnter(node)
         }
@@ -143,7 +143,7 @@ export class RegExpVisitor {
             this._handlers.onCharacterClassRangeLeave(node)
         }
     }
-    private visitCharacterSet(node: CharacterSet): void {
+    protected visitCharacterSet(node: CharacterSet): void {
         if (this._handlers.onCharacterSetEnter) {
             this._handlers.onCharacterSetEnter(node)
         }
@@ -151,7 +151,7 @@ export class RegExpVisitor {
             this._handlers.onCharacterSetLeave(node)
         }
     }
-    private visitFlags(node: Flags): void {
+    protected visitFlags(node: Flags): void {
         if (this._handlers.onFlagsEnter) {
             this._handlers.onFlagsEnter(node)
         }
@@ -159,7 +159,7 @@ export class RegExpVisitor {
             this._handlers.onFlagsLeave(node)
         }
     }
-    private visitGroup(node: Group): void {
+    protected visitGroup(node: Group): void {
         if (this._handlers.onGroupEnter) {
             this._handlers.onGroupEnter(node)
         }
@@ -168,7 +168,7 @@ export class RegExpVisitor {
             this._handlers.onGroupLeave(node)
         }
     }
-    private visitPattern(node: Pattern): void {
+    protected visitPattern(node: Pattern): void {
         if (this._handlers.onPatternEnter) {
             this._handlers.onPatternEnter(node)
         }
@@ -177,7 +177,7 @@ export class RegExpVisitor {
             this._handlers.onPatternLeave(node)
         }
     }
-    private visitQuantifier(node: Quantifier): void {
+    protected visitQuantifier(node: Quantifier): void {
         if (this._handlers.onQuantifierEnter) {
             this._handlers.onQuantifierEnter(node)
         }
@@ -186,7 +186,7 @@ export class RegExpVisitor {
             this._handlers.onQuantifierLeave(node)
         }
     }
-    private visitRegExpLiteral(node: RegExpLiteral): void {
+    protected visitRegExpLiteral(node: RegExpLiteral): void {
         if (this._handlers.onRegExpLiteralEnter) {
             this._handlers.onRegExpLiteralEnter(node)
         }

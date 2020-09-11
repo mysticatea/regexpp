@@ -3,7 +3,7 @@ import { RegExpParser } from "./parser"
 import { RegExpValidator } from "./validator"
 import { RegExpVisitor } from "./visitor"
 
-export { AST, RegExpParser, RegExpValidator }
+export { AST, RegExpParser, RegExpValidator, RegExpVisitor }
 
 /**
  * Parse a given regular expression literal then make AST object.
