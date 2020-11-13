@@ -23,10 +23,21 @@ describe("visitRegExpAST function:", () => {
                     const expected = fixture.patterns[source]
                     const ast = generateAST(source, options)
                     const history = [] as string[]
-                    const enter = (node: AST.Node): void => {
+                    const expectedParents = [] as AST.Node[]
+                    const enter = (
+                        node: AST.Node,
+                        parents: readonly AST.Node[],
+                    ): void => {
+                        assert.deepStrictEqual(parents, expectedParents)
                         history.push(`enter:${node.type}:${node.raw}`)
+                        expectedParents.push(node)
                     }
-                    const leave = (node: AST.Node): void => {
+                    const leave = (
+                        node: AST.Node,
+                        parents: readonly AST.Node[],
+                    ): void => {
+                        expectedParents.pop()
+                        assert.deepStrictEqual(parents, expectedParents)
                         history.push(`leave:${node.type}:${node.raw}`)
                     }
 
