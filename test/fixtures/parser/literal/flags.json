@@ -57,7 +57,8 @@
           "multiline": false,
           "unicode": false,
           "sticky": false,
-          "dotAll": false
+          "dotAll": false,
+          "hasIndices": false
         }
       }
     },
@@ -114,7 +115,8 @@
           "multiline": false,
           "unicode": false,
           "sticky": false,
-          "dotAll": false
+          "dotAll": false,
+          "hasIndices": false
         }
       }
     },
@@ -171,7 +173,8 @@
           "multiline": true,
           "unicode": false,
           "sticky": false,
-          "dotAll": false
+          "dotAll": false,
+          "hasIndices": false
         }
       }
     },
@@ -228,7 +231,8 @@
           "multiline": false,
           "unicode": false,
           "sticky": false,
-          "dotAll": false
+          "dotAll": false,
+          "hasIndices": false
         }
       }
     },
@@ -285,7 +289,8 @@
           "multiline": true,
           "unicode": false,
           "sticky": false,
-          "dotAll": false
+          "dotAll": false,
+          "hasIndices": false
         }
       }
     },
@@ -342,7 +347,8 @@
           "multiline": true,
           "unicode": false,
           "sticky": false,
-          "dotAll": false
+          "dotAll": false,
+          "hasIndices": false
         }
       }
     },
@@ -379,6 +385,12 @@
     "/./s": {
       "error": {
         "message": "Invalid regular expression: /./s: Invalid flag 's'",
+        "index": 3
+      }
+    },
+    "/./d": {
+      "error": {
+        "message": "Invalid regular expression: /./d: Invalid flag 'd'",
         "index": 3
       }
     }

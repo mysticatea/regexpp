@@ -40,7 +40,7 @@ class RegExpParserState {
 
     public constructor(options?: RegExpParser.Options) {
         this.strict = Boolean(options && options.strict)
-        this.ecmaVersion = (options && options.ecmaVersion) || 2020
+        this.ecmaVersion = (options && options.ecmaVersion) || 2022
     }
 
     public get pattern(): Pattern {
@@ -66,6 +66,7 @@ class RegExpParserState {
         unicode: boolean,
         sticky: boolean,
         dotAll: boolean,
+        hasIndices: boolean,
     ): void {
         this._flags = {
             type: "Flags",
@@ -79,6 +80,7 @@ class RegExpParserState {
             unicode,
             sticky,
             dotAll,
+            hasIndices,
         }
     }
 
@@ -502,11 +504,12 @@ export namespace RegExpParser {
         strict?: boolean
 
         /**
-         * ECMAScript version. Default is `2020`.
+         * ECMAScript version. Default is `2`.
          * - `2015` added `u` and `y` flags.
          * - `2018` added `s` flag, Named Capturing Group, Lookbehind Assertion,
          *   and Unicode Property Escape.
          * - `2019`, `2020`, and `2021` added more valid Unicode Property Escapes.
+         * - `2022` added `d` flag.
          */
         ecmaVersion?: EcmaVersion
     }
