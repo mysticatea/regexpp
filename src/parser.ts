@@ -504,7 +504,7 @@ export namespace RegExpParser {
         strict?: boolean
 
         /**
-         * ECMAScript version. Default is `2`.
+         * ECMAScript version. Default is `2022`.
          * - `2015` added `u` and `y` flags.
          * - `2018` added `s` flag, Named Capturing Group, Lookbehind Assertion,
          *   and Unicode Property Escape.

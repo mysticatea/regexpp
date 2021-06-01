@@ -127,7 +127,7 @@ export namespace RegExpValidator {
         strict?: boolean
 
         /**
-         * ECMAScript version. Default is `2020`.
+         * ECMAScript version. Default is `2022`.
          * - `2015` added `u` and `y` flags.
          * - `2018` added `s` flag, Named Capturing Group, Lookbehind Assertion,
          *   and Unicode Property Escape.
@@ -555,7 +555,7 @@ export class RegExpValidator {
     }
 
     private get ecmaVersion() {
-        return this._options.ecmaVersion || 2020
+        return this._options.ecmaVersion || 2022
     }
 
     private onLiteralEnter(start: number): void {
