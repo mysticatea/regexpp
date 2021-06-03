@@ -526,19 +526,8 @@ export class RegExpValidator {
         uFlag = false,
     ): void {
         this._uFlag = uFlag && this.ecmaVersion >= 2015
-        this._nFlag = uFlag && this.ecmaVersion >= 2018
         this.reset(source, start, end)
         this.consumePattern()
-
-        if (
-            !this._nFlag &&
-            this.ecmaVersion >= 2018 &&
-            this._groupNames.size > 0
-        ) {
-            this._nFlag = true
-            this.rewind(start)
-            this.consumePattern()
-        }
     }
 
     // #region Delegate for Options
@@ -893,7 +882,11 @@ export class RegExpValidator {
      */
     private consumePattern(): void {
         const start = this.index
-        this._numCapturingParens = this.countCapturingParens()
+        const [unnamedGroups, namedGroups] = this.countCapturingParens()
+
+        this._nFlag =
+            this.ecmaVersion >= 2018 && (this._uFlag || namedGroups > 0)
+        this._numCapturingParens = unnamedGroups + namedGroups
         this._groupNames.clear()
         this._backreferenceNames.clear()
 
@@ -924,13 +917,15 @@ export class RegExpValidator {
 
     /**
      * Count capturing groups in the current source code.
-     * @returns The number of capturing groups.
+     * @returns The number of unnamed capturing groups and the number of named
+     * capturing groups.
      */
-    private countCapturingParens(): number {
+    private countCapturingParens(): [number, number] {
         const start = this.index
         let inClass = false
         let escaped = false
-        let count = 0
+        let unnamedCount = 0
+        let namedCount = 0
         let cp = 0
 
         while ((cp = this.currentCodePoint) !== -1) {
@@ -942,21 +937,23 @@ export class RegExpValidator {
                 inClass = true
             } else if (cp === RightSquareBracket) {
                 inClass = false
-            } else if (
-                cp === LeftParenthesis &&
-                !inClass &&
-                (this.nextCodePoint !== QuestionMark ||
-                    (this.nextCodePoint2 === LessThanSign &&
-                        this.nextCodePoint3 !== EqualsSign &&
-                        this.nextCodePoint3 !== ExclamationMark))
-            ) {
-                count += 1
+            } else if (cp === LeftParenthesis && !inClass) {
+                if (
+                    this.nextCodePoint === QuestionMark &&
+                    this.nextCodePoint2 === LessThanSign &&
+                    this.nextCodePoint3 !== EqualsSign &&
+                    this.nextCodePoint3 !== ExclamationMark
+                ) {
+                    namedCount += 1
+                } else if (this.nextCodePoint !== QuestionMark) {
+                    unnamedCount += 1
+                }
             }
             this.advance()
         }
 
         this.rewind(start)
-        return count
+        return [unnamedCount, namedCount]
     }
 
     /**
