@@ -288,6 +288,7 @@ export interface Flags extends NodeBase {
     parent: RegExpLiteral | null
     dotAll: boolean
     global: boolean
+    hasIndices: boolean
     ignoreCase: boolean
     multiline: boolean
     sticky: boolean

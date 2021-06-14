@@ -5,7 +5,16 @@ type FixtureData = {
     [filename: string]: {
         options: {
             strict?: boolean
-            ecmaVersion?: 5 | 2015 | 2016 | 2017 | 2018
+            ecmaVersion?:
+                | 5
+                | 2015
+                | 2016
+                | 2017
+                | 2018
+                | 2019
+                | 2020
+                | 2021
+                | 2022
         }
         patterns: {
             [source: string]: string[]

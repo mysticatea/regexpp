@@ -1,16 +1,16 @@
 {
   "options": {
     "strict": true,
-    "ecmaVersion": 2018
+    "ecmaVersion": 2022
   },
   "patterns": {
-    "/./s": {
+    "/./d": {
       "ast": {
         "type": "RegExpLiteral",
         "parent": null,
         "start": 0,
         "end": 4,
-        "raw": "/./s",
+        "raw": "/./d",
         "pattern": {
           "type": "Pattern",
           "parent": "♻️..",
@@ -42,21 +42,15 @@
           "parent": "♻️..",
           "start": 3,
           "end": 4,
-          "raw": "s",
+          "raw": "d",
           "global": false,
           "ignoreCase": false,
           "multiline": false,
           "unicode": false,
           "sticky": false,
-          "dotAll": true,
-          "hasIndices": false
+          "dotAll": false,
+          "hasIndices": true
         }
-      }
-    },
-    "/./d": {
-      "error": {
-        "message": "Invalid regular expression: /./d: Invalid flag 'd'",
-        "index": 3
       }
     }
   }

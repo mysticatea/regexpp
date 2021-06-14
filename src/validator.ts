@@ -127,11 +127,12 @@ export namespace RegExpValidator {
         strict?: boolean
 
         /**
-         * ECMAScript version. Default is `2020`.
+         * ECMAScript version. Default is `2022`.
          * - `2015` added `u` and `y` flags.
          * - `2018` added `s` flag, Named Capturing Group, Lookbehind Assertion,
          *   and Unicode Property Escape.
          * - `2019`, `2020`, and `2021` added more valid Unicode Property Escapes.
+         * - `2022` added `d` flag.
          */
         ecmaVersion?: EcmaVersion
 
@@ -158,6 +159,7 @@ export namespace RegExpValidator {
          * @param unicode `u` flag.
          * @param sticky `y` flag.
          * @param dotAll `s` flag.
+         * @param hasIndices `d` flag.
          */
         onFlags?(
             start: number,
@@ -168,6 +170,7 @@ export namespace RegExpValidator {
             unicode: boolean,
             sticky: boolean,
             dotAll: boolean,
+            hasIndices: boolean,
         ): void
 
         /**
@@ -476,6 +479,7 @@ export class RegExpValidator {
         let sticky = false
         let unicode = false
         let dotAll = false
+        let hasIndices = false
         for (let i = start; i < end; ++i) {
             const flag = source.charCodeAt(i)
 
@@ -496,6 +500,8 @@ export class RegExpValidator {
                 sticky = true
             } else if (flag === LatinSmallLetterS && this.ecmaVersion >= 2018) {
                 dotAll = true
+            } else if (flag === LatinSmallLetterD && this.ecmaVersion >= 2022) {
+                hasIndices = true
             } else {
                 this.raise(`Invalid flag '${source[i]}'`)
             }
@@ -509,6 +515,7 @@ export class RegExpValidator {
             unicode,
             sticky,
             dotAll,
+            hasIndices,
         )
     }
 
@@ -548,7 +555,7 @@ export class RegExpValidator {
     }
 
     private get ecmaVersion() {
-        return this._options.ecmaVersion || 2020
+        return this._options.ecmaVersion || 2022
     }
 
     private onLiteralEnter(start: number): void {
@@ -572,6 +579,7 @@ export class RegExpValidator {
         unicode: boolean,
         sticky: boolean,
         dotAll: boolean,
+        hasIndices: boolean,
     ): void {
         if (this._options.onFlags) {
             this._options.onFlags(
@@ -583,6 +591,7 @@ export class RegExpValidator {
                 unicode,
                 sticky,
                 dotAll,
+                hasIndices,
             )
         }
     }
