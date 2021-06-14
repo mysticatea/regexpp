@@ -9,6 +9,13 @@
   "files": [
     "index.*"
   ],
+  "exports": {
+    ".": {
+      "import": "./index.mjs",
+      "default": "./index.js"
+    },
+    "./package.json": "./package.json"
+  },
   "dependencies": {},
   "devDependencies": {
     "@mysticatea/eslint-plugin": "^11.0.0",
