@@ -34,197 +34,264 @@ export class RegExpVisitor {
      * @param node The root node to visit tree.
      */
     public visit(node: Node): void {
+        this.visitWithParents(node, [])
+    }
+
+    private visitWithParents(node: Node, parents: Node[]): void {
         switch (node.type) {
             case "Alternative":
-                this.visitAlternative(node)
+                this.visitAlternative(node, parents)
                 break
             case "Assertion":
-                this.visitAssertion(node)
+                this.visitAssertion(node, parents)
                 break
             case "Backreference":
-                this.visitBackreference(node)
+                this.visitBackreference(node, parents)
                 break
             case "CapturingGroup":
-                this.visitCapturingGroup(node)
+                this.visitCapturingGroup(node, parents)
                 break
             case "Character":
-                this.visitCharacter(node)
+                this.visitCharacter(node, parents)
                 break
             case "CharacterClass":
-                this.visitCharacterClass(node)
+                this.visitCharacterClass(node, parents)
                 break
             case "CharacterClassRange":
-                this.visitCharacterClassRange(node)
+                this.visitCharacterClassRange(node, parents)
                 break
             case "CharacterSet":
-                this.visitCharacterSet(node)
+                this.visitCharacterSet(node, parents)
                 break
             case "Flags":
-                this.visitFlags(node)
+                this.visitFlags(node, parents)
                 break
             case "Group":
-                this.visitGroup(node)
+                this.visitGroup(node, parents)
                 break
             case "Pattern":
-                this.visitPattern(node)
+                this.visitPattern(node, parents)
                 break
             case "Quantifier":
-                this.visitQuantifier(node)
+                this.visitQuantifier(node, parents)
                 break
             case "RegExpLiteral":
-                this.visitRegExpLiteral(node)
+                this.visitRegExpLiteral(node, parents)
                 break
             default:
                 throw new Error(`Unknown type: ${(node as any).type}`)
         }
     }
 
-    private visitAlternative(node: Alternative): void {
+    private visitAlternative(node: Alternative, parents: Node[]): void {
         if (this._handlers.onAlternativeEnter) {
-            this._handlers.onAlternativeEnter(node)
+            this._handlers.onAlternativeEnter(node, parents)
         }
-        node.elements.forEach(this.visit, this)
+        parents.push(node)
+        for (const child of node.elements) {
+            this.visitWithParents(child, parents)
+        }
+        parents.pop()
         if (this._handlers.onAlternativeLeave) {
-            this._handlers.onAlternativeLeave(node)
+            this._handlers.onAlternativeLeave(node, parents)
         }
     }
-    private visitAssertion(node: Assertion): void {
+    private visitAssertion(node: Assertion, parents: Node[]): void {
         if (this._handlers.onAssertionEnter) {
-            this._handlers.onAssertionEnter(node)
+            this._handlers.onAssertionEnter(node, parents)
         }
         if (node.kind === "lookahead" || node.kind === "lookbehind") {
-            node.alternatives.forEach(this.visit, this)
+            parents.push(node)
+            for (const child of node.alternatives) {
+                this.visitWithParents(child, parents)
+            }
+            parents.pop()
         }
         if (this._handlers.onAssertionLeave) {
-            this._handlers.onAssertionLeave(node)
+            this._handlers.onAssertionLeave(node, parents)
         }
     }
-    private visitBackreference(node: Backreference): void {
+    private visitBackreference(node: Backreference, parents: Node[]): void {
         if (this._handlers.onBackreferenceEnter) {
-            this._handlers.onBackreferenceEnter(node)
+            this._handlers.onBackreferenceEnter(node, parents)
         }
         if (this._handlers.onBackreferenceLeave) {
-            this._handlers.onBackreferenceLeave(node)
+            this._handlers.onBackreferenceLeave(node, parents)
         }
     }
-    private visitCapturingGroup(node: CapturingGroup): void {
+    private visitCapturingGroup(node: CapturingGroup, parents: Node[]): void {
         if (this._handlers.onCapturingGroupEnter) {
-            this._handlers.onCapturingGroupEnter(node)
+            this._handlers.onCapturingGroupEnter(node, parents)
         }
-        node.alternatives.forEach(this.visit, this)
+        parents.push(node)
+        for (const child of node.alternatives) {
+            this.visitWithParents(child, parents)
+        }
+        parents.pop()
         if (this._handlers.onCapturingGroupLeave) {
-            this._handlers.onCapturingGroupLeave(node)
+            this._handlers.onCapturingGroupLeave(node, parents)
         }
     }
-    private visitCharacter(node: Character): void {
+    private visitCharacter(node: Character, parents: Node[]): void {
         if (this._handlers.onCharacterEnter) {
-            this._handlers.onCharacterEnter(node)
+            this._handlers.onCharacterEnter(node, parents)
         }
         if (this._handlers.onCharacterLeave) {
-            this._handlers.onCharacterLeave(node)
+            this._handlers.onCharacterLeave(node, parents)
         }
     }
-    private visitCharacterClass(node: CharacterClass): void {
+    private visitCharacterClass(node: CharacterClass, parents: Node[]): void {
         if (this._handlers.onCharacterClassEnter) {
-            this._handlers.onCharacterClassEnter(node)
+            this._handlers.onCharacterClassEnter(node, parents)
         }
-        node.elements.forEach(this.visit, this)
+        parents.push(node)
+        for (const child of node.elements) {
+            this.visitWithParents(child, parents)
+        }
+        parents.pop()
         if (this._handlers.onCharacterClassLeave) {
-            this._handlers.onCharacterClassLeave(node)
+            this._handlers.onCharacterClassLeave(node, parents)
         }
     }
-    private visitCharacterClassRange(node: CharacterClassRange): void {
+    private visitCharacterClassRange(
+        node: CharacterClassRange,
+        parents: Node[],
+    ): void {
         if (this._handlers.onCharacterClassRangeEnter) {
-            this._handlers.onCharacterClassRangeEnter(node)
+            this._handlers.onCharacterClassRangeEnter(node, parents)
         }
-        this.visitCharacter(node.min)
-        this.visitCharacter(node.max)
+        parents.push(node)
+        this.visitCharacter(node.min, parents)
+        this.visitCharacter(node.max, parents)
+        parents.pop()
         if (this._handlers.onCharacterClassRangeLeave) {
-            this._handlers.onCharacterClassRangeLeave(node)
+            this._handlers.onCharacterClassRangeLeave(node, parents)
         }
     }
-    private visitCharacterSet(node: CharacterSet): void {
+    private visitCharacterSet(node: CharacterSet, parents: Node[]): void {
         if (this._handlers.onCharacterSetEnter) {
-            this._handlers.onCharacterSetEnter(node)
+            this._handlers.onCharacterSetEnter(node, parents)
         }
         if (this._handlers.onCharacterSetLeave) {
-            this._handlers.onCharacterSetLeave(node)
+            this._handlers.onCharacterSetLeave(node, parents)
         }
     }
-    private visitFlags(node: Flags): void {
+    private visitFlags(node: Flags, parents: Node[]): void {
         if (this._handlers.onFlagsEnter) {
-            this._handlers.onFlagsEnter(node)
+            this._handlers.onFlagsEnter(node, parents)
         }
         if (this._handlers.onFlagsLeave) {
-            this._handlers.onFlagsLeave(node)
+            this._handlers.onFlagsLeave(node, parents)
         }
     }
-    private visitGroup(node: Group): void {
+    private visitGroup(node: Group, parents: Node[]): void {
         if (this._handlers.onGroupEnter) {
-            this._handlers.onGroupEnter(node)
+            this._handlers.onGroupEnter(node, parents)
         }
-        node.alternatives.forEach(this.visit, this)
+        parents.push(node)
+        for (const child of node.alternatives) {
+            this.visitWithParents(child, parents)
+        }
+        parents.pop()
         if (this._handlers.onGroupLeave) {
-            this._handlers.onGroupLeave(node)
+            this._handlers.onGroupLeave(node, parents)
         }
     }
-    private visitPattern(node: Pattern): void {
+    private visitPattern(node: Pattern, parents: Node[]): void {
         if (this._handlers.onPatternEnter) {
-            this._handlers.onPatternEnter(node)
+            this._handlers.onPatternEnter(node, parents)
         }
-        node.alternatives.forEach(this.visit, this)
+        parents.push(node)
+        for (const child of node.alternatives) {
+            this.visitWithParents(child, parents)
+        }
+        parents.pop()
         if (this._handlers.onPatternLeave) {
-            this._handlers.onPatternLeave(node)
+            this._handlers.onPatternLeave(node, parents)
         }
     }
-    private visitQuantifier(node: Quantifier): void {
+    private visitQuantifier(node: Quantifier, parents: Node[]): void {
         if (this._handlers.onQuantifierEnter) {
-            this._handlers.onQuantifierEnter(node)
+            this._handlers.onQuantifierEnter(node, parents)
         }
-        this.visit(node.element)
+        parents.push(node)
+        this.visitWithParents(node.element, parents)
+        parents.pop()
         if (this._handlers.onQuantifierLeave) {
-            this._handlers.onQuantifierLeave(node)
+            this._handlers.onQuantifierLeave(node, parents)
         }
     }
-    private visitRegExpLiteral(node: RegExpLiteral): void {
+    private visitRegExpLiteral(node: RegExpLiteral, parents: Node[]): void {
         if (this._handlers.onRegExpLiteralEnter) {
-            this._handlers.onRegExpLiteralEnter(node)
+            this._handlers.onRegExpLiteralEnter(node, parents)
         }
-        this.visitPattern(node.pattern)
-        this.visitFlags(node.flags)
+        parents.push(node)
+        this.visitWithParents(node.pattern, parents)
+        this.visitWithParents(node.flags, parents)
+        parents.pop()
         if (this._handlers.onRegExpLiteralLeave) {
-            this._handlers.onRegExpLiteralLeave(node)
+            this._handlers.onRegExpLiteralLeave(node, parents)
         }
     }
 }
 
 export namespace RegExpVisitor {
     export interface Handlers {
-        onAlternativeEnter?(node: Alternative): void
-        onAlternativeLeave?(node: Alternative): void
-        onAssertionEnter?(node: Assertion): void
-        onAssertionLeave?(node: Assertion): void
-        onBackreferenceEnter?(node: Backreference): void
-        onBackreferenceLeave?(node: Backreference): void
-        onCapturingGroupEnter?(node: CapturingGroup): void
-        onCapturingGroupLeave?(node: CapturingGroup): void
-        onCharacterEnter?(node: Character): void
-        onCharacterLeave?(node: Character): void
-        onCharacterClassEnter?(node: CharacterClass): void
-        onCharacterClassLeave?(node: CharacterClass): void
-        onCharacterClassRangeEnter?(node: CharacterClassRange): void
-        onCharacterClassRangeLeave?(node: CharacterClassRange): void
-        onCharacterSetEnter?(node: CharacterSet): void
-        onCharacterSetLeave?(node: CharacterSet): void
-        onFlagsEnter?(node: Flags): void
-        onFlagsLeave?(node: Flags): void
-        onGroupEnter?(node: Group): void
-        onGroupLeave?(node: Group): void
-        onPatternEnter?(node: Pattern): void
-        onPatternLeave?(node: Pattern): void
-        onQuantifierEnter?(node: Quantifier): void
-        onQuantifierLeave?(node: Quantifier): void
-        onRegExpLiteralEnter?(node: RegExpLiteral): void
-        onRegExpLiteralLeave?(node: RegExpLiteral): void
+        onAlternativeEnter?(node: Alternative, parents: readonly Node[]): void
+        onAlternativeLeave?(node: Alternative, parents: readonly Node[]): void
+        onAssertionEnter?(node: Assertion, parents: readonly Node[]): void
+        onAssertionLeave?(node: Assertion, parents: readonly Node[]): void
+        onBackreferenceEnter?(
+            node: Backreference,
+            parents: readonly Node[],
+        ): void
+        onBackreferenceLeave?(
+            node: Backreference,
+            parents: readonly Node[],
+        ): void
+        onCapturingGroupEnter?(
+            node: CapturingGroup,
+            parents: readonly Node[],
+        ): void
+        onCapturingGroupLeave?(
+            node: CapturingGroup,
+            parents: readonly Node[],
+        ): void
+        onCharacterEnter?(node: Character, parents: readonly Node[]): void
+        onCharacterLeave?(node: Character, parents: readonly Node[]): void
+        onCharacterClassEnter?(
+            node: CharacterClass,
+            parents: readonly Node[],
+        ): void
+        onCharacterClassLeave?(
+            node: CharacterClass,
+            parents: readonly Node[],
+        ): void
+        onCharacterClassRangeEnter?(
+            node: CharacterClassRange,
+            parents: readonly Node[],
+        ): void
+        onCharacterClassRangeLeave?(
+            node: CharacterClassRange,
+            parents: readonly Node[],
+        ): void
+        onCharacterSetEnter?(node: CharacterSet, parents: readonly Node[]): void
+        onCharacterSetLeave?(node: CharacterSet, parents: readonly Node[]): void
+        onFlagsEnter?(node: Flags, parents: readonly Node[]): void
+        onFlagsLeave?(node: Flags, parents: readonly Node[]): void
+        onGroupEnter?(node: Group, parents: readonly Node[]): void
+        onGroupLeave?(node: Group, parents: readonly Node[]): void
+        onPatternEnter?(node: Pattern, parents: readonly Node[]): void
+        onPatternLeave?(node: Pattern, parents: readonly Node[]): void
+        onQuantifierEnter?(node: Quantifier, parents: readonly Node[]): void
+        onQuantifierLeave?(node: Quantifier, parents: readonly Node[]): void
+        onRegExpLiteralEnter?(
+            node: RegExpLiteral,
+            parents: readonly Node[],
+        ): void
+        onRegExpLiteralLeave?(
+            node: RegExpLiteral,
+            parents: readonly Node[],
+        ): void
     }
 }
