@@ -1,0 +1,26 @@
+{
+  "options": {
+    "strict": true,
+    "ecmaVersion": 2018
+  },
+  "patterns": {
+    "/\\k/": {
+      "error": {
+        "message": "Invalid regular expression: /\\k/: Invalid escape",
+        "index": 2
+      }
+    },
+    "/\\k<a>/": {
+      "error": {
+        "message": "Invalid regular expression: /\\k<a>/: Invalid escape",
+        "index": 2
+      }
+    },
+    "/(?<a>a)\\2/": {
+      "error": {
+        "message": "Invalid regular expression: /(?<a>a)\\2/: Invalid escape",
+        "index": 10
+      }
+    }
+  }
+}
