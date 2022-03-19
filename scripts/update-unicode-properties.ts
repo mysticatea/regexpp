@@ -4,29 +4,36 @@ import { CLIEngine } from "eslint"
 
 const DataSources = [
     {
-        url: "https://www.ecma-international.org/ecma-262/9.0/",
+        url: "https://262.ecma-international.org/9.0/",
         version: 2018,
         binProperties: "#table-binary-unicode-properties",
         gcValues: "#table-unicode-general-category-values",
         scValues: "#table-unicode-script-values",
     },
     {
-        url: "https://www.ecma-international.org/ecma-262/10.0/",
+        url: "https://262.ecma-international.org/10.0/",
         version: 2019,
         binProperties: "#table-binary-unicode-properties",
         gcValues: "#table-unicode-general-category-values",
         scValues: "#table-unicode-script-values",
     },
     {
-        url: "https://www.ecma-international.org/ecma-262/11.0/",
+        url: "https://262.ecma-international.org/11.0/",
         version: 2020,
         binProperties: "#table-binary-unicode-properties",
         gcValues: "#table-unicode-general-category-values",
         scValues: "#table-unicode-script-values",
     },
     {
-        url: "https://tc39.es/ecma262/",
+        url: "https://262.ecma-international.org/12.0/",
         version: 2021,
+        binProperties: "#table-binary-unicode-properties",
+        gcValues: "#table-unicode-general-category-values",
+        scValues: "#table-unicode-script-values",
+    },
+    {
+        url: "https://tc39.es/ecma262/multipage/text-processing.html",
+        version: 2022,
         binProperties: "#table-binary-unicode-properties",
         gcValues: "#table-unicode-general-category-values",
         scValues: "#table-unicode-script-values",
